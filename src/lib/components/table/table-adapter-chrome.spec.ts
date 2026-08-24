@@ -137,11 +137,48 @@ describe('adapter-rendered chrome', () => {
 	});
 
 	describe('the search field', () => {
-		/** Emulation is what kept the rules away; `::ng-deep` is the way out of it. */
-		it('reaches the adapter control from inside the emulated sheet', () => {
-			const reached = rulesMatching((s) => s.includes('hub-input') && s.includes('hub-table__search-input'));
+		/**
+		 * The geometry is handed over, not reached for.
+		 *
+		 * When the adapter is wired, the field here is a component this table creates at
+		 * runtime, and a dynamically created component carries no `_ngcontent` attribute —
+		 * so no rule in this emulated stylesheet can name it. The first attempt was a
+		 * `::ng-deep` rule, which is a rule reaching into someone else's component: it
+		 * shipped nested inside the right-to-left block, compiled to
+		 * `:host.hub-table--rtl :host ::ng-deep …`, and was inert in every table.
+		 *
+		 * Custom properties inherit, so the container states the geometry and whatever fills
+		 * it reads it. The native fallback ignores what it does not use.
+		 */
+		it('states the group radius on its own container', () => {
+			const declared = rulesMatching((s) => s.includes('hub-table__search'))
+				.map(({ style }) => style.getPropertyValue('--hub-input-border-radius'))
+				.filter(Boolean);
 
-			expect(reached.length).toBeGreaterThan(0);
+			expect(declared.length).toBeGreaterThan(0);
+		});
+
+		/** No rule may name the control: that is what emulation forbids and what broke. */
+		it('never reaches into the control it does not own', () => {
+			const invasoras = rulesMatching(
+				(s) => s.includes('ng-deep') || /hub-input\.hub-table__search-input/.test(s)
+			);
+
+			expect(invasoras.map(({ selector }) => selector)).toEqual([]);
+		});
+
+		/**
+		 * The stacking gap is deliberately NOT zeroed here. A control the adapter creates is
+		 * embedded wherever it is created — a search group, a paginator row, anything wired
+		 * next — so `ng-hub-ui-forms` states it once in the adapter rather than each host
+		 * library discovering the same margin separately.
+		 */
+		it('leaves the stacking gap to the adapter that creates the control', () => {
+			const declared = rulesMatching((s) => s.includes('hub-table__search'))
+				.map(({ style }) => style.getPropertyValue('--hub-field-stack-gap'))
+				.filter(Boolean);
+
+			expect(declared).toEqual([]);
 		});
 	});
 });

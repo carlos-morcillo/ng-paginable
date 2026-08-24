@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [22.14.1] - 2026-08-24
+
+### Fixed
+
+- **The search field's geometry actually reaches it now.** 22.14.0 claimed this and shipped it inert. The rule was written as `::ng-deep`, and nested by accident inside the component's right-to-left block, so it compiled to `:host.hub-table--rtl :host ::ng-deep …` — confined to a direction most tables are not in, and unmatchable even there, because `:host` twice describes an element inside itself. It read correctly in the source and applied in no table anywhere.
+
+    It is not a `::ng-deep` rule any more, and that is the actual repair rather than a correction of the selector. Reaching into a component this table does not own was the wrong shape to begin with: custom properties inherit, so the container states the group's radius on its **own** element and whatever fills it reads it — the adapter's `<hub-input>`, or the native fallback, which ignores what it does not use. Nothing names the control.
+
+    Measured on a consuming application: field and button both 38px where the button was 54px, trailing corners flattened, and no rule in the whole document naming the control. Two cases pin it — the container declares the radius, and no shipped selector mentions `ng-deep` or the control.
+
+    The other half of what made the button overshoot — a form field's stacking margin, kept by a control that is not stacked in a form — moved to `ng-hub-ui-forms`, where the adapter that creates it says so once for every library that wires it.
+
 ## [22.14.0] - 2026-08-21
 
 ### Changed

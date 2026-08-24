@@ -411,6 +411,26 @@
 		align-items: stretch;
 		justify-content: end;
 
+		/*
+		 * The geometry of the group, handed to whatever control fills it.
+		 *
+		 * When a consumer wires `provideHubPaginableFormControls`, the field here is a
+		 * component this table creates at runtime — and a dynamically created component
+		 * carries no `_ngcontent` attribute, so no rule in this emulated stylesheet can
+		 * reach it. The first attempt was a `::ng-deep` rule, which is a rule reaching into
+		 * someone else's component: it shipped nested in the wrong block, applied nowhere,
+		 * and would have been the wrong shape even where it applied.
+		 *
+		 * Custom properties inherit, and this element is this component's own. Setting them
+		 * here reaches the control without naming it — the field reads its radius from the
+		 * token either way, and the native fallback ignores what it does not use.
+		 *
+		 * The stacking gap is NOT zeroed here: a control the adapter creates is embedded
+		 * wherever it is created, so `ng-hub-ui-forms` states that once, in the adapter.
+		 */
+		--hub-input-border-radius: var(--hub-table-search-border-radius) 0 0
+			var(--hub-table-search-border-radius);
+
 		&-input {
 			position: relative;
 			flex: 1 1 auto;
@@ -988,35 +1008,6 @@ $hub-table-variants: primary, secondary, success, danger, warning, info, neutral
 		}
 	}
 
-	/*
-	 * The search field when it is rendered through the hub-forms adapter.
-	 *
-	 * `provideHubPaginableFormControls` forwards `hub-table__search-input` to the HOST of
-	 * a component this table creates dynamically, and a dynamically created component
-	 * carries no `_ngcontent` attribute — so every rule above, written for the native
-	 * `<input>` under emulated encapsulation, simply never reaches it. The field came out
-	 * with none of the group geometry: a standalone rounded control sitting next to a
-	 * button it was supposed to be joined to.
-	 *
-	 * `::ng-deep` because that is the only way out of the emulation from here, and scoped
-	 * under `:host` so it cannot leak past this table. The element selector confines it to
-	 * the adapter's control, leaving the native fallback to the rules above.
-	 */
-	:host ::ng-deep hub-input.hub-table__search-input {
-		flex: 1 1 auto;
-		min-width: 0;
-		margin-block-end: 0;
-
-		// The host is a wrapper; the control inside already draws the box.
-		padding: 0;
-		border: 0;
-		background: transparent;
-
-		// Flatten the trailing corners so field and button read as one piece. The control
-		// takes its radius from this token, and the button mirrors it from the same one.
-		--hub-input-border-radius: var(--hub-table-search-border-radius) 0 0
-			var(--hub-table-search-border-radius);
-	}
 
 	.hub-table__search {
 		order: 1;
@@ -1106,3 +1097,4 @@ $hub-table-variants: primary, secondary, success, danger, warning, info, neutral
 		transform: scale(1);
 	}
 }
+
