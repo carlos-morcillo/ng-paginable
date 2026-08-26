@@ -69,15 +69,7 @@ export interface PaginableActionButton<T = any> {
 	 *
 	 * @default 'neutral'
 	 */
-	color?:
-		| 'primary'
-		| 'secondary'
-		| 'success'
-		| 'warning'
-		| 'danger'
-		| 'info'
-		| 'neutral'
-		| (string & {});
+	color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | (string & {});
 
 	/**
 	 * Optional CSS class list for action button customization.

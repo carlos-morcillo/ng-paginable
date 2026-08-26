@@ -13,18 +13,18 @@ export class ModalService {
 
 	remove(id: string) {
 		// remove modal from array of active modals
-		this.modals = this.modals.filter(x => x.id !== id);
+		this.modals = this.modals.filter((x) => x.id !== id);
 	}
 
 	open(id: string) {
 		// open modal specified by id
-		const modal = this.modals.find(x => x.id === id);
+		const modal = this.modals.find((x) => x.id === id);
 		modal.open();
 	}
 
 	close(id: string) {
 		// close modal specified by id
-		const modal = this.modals.find(x => x.id === id);
+		const modal = this.modals.find((x) => x.id === id);
 		modal.close();
 	}
 }

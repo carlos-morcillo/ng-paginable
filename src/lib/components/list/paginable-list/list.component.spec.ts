@@ -380,10 +380,8 @@ describe('ListComponent', () => {
 			expect(seen.children).toEqual([]);
 		});
 
-		it('hands over a group\'s children as items too, not as internal wrappers', () => {
-			fixture.componentRef.setInput('items', [
-				{ id: 10, label: 'Building', children: [{ id: 11, label: 'Room' }] }
-			]);
+		it("hands over a group's children as items too, not as internal wrappers", () => {
+			fixture.componentRef.setInput('items', [{ id: 10, label: 'Building', children: [{ id: 11, label: 'Room' }] }]);
 			let seen: any = null;
 			fixture.componentRef.setInput('clickFn', (event: any) => (seen = event));
 			fixture.detectChanges();
@@ -575,8 +573,8 @@ describe('ListComponent', () => {
 			component.filter();
 			fixture.detectChanges();
 
-			const labels = [...fixture.nativeElement.querySelectorAll('.hub-list__label')].map(
-				(el: HTMLElement) => el.textContent?.trim()
+			const labels = [...fixture.nativeElement.querySelectorAll('.hub-list__label')].map((el: HTMLElement) =>
+				el.textContent?.trim()
 			);
 			expect(labels).toEqual(['Second item']);
 		});

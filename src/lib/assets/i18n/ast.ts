@@ -10,7 +10,7 @@ export const locale = {
 		SEARCH_PLACEHOLDER: 'Buscar...',
 		ROWS_PER_PAGE: 'Fileres por páxina',
 		SHOWING_X_OF_Y_ROWS: 'Amosando {{ amount }} de {{ total }} fileres',
-		NO_RESULTS_FOUND: 'Nun s\'atoparon resultaos',
+		NO_RESULTS_FOUND: "Nun s'atoparon resultaos",
 		DRAG_SORTABLE_ITEM: 'elementu ordenable',
 		DRAG_PICKED_UP: 'Elementu coyíu. Posición {{ index }} de {{ total }}',
 		DRAG_MOVED_TO: 'Movíu a la posición {{ index }} de {{ total }}',
@@ -28,7 +28,7 @@ export const locale = {
 		DELETE_VIEW: 'desaniciar vista',
 		SAVE_FILTERS: 'guardar filtros',
 		CANCEL: 'cancelar',
-		NO_VIEWS_CREATED: 'Nun s\'crearon vistes',
+		NO_VIEWS_CREATED: "Nun s'crearon vistes",
 		SELECT_VIEW: 'Selecciona una vista',
 		CLEAN_FILTERS: 'Llimpiar filtros',
 		NAME: 'nome',
@@ -41,8 +41,8 @@ export const locale = {
 		LAST_MONTH: 'mes pasáu',
 		CURRENT_YEAR: 'añu actual',
 		LAST_YEAR: 'añu pasáu',
-		NO_ELEMENTS_FOUND: 'Nun s\'atoparon elementos',
-		STAR_TYPING: 'Entama a escribir p\'aniciar la gueta',
+		NO_ELEMENTS_FOUND: "Nun s'atoparon elementos",
+		STAR_TYPING: "Entama a escribir p'aniciar la gueta",
 		OPERATIONS: {
 			EQUAL_TO: 'Igual a',
 			VARIABLE: 'Variable'

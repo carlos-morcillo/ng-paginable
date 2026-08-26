@@ -24,7 +24,14 @@ import {
 	NG_VALUE_ACCESSOR,
 	ReactiveFormsModule
 } from '@angular/forms';
-import { generateUniqueId, getValue, HUB_TRANSLATION_PREFIX, resolveHubAccent, TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
+import {
+	generateUniqueId,
+	getValue,
+	HUB_TRANSLATION_PREFIX,
+	resolveHubAccent,
+	TranslatePipe,
+	UcfirstPipe
+} from 'ng-hub-ui-utils';
 import { HubListDragPlaceholderDirective } from '../../../directives/list-drag-placeholder.directive';
 import { HubListDragPreviewDirective } from '../../../directives/list-drag-preview.directive';
 import { PaginableErrorDirective } from '../../../directives/paginable-error.directive';
@@ -508,9 +515,7 @@ export class ListComponent<T = any> {
 		// control, and Angular ignores that binding on one (it warns and carries on, so the
 		// box stayed live). Disabling the array reaches every `selected` inside it, however
 		// deep, and the radio — which is not a reactive control — reads the flag directly.
-		isDisabled
-			? this.form.disable({ emitEvent: false })
-			: this.form.enable({ emitEvent: false });
+		isDisabled ? this.form.disable({ emitEvent: false }) : this.form.enable({ emitEvent: false });
 
 		this.#cdr.markForCheck();
 	}
@@ -621,10 +626,7 @@ export class ListComponent<T = any> {
 		const searchFn = this.searchFn();
 
 		if (searchFn) {
-			return (
-				searchFn(item as T, term) ||
-				(item?.[this.bindChildren()] ?? []).some((child: any) => this.#matches(child))
-			);
+			return searchFn(item as T, term) || (item?.[this.bindChildren()] ?? []).some((child: any) => this.#matches(child));
 		}
 
 		const label = this.bindLabel() ? getValue(item, this.bindLabel()) : item;
@@ -802,12 +804,7 @@ export class ListComponent<T = any> {
 	 * @remarks
 	 * If the `clickFn` callback is not defined, the method exits early and no event is emitted.
 	 */
-	onItemClick(
-		{ collapsed, selected, data, children }: any,
-		depth: number,
-		index: number,
-		event: MouseEvent
-	) {
+	onItemClick({ collapsed, selected, data, children }: any, depth: number, index: number, event: MouseEvent) {
 		const clickFn = this.clickFn();
 		if (!clickFn) {
 			return;
@@ -1344,7 +1341,8 @@ export class ListComponent<T = any> {
 		// so the design tokens are read from the source row and applied inline.
 		const styles = getComputedStyle(li);
 		ghost.style.opacity = styles.getPropertyValue('--hub-list-ghost-opacity').trim() || '0.85';
-		ghost.style.boxShadow = styles.getPropertyValue('--hub-list-ghost-shadow').trim() || '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
+		ghost.style.boxShadow =
+			styles.getPropertyValue('--hub-list-ghost-shadow').trim() || '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
 		return ghost;
 	}
 
@@ -1362,8 +1360,7 @@ export class ListComponent<T = any> {
 		const view = template.createEmbeddedView({ item });
 		view.detectChanges();
 		const node = view.rootNodes.find((candidate: Node) => candidate.nodeType === Node.ELEMENT_NODE) as
-			| HTMLElement
-			| undefined;
+			HTMLElement | undefined;
 		if (!node) {
 			view.destroy();
 			return;

@@ -76,9 +76,7 @@ describe('row action variants', () => {
 
 	/** What every table already in use gets, and has to keep getting. */
 	it('leaves a button that asked for nothing on the plain bordered look', () => {
-		expect(component.getRowActionClassList({} as PaginableActionButton)).toEqual([
-			'hub-table__cell-btn--default'
-		]);
+		expect(component.getRowActionClassList({} as PaginableActionButton)).toEqual(['hub-table__cell-btn--default']);
 	});
 
 	it('emits the variant as a class and the colour as a value', () => {
@@ -100,18 +98,19 @@ describe('row action variants', () => {
 	 * no warning, from an API whose type said any string was welcome.
 	 */
 	it('resolves a colour the design system never declared', () => {
-		expect(component.actionAccent({ variant: 'soft', color: 'brand' } as PaginableActionButton))
-			.toBe('var(--hub-sys-color-brand, brand)');
+		expect(component.actionAccent({ variant: 'soft', color: 'brand' } as PaginableActionButton)).toBe(
+			'var(--hub-sys-color-brand, brand)'
+		);
 
 		// And a literal colour passes through instead of becoming a nonsense token name.
-		expect(component.actionAccent({ variant: 'solid', color: '#ff6600' } as PaginableActionButton))
-			.toBe('#ff6600');
+		expect(component.actionAccent({ variant: 'solid', color: '#ff6600' } as PaginableActionButton)).toBe('#ff6600');
 	});
 
 	/** No accent named means neutral, not none: a variant with no colour has nothing to tint. */
 	it('falls back to neutral when a variant carries no colour', () => {
-		expect(component.actionAccent({ variant: 'soft' } as PaginableActionButton))
-			.toBe('var(--hub-sys-color-neutral, neutral)');
+		expect(component.actionAccent({ variant: 'soft' } as PaginableActionButton)).toBe(
+			'var(--hub-sys-color-neutral, neutral)'
+		);
 	});
 
 	/**
@@ -138,9 +137,7 @@ describe('row action variants', () => {
 	});
 
 	it('accepts a single class as well as a list', () => {
-		expect(
-			component.getRowActionClassList({ classlist: 'my-own' } as PaginableActionButton)
-		).toContain('my-own');
+		expect(component.getRowActionClassList({ classlist: 'my-own' } as PaginableActionButton)).toContain('my-own');
 	});
 
 	describe('the shipped tints', () => {

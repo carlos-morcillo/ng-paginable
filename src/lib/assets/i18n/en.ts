@@ -35,11 +35,9 @@ export const locale = {
 		CLEAN_FILTERS: 'Clean filters',
 		NAME: 'name',
 		SELECT_ONE: 'Select one',
-		A_VIEW_WILL_BE_CREATED:
-			'A view will be created with the following configuration',
+		A_VIEW_WILL_BE_CREATED: 'A view will be created with the following configuration',
 		MUST_PROVIDE_A_VIEW_NAME: 'Must provide a view name.',
-		MUST_PROVIDE_VIEW_CONDITIONS:
-			'Must provide the conditions of the view.',
+		MUST_PROVIDE_VIEW_CONDITIONS: 'Must provide the conditions of the view.',
 		TODAY: 'today',
 		YESTERDAY: 'yesterday',
 		CURRENT_WEEK: 'current_week',

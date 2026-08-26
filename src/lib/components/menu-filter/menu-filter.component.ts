@@ -1,24 +1,24 @@
 import { UpperCasePipe } from '@angular/common';
 import { Component, Input, forwardRef, inject } from '@angular/core';
 import {
-    ControlValueAccessor,
-    FormArray,
-    FormBuilder,
-    FormGroup,
-    NG_VALUE_ACCESSOR,
-    ReactiveFormsModule
+	ControlValueAccessor,
+	FormArray,
+	FormBuilder,
+	FormGroup,
+	NG_VALUE_ACCESSOR,
+	ReactiveFormsModule
 } from '@angular/forms';
 import { TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 import {
-    BooleanMatchModes,
-    DateMatchModes,
-    MatchModes,
-    MenuFilterOperators,
-    MenuFilterRule,
-    MenuFilterValue,
-    NullMatchModes,
-    NumberMatchModes,
-    StringMatchModes
+	BooleanMatchModes,
+	DateMatchModes,
+	MatchModes,
+	MenuFilterOperators,
+	MenuFilterRule,
+	MenuFilterValue,
+	NullMatchModes,
+	NumberMatchModes,
+	StringMatchModes
 } from '../../interfaces/column-filter-event';
 import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
 import { DropdownComponent } from '../dropdown/dropdown.component';
@@ -26,12 +26,7 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 @Component({
 	selector: 'menu-filter',
 	standalone: true,
-	imports: [
-		ReactiveFormsModule,
-		UpperCasePipe,
-		TranslatePipe,
-		UcfirstPipe
-	],
+	imports: [ReactiveFormsModule, UpperCasePipe, TranslatePipe, UcfirstPipe],
 	templateUrl: './menu-filter.component.html',
 	styleUrls: ['./menu-filter.component.scss'],
 	providers: [
@@ -139,9 +134,7 @@ export class MenuFilterComponent implements ControlValueAccessor {
 		let { operator, rules } = this.form.value as MenuFilterValue;
 		rules = rules?.filter(
 			(rule) =>
-				[NullMatchModes.IsNotNull, NullMatchModes.IsNull].includes(
-					rule.matchMode as any
-				) ||
+				[NullMatchModes.IsNotNull, NullMatchModes.IsNull].includes(rule.matchMode as any) ||
 				(rule.value !== undefined && rule.value !== null)
 		);
 		this.onChange(
@@ -149,7 +142,7 @@ export class MenuFilterComponent implements ControlValueAccessor {
 				? {
 						operator,
 						rules
-				  }
+					}
 				: null
 		);
 		this.#parent.closeDropdown();
@@ -175,10 +168,7 @@ export class MenuFilterComponent implements ControlValueAccessor {
 				matchModes = StringMatchModes;
 				break;
 		}
-		this.matchModes = [
-			...Object.values(matchModes as any),
-			...Object.values(NullMatchModes)
-		] as MatchModes[];
+		this.matchModes = [...Object.values(matchModes as any), ...Object.values(NullMatchModes)] as MatchModes[];
 	}
 
 	/**

@@ -1,15 +1,15 @@
 import { NgClass } from '@angular/common';
 import {
-    Component,
-    ElementRef,
-    EmbeddedViewRef,
-    HostListener,
-    Input,
-    TemplateRef,
-    ViewContainerRef,
-    inject,
-    input,
-    viewChild
+	Component,
+	ElementRef,
+	EmbeddedViewRef,
+	HostListener,
+	Input,
+	TemplateRef,
+	ViewContainerRef,
+	inject,
+	input,
+	viewChild
 } from '@angular/core';
 import { UnwrapAsyncPipe } from 'ng-hub-ui-utils';
 import { TableRowEvent } from '../../interfaces';
@@ -22,8 +22,7 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
 	selector: 'hub-table-dropdown, paginable-table-dropdown',
 
 	standalone: true,
-	imports: [
-		HubTableTooltipDirective,NgClass, HubIconComponent, UnwrapAsyncPipe],
+	imports: [HubTableTooltipDirective, NgClass, HubIconComponent, UnwrapAsyncPipe],
 	templateUrl: './paginable-table-dropdown.component.html',
 	styleUrls: ['./paginable-table-dropdown.component.scss']
 })
@@ -75,11 +74,7 @@ export class PaginableTableDropdownComponent<T = any> {
 		if (this.#options.fill === 'clear') {
 			this.buttonClass = 'btn text-' + (this.#options.color ?? 'muted');
 		} else {
-			this.buttonClass =
-				'btn ' +
-				['btn', this.#options.fill, this.#options.color]
-					.filter((o) => o)
-					.join('-');
+			this.buttonClass = 'btn ' + ['btn', this.#options.fill, this.#options.color].filter((o) => o).join('-');
 		}
 	}
 
@@ -112,10 +107,7 @@ export class PaginableTableDropdownComponent<T = any> {
 	 */
 	@HostListener('document:click', ['$event'])
 	clickOut(event: MouseEvent) {
-		if (
-			!this.#elementRef.nativeElement.contains(event.target) &&
-			this.shown
-		) {
+		if (!this.#elementRef.nativeElement.contains(event.target) && this.shown) {
 			this.close();
 		}
 	}
@@ -130,11 +122,7 @@ export class PaginableTableDropdownComponent<T = any> {
 
 		const appendTo = this.appendTo();
 		const target =
-			appendTo === 'body'
-				? document.body
-				: appendTo instanceof HTMLElement
-					? appendTo
-					: this.#elementRef.nativeElement;
+			appendTo === 'body' ? document.body : appendTo instanceof HTMLElement ? appendTo : this.#elementRef.nativeElement;
 
 		// Crea la vista
 		this.embeddedView = this.vcr.createEmbeddedView(this.dropdownTpt());
@@ -168,9 +156,7 @@ export class PaginableTableDropdownComponent<T = any> {
 		}
 
 		if (this.renderedElement && this.renderedElement.parentElement) {
-			this.renderedElement.parentElement.removeChild(
-				this.renderedElement
-			);
+			this.renderedElement.parentElement.removeChild(this.renderedElement);
 			this.renderedElement = null;
 		}
 	}
@@ -211,11 +197,7 @@ export class PaginableTableDropdownComponent<T = any> {
 	 * @returns Normalized class name array.
 	 */
 	private normalizeClassList(classList: string | Array<string> | undefined): Array<string> {
-		const tokens = Array.isArray(classList)
-			? classList
-			: typeof classList === 'string'
-				? classList.split(/\s+/)
-				: [];
+		const tokens = Array.isArray(classList) ? classList : typeof classList === 'string' ? classList.split(/\s+/) : [];
 		return [...new Set(tokens.map((item) => item.trim()).filter(Boolean))];
 	}
 }

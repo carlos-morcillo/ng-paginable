@@ -123,7 +123,7 @@ describe('PaginationService', () => {
 			const result = service.generate(mockData, {
 				page: 1,
 				perPage: 10,
-				searchText: 'alice',  // lowercase matches 'Alice'
+				searchText: 'alice', // lowercase matches 'Alice'
 				searchKeys: ['name']
 			});
 
@@ -269,11 +269,7 @@ describe('PaginationService', () => {
 		});
 
 		it('should handle nested properties', () => {
-			const nestedItems = [
-				{ user: { name: 'Charlie' } },
-				{ user: { name: 'Alice' } },
-				{ user: { name: 'Bob' } }
-			];
+			const nestedItems = [{ user: { name: 'Charlie' } }, { user: { name: 'Alice' } }, { user: { name: 'Bob' } }];
 
 			const result = service.orderBy(nestedItems, 'user.name', 'ASC');
 			expect(result[0].user.name).toBe('Alice');

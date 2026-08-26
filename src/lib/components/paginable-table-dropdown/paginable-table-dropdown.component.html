@@ -20,10 +20,7 @@
 			class="table-dropdown__menu dropdown-menu dropdown-menu-{{ options.position }}"
 			[class.show]="shown"
 			[style]="{
-				right:
-					options.position == 'end' || options.position === 'right'
-						? 0
-						: 'initial'
+				right: options.position == 'end' || options.position === 'right' ? 0 : 'initial'
 			}"
 		>
 			@for (dropdownItem of options.buttons; track dropdownItem) {
@@ -36,10 +33,7 @@
 						(click)="executeDropdownAction(dropdownItem)"
 					>
 						<div class="table-dropdown__item-content d-flex align-items-center gap-2">
-							<ng-hub-ui-icon
-								class="table-dropdown__item-icon"
-								[config]="dropdownItem.icon"
-							></ng-hub-ui-icon>
+							<ng-hub-ui-icon class="table-dropdown__item-icon" [config]="dropdownItem.icon"></ng-hub-ui-icon>
 							@if (dropdownItem.label) {
 								<span class="table-dropdown__item-label">{{ dropdownItem.label | unwrapAsync }}</span>
 							}

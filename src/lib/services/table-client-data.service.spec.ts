@@ -122,7 +122,10 @@ describe('TableClientDataService', () => {
 
 		it('evaluates a number "GreaterThan" rule', () => {
 			const result = service.applyColumnFilters(people, menuHeader('number'), {
-				age: { operator: MenuFilterOperators.And, rules: [{ value: '28' as any, matchMode: NumberMatchModes.GreaterThan }] }
+				age: {
+					operator: MenuFilterOperators.And,
+					rules: [{ value: '28' as any, matchMode: NumberMatchModes.GreaterThan }]
+				}
 			});
 			expect(result.map((r) => r.data.name)).toEqual(['John', 'Joana']);
 		});
@@ -156,10 +159,7 @@ describe('TableClientDataService', () => {
 
 	describe('process', () => {
 		it('runs search, filtering and sorting together', () => {
-			const headers: PaginableTableHeader[] = [
-				{ property: 'name' },
-				{ property: 'active', filter: { type: 'boolean' } }
-			];
+			const headers: PaginableTableHeader[] = [{ property: 'name' }, { property: 'active', filter: { type: 'boolean' } }];
 			const result = service.process(people, {
 				searchTerm: 'jo',
 				searchKeys: ['name'],

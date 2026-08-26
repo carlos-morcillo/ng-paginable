@@ -100,9 +100,7 @@ describe('adapter-rendered chrome', () => {
 	describe('the page-size picker', () => {
 		/** The native skin has to name the native element, or it lands on the component too. */
 		it('paints the native control by element, not by class alone', () => {
-			const painted = rulesMatching(
-				(s) => s.includes('hub-paginator__select') && s.includes('select.')
-			);
+			const painted = rulesMatching((s) => s.includes('hub-paginator__select') && s.includes('select.'));
 
 			expect(painted.length).toBeGreaterThan(0);
 		});
@@ -116,9 +114,7 @@ describe('adapter-rendered chrome', () => {
 			// declaration means rather than on the exact string a browser chose for it.
 			const borders = host.map(({ style }) => style.getPropertyValue('border'));
 			expect(borders.some((value) => /^0(px)?\b/.test(value.trim()))).toBe(true);
-			expect(host.map(({ style }) => style.getPropertyValue('background'))).toContain(
-				'transparent'
-			);
+			expect(host.map(({ style }) => style.getPropertyValue('background'))).toContain('transparent');
 		});
 
 		/**
@@ -127,10 +123,9 @@ describe('adapter-rendered chrome', () => {
 		 * the class, the component host included.
 		 */
 		it('has no bare class rule painting a background', () => {
-			const bare = rulesMatching(
-				(s) =>
-					s.split(',').some((part) => part.trim() === '.hub-paginator__select')
-			).filter(({ style }) => style.getPropertyValue('background-color'));
+			const bare = rulesMatching((s) => s.split(',').some((part) => part.trim() === '.hub-paginator__select')).filter(
+				({ style }) => style.getPropertyValue('background-color')
+			);
 
 			expect(bare).toEqual([]);
 		});
@@ -160,9 +155,7 @@ describe('adapter-rendered chrome', () => {
 
 		/** No rule may name the control: that is what emulation forbids and what broke. */
 		it('never reaches into the control it does not own', () => {
-			const invasoras = rulesMatching(
-				(s) => s.includes('ng-deep') || /hub-input\.hub-table__search-input/.test(s)
-			);
+			const invasoras = rulesMatching((s) => s.includes('ng-deep') || /hub-input\.hub-table__search-input/.test(s));
 
 			expect(invasoras.map(({ selector }) => selector)).toEqual([]);
 		});

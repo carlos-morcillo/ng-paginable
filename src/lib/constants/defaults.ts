@@ -1,8 +1,7 @@
 import { PaginableTableConfig } from '../interfaces/paginable-table-config';
 
 // SSR-safe: `navigator` does not exist under Node, and this module runs at import time.
-export const DEFAULT_LANGUAGE =
-	typeof navigator !== 'undefined' ? (navigator.language.split('-').at(0) ?? 'en') : 'en';
+export const DEFAULT_LANGUAGE = typeof navigator !== 'undefined' ? (navigator.language.split('-').at(0) ?? 'en') : 'en';
 export const DEFAULT_PAGINABLE_CONFIG: PaginableTableConfig = {
 	theme: null,
 	mapping: {

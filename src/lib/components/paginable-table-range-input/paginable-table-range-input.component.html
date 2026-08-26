@@ -1,28 +1,26 @@
 <div class="range-input form-control d-flex flex-column">
-  <div class="range-input__field d-flex align-items-center justify-content-between">
-    @if (type() == 'date') {
-      <label class="range-input__label text-muted"
-        >{{ 'FROM' | translate | ucfirst }}:</label
-        >
-        }<input
-        class="range-input__control"
-        [type]="type()"
-        [(ngModel)]="value[0]"
-        [placeholder]="'FROM' | translate | ucfirst"
-        (change)="onChange($any(value))"
-        />
-    </div>
-    <div class="range-input__field d-flex align-items-center justify-content-between">
-      @if (type() == 'date') {
-        <label class="range-input__label text-muted"
-          >{{ 'TO' | translate | ucfirst }}:</label
-          >
-          }<input
-          class="range-input__control"
-          [type]="type()"
-          [(ngModel)]="value[1]"
-          [placeholder]="'TO' | translate | ucfirst"
-          (change)="onChange($any(value))"
-          />
-      </div>
-    </div>
+	<div class="range-input__field d-flex align-items-center justify-content-between">
+		@if (type() == 'date') {
+			<label class="range-input__label text-muted">{{ 'FROM' | translate | ucfirst }}:</label>
+		}
+		<input
+			class="range-input__control"
+			[type]="type()"
+			[(ngModel)]="value[0]"
+			[placeholder]="'FROM' | translate | ucfirst"
+			(change)="onChange($any(value))"
+		/>
+	</div>
+	<div class="range-input__field d-flex align-items-center justify-content-between">
+		@if (type() == 'date') {
+			<label class="range-input__label text-muted">{{ 'TO' | translate | ucfirst }}:</label>
+		}
+		<input
+			class="range-input__control"
+			[type]="type()"
+			[(ngModel)]="value[1]"
+			[placeholder]="'TO' | translate | ucfirst"
+			(change)="onChange($any(value))"
+		/>
+	</div>
+</div>

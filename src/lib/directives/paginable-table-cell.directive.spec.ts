@@ -1,7 +1,6 @@
 import { Component, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-
 import { PaginableTableCellDirective } from './paginable-table-cell.directive';
 
 /**
@@ -10,39 +9,39 @@ import { PaginableTableCellDirective } from './paginable-table-cell.directive';
 @Component({
 	template: `
 		<ng-template cellTpt header="name" let-data="data" #nameTemplate>
-		  <div class="test-cell-name" [attr.data-name]="data?.name">
-		    <strong>{{ data?.name || 'No Name' }}</strong>
-		    @if (data?.email) {
-		      <small>({{ data?.email }})</small>
-		    }
-		  </div>
+			<div class="test-cell-name" [attr.data-name]="data?.name">
+				<strong>{{ data?.name || 'No Name' }}</strong>
+				@if (data?.email) {
+					<small>({{ data?.email }})</small>
+				}
+			</div>
 		</ng-template>
-		
+
 		<ng-template cellTpt header="age" let-data="data" #ageTemplate>
-		  <div class="test-cell-age" [class.adult]="data?.age >= 18">
-		    <span class="age-value">{{ data?.age || 0 }} years</span>
-		  </div>
+			<div class="test-cell-age" [class.adult]="data?.age >= 18">
+				<span class="age-value">{{ data?.age || 0 }} years</span>
+			</div>
 		</ng-template>
-		
+
 		<ng-template cellTpt header="status" let-data="data" let-index="index" #statusTemplate>
-		  <div class="test-cell-status" [attr.data-index]="index">
-		    <span [class.active]="data?.active" [class.inactive]="!data?.active">
-		      {{ data?.active ? 'Active' : 'Inactive' }}
-		    </span>
-		  </div>
+			<div class="test-cell-status" [attr.data-index]="index">
+				<span [class.active]="data?.active" [class.inactive]="!data?.active">
+					{{ data?.active ? 'Active' : 'Inactive' }}
+				</span>
+			</div>
 		</ng-template>
-		
+
 		<ng-template paginableTableCell header="description" let-data="data" #descTemplate>
-		  <div class="test-cell-description">
-		    <p>{{ data?.description || 'No description available' }}</p>
-		  </div>
+			<div class="test-cell-description">
+				<p>{{ data?.description || 'No description available' }}</p>
+			</div>
 		</ng-template>
-		
+
 		<!-- Template without directive for comparison -->
 		<ng-template #regularTemplate let-data="data">
-		  <div class="regular-template">{{ data?.name }}</div>
+			<div class="regular-template">{{ data?.name }}</div>
 		</ng-template>
-		`,
+	`,
 	standalone: true,
 	imports: [PaginableTableCellDirective]
 })
@@ -198,7 +197,7 @@ describe('PaginableTableCellDirective', () => {
 			expect(templateElement.classList.contains('test-cell-status')).toBe(true);
 			expect(templateElement.getAttribute('data-index')).toBe('5');
 			expect(templateElement.textContent).toContain('Active');
-			
+
 			const statusSpan = templateElement.querySelector('span');
 			expect(statusSpan?.classList.contains('active')).toBe(true);
 			expect(statusSpan?.classList.contains('inactive')).toBe(false);
@@ -343,15 +342,15 @@ describe('PaginableTableCellDirective', () => {
 			});
 
 			expect(embeddedView.destroyed).toBe(false);
-			
+
 			embeddedView.destroy();
-			
+
 			expect(embeddedView.destroyed).toBe(true);
 		});
 
 		it('should handle multiple view creation and destruction', () => {
 			const views: any[] = [];
-			
+
 			// Create multiple views
 			for (let i = 0; i < 10; i++) {
 				const view = directive.template.createEmbeddedView({
@@ -362,11 +361,11 @@ describe('PaginableTableCellDirective', () => {
 			}
 
 			expect(views.length).toBe(10);
-			views.forEach(view => expect(view.destroyed).toBe(false));
+			views.forEach((view) => expect(view.destroyed).toBe(false));
 
 			// Destroy all views
-			views.forEach(view => view.destroy());
-			views.forEach(view => expect(view.destroyed).toBe(true));
+			views.forEach((view) => view.destroy());
+			views.forEach((view) => expect(view.destroyed).toBe(true));
 		});
 	});
 
@@ -418,7 +417,7 @@ describe('PaginableTableCellDirective', () => {
 				{ data: {} }
 			];
 
-			validContexts.forEach(context => {
+			validContexts.forEach((context) => {
 				expect(() => {
 					const view = directive.template.createEmbeddedView(context as any);
 					view.detectChanges();
@@ -446,10 +445,10 @@ describe('PaginableTableCellDirective', () => {
 			});
 
 			expect(() => embeddedView.detectChanges()).not.toThrow();
-			
+
 			const templateElement = embeddedView.rootNodes[0] as HTMLElement;
 			expect(templateElement.textContent).toContain('Complex User');
-			
+
 			embeddedView.destroy();
 		});
 	});
@@ -473,12 +472,12 @@ describe('PaginableTableCellDirective', () => {
 			});
 
 			expect(() => embeddedView.detectChanges()).not.toThrow();
-			
+
 			// Verify that structural directive (*ngIf) worked correctly
 			const templateElement = embeddedView.rootNodes[0] as HTMLElement;
 			const conditionalElement = templateElement.querySelector('small');
 			expect(conditionalElement).toBeTruthy(); // Should exist because email is present
-			
+
 			embeddedView.destroy();
 		});
 	});
@@ -486,7 +485,7 @@ describe('PaginableTableCellDirective', () => {
 	describe('Performance Testing', () => {
 		it('should handle rapid template creation efficiently', () => {
 			const startTime = performance.now();
-			
+
 			for (let i = 0; i < 100; i++) {
 				const view = directive.template.createEmbeddedView({
 					data: { ...component.mockUserData, id: i }
@@ -494,10 +493,10 @@ describe('PaginableTableCellDirective', () => {
 				view.detectChanges();
 				view.destroy();
 			}
-			
+
 			const endTime = performance.now();
 			const duration = endTime - startTime;
-			
+
 			// Should complete within reasonable time (less than 100ms)
 			expect(duration).toBeLessThan(100);
 		});

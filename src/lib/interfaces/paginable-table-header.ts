@@ -5,9 +5,9 @@ import { PaginableActionButton } from './paginable-action-button';
 /**
  * Represents the configuration for a table header column in a paginable table.
  * This interface defines all the properties and behaviors that can be applied to a table column.
- * 
+ *
  * @template T - The type of data objects displayed in the table
- * 
+ *
  * @example
  * ```typescript
  * const headers: PaginableTableHeader[] = [
@@ -36,12 +36,12 @@ export interface PaginableTableHeader {
 	 * The display title for the column header.
 	 * Can be a static string or an Observable for dynamic/translated titles.
 	 * If not provided, the property name will be used as the title.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Static title
 	 * title: 'User Name'
-	 * 
+	 *
 	 * // Dynamic title with translation
 	 * title: this.translateService.get('user.name')
 	 * ```
@@ -52,7 +52,7 @@ export interface PaginableTableHeader {
 	 * The property name from the data object that this column represents.
 	 * This is used to extract the value from each row's data object.
 	 * Required for all columns except button-only columns.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // For a user object { id: 1, name: 'John', email: 'john@example.com' }
@@ -65,12 +65,12 @@ export interface PaginableTableHeader {
 	/**
 	 * Icon to display in the column header.
 	 * Can be a string (CSS class) or an Icon object for more control.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Simple FontAwesome icon
 	 * icon: 'fa-user'
-	 * 
+	 *
 	 * // Material icon with configuration
 	 * icon: { type: 'material', value: 'person' }
 	 * ```
@@ -79,9 +79,9 @@ export interface PaginableTableHeader {
 
 	/**
 	 * Text alignment for the column content (header and cells).
-	 * 
+	 *
 	 * @default 'start'
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * align: 'start'  // Left alignment
@@ -94,9 +94,9 @@ export interface PaginableTableHeader {
 	/**
 	 * Whether the column can be sorted by clicking the header.
 	 * When enabled, displays sort indicators and handles click events.
-	 * 
+	 *
 	 * @default false
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * sortable: true // Enable sorting for this column
@@ -107,9 +107,9 @@ export interface PaginableTableHeader {
 	/**
 	 * Text wrapping behavior for the column content.
 	 * Controls how long text is handled within the column cells.
-	 * 
+	 *
 	 * @default 'wrap'
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * wrapping: 'wrap'   // Allow text to wrap to multiple lines
@@ -121,7 +121,7 @@ export interface PaginableTableHeader {
 	/**
 	 * Makes the column sticky (fixed position) during horizontal scrolling.
 	 * Useful for keeping important columns like actions or identifiers visible.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * sticky: 'start' // Stick to left side (e.g., for ID column)
@@ -134,7 +134,7 @@ export interface PaginableTableHeader {
 	 * Array of action buttons or dropdowns to display in this column.
 	 * Each button can have its own handler, icon, and visibility logic.
 	 * When buttons are present, the column typically shows buttons instead of data.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * buttons: [
@@ -159,20 +159,20 @@ export interface PaginableTableHeader {
 	/**
 	 * Filter configuration for the column.
 	 * Enables filtering capabilities with various input types and display modes.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Text filter displayed in row
 	 * filter: { type: 'text', mode: 'row', placeholder: 'Search names...' }
-	 * 
+	 *
 	 * // Dropdown filter in menu
-	 * filter: { 
-	 *   type: 'dropdown', 
+	 * filter: {
+	 *   type: 'dropdown',
 	 *   mode: 'menu',
 	 *   options: ['Active', 'Inactive'],
 	 *   placeholder: 'Select status'
 	 * }
-	 * 
+	 *
 	 * // Date range filter
 	 * filter: { type: 'date-range', mode: 'row' }
 	 * ```
@@ -182,9 +182,9 @@ export interface PaginableTableHeader {
 	/**
 	 * Indicates that this column contains only buttons and no data.
 	 * When true, optimizes the column layout for button display.
-	 * 
+	 *
 	 * @default false
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * {
@@ -200,24 +200,24 @@ export interface PaginableTableHeader {
 	 * Controls the visibility of the table header column.
 	 * When true, the entire column (header and all cells) will be hidden.
 	 * When false or undefined, the column will be visible.
-	 * 
+	 *
 	 * Supports multiple types for maximum flexibility:
 	 * - **Static boolean**: Simple show/hide based on a fixed value
 	 * - **Synchronous function**: Dynamic visibility based on current state
 	 * - **Promise**: Asynchronous visibility determination (e.g., from API calls)
 	 * - **Observable**: Reactive visibility that responds to state changes
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Static visibility
 	 * hidden: false
-	 * 
+	 *
 	 * // Dynamic visibility based on user permissions
 	 * hidden: () => !this.hasPermission('view.email')
-	 * 
+	 *
 	 * // Async visibility from API
 	 * hidden: () => this.checkColumnVisibility('email')
-	 * 
+	 *
 	 * // Reactive visibility with state management
 	 * hidden: () => this.configService.getColumnVisibility('email')
 	 * ```
@@ -228,7 +228,7 @@ export interface PaginableTableHeader {
 /**
  * Represents the configuration for a text/numeric/date input filter used in a paginable table header.
  * This interface is used for simple input controls like text fields, number inputs, and date pickers.
- * 
+ *
  * @example
  * ```typescript
  * // Text filter in row mode
@@ -237,7 +237,7 @@ export interface PaginableTableHeader {
  *   mode: 'row',
  *   placeholder: 'Search by name...'
  * };
- * 
+ *
  * // Number range filter in menu mode
  * const priceFilter: InputFilter = {
  *   type: 'number-range',
@@ -252,7 +252,7 @@ interface InputFilter {
 	 * Specifies where the filter input should be displayed.
 	 * - 'row': Filter appears directly under the column header in a dedicated filter row
 	 * - 'menu': Filter appears in a dropdown menu accessible via a filter button
-	 * 
+	 *
 	 * @default 'row'
 	 */
 	mode?: 'row' | 'menu';
@@ -268,7 +268,7 @@ interface InputFilter {
 	 * Optional key to identify this filter in the filters object.
 	 * If not provided, the column's property name will be used.
 	 * Useful when you need a different key than the column property.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Column property is 'user.name' but filter key is 'name'
@@ -280,7 +280,7 @@ interface InputFilter {
 	/**
 	 * Placeholder text to display in the input when it's empty.
 	 * Provides users with hints about what to enter or how to use the filter.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * placeholder: 'Enter name to search...'
@@ -330,7 +330,7 @@ export enum MenuFilterInputType {
  * Represents the configuration for a dropdown/select filter used in a paginable table header.
  * This interface is used for filters that present a list of predefined options for the user to choose from.
  * Supports both static options and dynamic options loaded from APIs or observables.
- * 
+ *
  * @example
  * ```typescript
  * // Simple dropdown with static options
@@ -340,7 +340,7 @@ export enum MenuFilterInputType {
  *   options: ['Active', 'Inactive', 'Pending'],
  *   placeholder: 'Select status...'
  * };
- * 
+ *
  * // Advanced dropdown with object options
  * const categoryFilter: DropdownFilter = {
  *   type: 'dropdown',
@@ -362,7 +362,7 @@ interface DropdownFilter {
 	 * Specifies where the filter dropdown should be displayed.
 	 * - 'row': Filter appears directly under the column header in a dedicated filter row
 	 * - 'menu': Filter appears in a dropdown menu accessible via a filter button
-	 * 
+	 *
 	 * @default 'row'
 	 */
 	mode?: 'row' | 'menu';
@@ -380,18 +380,18 @@ interface DropdownFilter {
 	 * - Static array of values
 	 * - Promise that resolves to an array (for async loading)
 	 * - Observable that emits arrays (for reactive data)
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Static options
 	 * options: ['Option 1', 'Option 2', 'Option 3']
-	 * 
+	 *
 	 * // Object options
 	 * options: [
 	 *   { id: 1, name: 'Active' },
 	 *   { id: 2, name: 'Inactive' }
 	 * ]
-	 * 
+	 *
 	 * // Async options
 	 * options: this.http.get('/api/options')
 	 * ```
@@ -401,7 +401,7 @@ interface DropdownFilter {
 	/**
 	 * Placeholder text to display when no option is selected.
 	 * Provides users with guidance on what the dropdown is for.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * placeholder: 'Select status...'
@@ -413,7 +413,7 @@ interface DropdownFilter {
 	/**
 	 * The property name to use as the display label when options are objects.
 	 * If not specified, the entire object will be displayed (usually not desired).
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // For options: [{ id: 1, name: 'Active' }, { id: 2, name: 'Inactive' }]
@@ -426,7 +426,7 @@ interface DropdownFilter {
 	 * The property name to use as the actual value when options are objects.
 	 * This is what gets stored in the filter value when an option is selected.
 	 * If not specified, the entire object will be used as the value.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // For options: [{ id: 1, name: 'Active' }, { id: 2, name: 'Inactive' }]
@@ -440,7 +440,7 @@ interface DropdownFilter {
  * Represents the configuration for a boolean filter used in a paginable table header.
  * This interface is used for filters that present true/false or yes/no choices to the user.
  * Typically rendered as a dropdown with customizable labels for the boolean states.
- * 
+ *
  * @example
  * ```typescript
  * // Simple boolean filter
@@ -449,7 +449,7 @@ interface DropdownFilter {
  *   mode: 'row',
  *   placeholder: 'Select status...'
  * };
- * 
+ *
  * // Custom boolean filter with labels
  * const verifiedFilter: BooleanFilter = {
  *   type: 'boolean',
@@ -470,7 +470,7 @@ interface BooleanFilter {
 	 * Specifies where the filter should be displayed.
 	 * - 'row': Filter appears directly under the column header in a dedicated filter row
 	 * - 'menu': Filter appears in a dropdown menu accessible via a filter button
-	 * 
+	 *
 	 * @default 'row'
 	 */
 	mode?: 'row' | 'menu';
@@ -485,7 +485,7 @@ interface BooleanFilter {
 	/**
 	 * Placeholder text to display when no option is selected.
 	 * Provides users with guidance on what the filter represents.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * placeholder: 'Select status...'
@@ -497,7 +497,7 @@ interface BooleanFilter {
 	/**
 	 * Custom label to display for the 'true' option in the dropdown.
 	 * If not provided, a default 'True' label will be used.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * trueLabel: 'Active'
@@ -510,7 +510,7 @@ interface BooleanFilter {
 	/**
 	 * Custom label to display for the 'false' option in the dropdown.
 	 * If not provided, a default 'False' label will be used.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * falseLabel: 'Inactive'
@@ -525,7 +525,7 @@ interface BooleanFilter {
  * Represents the configuration for an icon used in table headers or buttons.
  * This interface provides a standardized way to specify icons from different icon libraries
  * with support for variants and customization.
- * 
+ *
  * @example
  * ```typescript
  * // FontAwesome icon
@@ -533,14 +533,14 @@ interface BooleanFilter {
  *   type: 'font-awesome',
  *   value: 'edit'
  * };
- * 
+ *
  * // Material icon with variant
  * const userIcon: Icon = {
  *   type: 'material',
  *   variant: 'outlined',
  *   value: 'person'
  * };
- * 
+ *
  * // Bootstrap icon
  * const deleteIcon: Icon = {
  *   type: 'bootstrap',
@@ -552,9 +552,9 @@ export interface Icon {
 	/**
 	 * The icon library/framework to use for rendering the icon.
 	 * Determines which icon system and CSS classes will be applied.
-	 * 
+	 *
 	 * - 'font-awesome': FontAwesome icons (fa-* classes)
-	 * - 'material': Material Design icons 
+	 * - 'material': Material Design icons
 	 * - 'bootstrap': Bootstrap icons (bi-* classes)
 	 */
 	type: 'font-awesome' | 'material' | 'bootstrap';
@@ -562,17 +562,17 @@ export interface Icon {
 	/**
 	 * Optional variant or style modifier for the icon.
 	 * The meaning and available options depend on the icon type:
-	 * 
+	 *
 	 * - FontAwesome: 'solid', 'regular', 'light', 'brands', etc.
 	 * - Material: 'filled', 'outlined', 'rounded', 'sharp', 'two-tone'
 	 * - Bootstrap: Usually not used, but could specify weight or style
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // FontAwesome variants
 	 * variant: 'solid'   // fa-solid fa-user
 	 * variant: 'regular' // fa-regular fa-user
-	 * 
+	 *
 	 * // Material variants
 	 * variant: 'outlined' // material-icons-outlined
 	 * variant: 'filled'   // material-icons (default)
@@ -584,17 +584,17 @@ export interface Icon {
 	 * The specific icon identifier/name within the chosen icon library.
 	 * This should be the icon name without any prefixes or suffixes
 	 * that are handled by the type and variant properties.
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // FontAwesome
 	 * value: 'user'      // Becomes: fa-user
 	 * value: 'edit'      // Becomes: fa-edit
-	 * 
+	 *
 	 * // Material
 	 * value: 'person'    // Becomes: person (in material-icons font)
 	 * value: 'edit'      // Becomes: edit
-	 * 
+	 *
 	 * // Bootstrap
 	 * value: 'person'    // Becomes: bi-person
 	 * value: 'pencil'    // Becomes: bi-pencil

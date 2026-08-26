@@ -103,7 +103,7 @@ describe('HubIconComponent', () => {
 			component.type = 'font-awesome';
 			component.value = 'fa fa-home';
 			const classList = component.classlist?.split(' ') || [];
-			const faCount = classList.filter(c => c === 'fa').length;
+			const faCount = classList.filter((c) => c === 'fa').length;
 			// The classlist getter adds fa if not present, but since it's already in value, it won't duplicate
 			// Actually, looking at the code, it splits the value and checks if fa is in the combined list
 			expect(classList).toContain('fa');

@@ -6,7 +6,8 @@ import { Directive, TemplateRef } from '@angular/core';
  * a consistent fallback template regardless of the concrete UI element.
  */
 @Directive({
-	selector: '[noResultsTpt], [paginableNoResults], [emptyStateTpt], [paginableEmptyState], [noDataTpt], [paginableTableNotFound]',
+	selector:
+		'[noResultsTpt], [paginableNoResults], [emptyStateTpt], [paginableEmptyState], [noDataTpt], [paginableTableNotFound]',
 	standalone: true
 })
 export class PaginableNoResultsDirective {

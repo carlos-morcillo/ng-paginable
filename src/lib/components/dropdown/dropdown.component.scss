@@ -1,31 +1,31 @@
 :host {
-  display: block;
-  position: relative;
+	display: block;
+	position: relative;
 }
 
 .dropdown {
-  &__toggle {
-    &--open {
-      // Styles for open state
-    }
-  }
+	&__toggle {
+		&--open {
+			// Styles for open state
+		}
+	}
 
-  &__menu {
-    // Menu specific styles
-  }
+	&__menu {
+		// Menu specific styles
+	}
 }
 
 // Styles for the overlay dropdown menu
 ::ng-deep .cdk-overlay-pane {
-  .dropdown-menu {
-    position: static !important;
-    display: block;
-    min-width: 160px;
-    z-index: var(--hub-sys-zindex-dropdown, 1000);
-  }
+	.dropdown-menu {
+		position: static !important;
+		display: block;
+		min-width: 160px;
+		z-index: var(--hub-sys-zindex-dropdown, 1000);
+	}
 }
 
 // Transparent backdrop for closing on outside click
 ::ng-deep .cdk-overlay-transparent-backdrop {
-  background: transparent;
+	background: transparent;
 }

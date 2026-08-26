@@ -85,9 +85,4 @@ export enum NullMatchModes {
 	IsNotNull = 'IsNotNull'
 }
 
-export type MatchModes =
-	| NullMatchModes
-	| StringMatchModes
-	| NumberMatchModes
-	| DateMatchModes
-	| BooleanMatchModes;
+export type MatchModes = NullMatchModes | StringMatchModes | NumberMatchModes | DateMatchModes | BooleanMatchModes;

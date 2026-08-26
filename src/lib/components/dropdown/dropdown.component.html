@@ -1,4 +1,10 @@
-<button class="dropdown__toggle btn" [class.dropdown__toggle--open]="isOpened()" type="button" [attr.aria-expanded]="isOpened()" (click)="toggle()">
+<button
+	class="dropdown__toggle btn"
+	[class.dropdown__toggle--open]="isOpened()"
+	type="button"
+	[attr.aria-expanded]="isOpened()"
+	(click)="toggle()"
+>
 	<ng-content select=".button"></ng-content>
 </button>
 

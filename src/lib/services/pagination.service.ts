@@ -14,22 +14,14 @@ export class PaginationService {
 				if (searchText && searchText.trim() !== '') {
 					filtered = filtered.filter((item) => {
 						return params.searchKeys.some(
-							(o: string) =>
-								this.get(item, o)
-									.toString()
-									.toLowerCase()
-									.indexOf(searchText) > -1
+							(o: string) => this.get(item, o).toString().toLowerCase().indexOf(searchText) > -1
 						);
 					});
 				}
 			}
 
 			if (params.ordination) {
-				filtered = this.orderBy(
-					filtered,
-					params.ordination.property,
-					params.ordination.direction
-				);
+				filtered = this.orderBy(filtered, params.ordination.property, params.ordination.direction);
 			}
 		}
 		const page = params.page || 1;
@@ -38,9 +30,7 @@ export class PaginationService {
 		if (params.paginate === undefined) {
 			params.paginate = true;
 		}
-		const perPage = params.paginate
-			? params.perPage || 20
-			: filtered.length;
+		const perPage = params.paginate ? params.perPage || 20 : filtered.length;
 
 		const pagination: PaginableTablePagination = {
 			currentPage: page,
@@ -64,11 +54,7 @@ export class PaginationService {
 	 * @param iteratee
 	 * @param direction
 	 */
-	orderBy(
-		collection: any[],
-		iteratee: string,
-		direction: string = 'ASC'
-	): any[] {
+	orderBy(collection: any[], iteratee: string, direction: string = 'ASC'): any[] {
 		return collection.sort((b, a) => {
 			const aSort = this.get(a, iteratee);
 			const bSort = this.get(b, iteratee);
@@ -84,9 +70,6 @@ export class PaginationService {
 		if (path.constructor.name === 'String') {
 			path = (path as string).split('.');
 		}
-		return (path as any[]).reduce(
-			(o, k) => (o && o[k] !== 'undefined' ? o[k] : undefined),
-			object
-		);
+		return (path as any[]).reduce((o, k) => (o && o[k] !== 'undefined' ? o[k] : undefined), object);
 	}
 }

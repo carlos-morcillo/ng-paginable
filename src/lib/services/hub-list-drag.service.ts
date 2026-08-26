@@ -4,8 +4,5 @@
  * so the list keeps a stable public surface while the implementation lives in the shared
  * core consumed by every ng-hub-ui library.
  */
-export {
-	HubDragDropService as HubListDragService,
-	HubDragDropService
-} from 'ng-hub-ui-utils';
+export { HubDragDropService as HubListDragService, HubDragDropService } from 'ng-hub-ui-utils';
 export type { ActiveDrag, DragPointerMode, DragRegistration, DragTarget } from 'ng-hub-ui-utils';

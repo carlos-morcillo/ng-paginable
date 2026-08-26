@@ -334,11 +334,7 @@
 			background-color: var(--hub-table-action-subtle);
 
 			&:hover {
-				background-color: color-mix(
-					in oklch,
-					var(--hub-table-action-subtle) 80%,
-					var(--hub-table-action-accent)
-				);
+				background-color: color-mix(in oklch, var(--hub-table-action-subtle) 80%, var(--hub-table-action-accent));
 			}
 		}
 
@@ -428,8 +424,7 @@
 		 * The stacking gap is NOT zeroed here: a control the adapter creates is embedded
 		 * wherever it is created, so `ng-hub-ui-forms` states that once, in the adapter.
 		 */
-		--hub-input-border-radius: var(--hub-table-search-border-radius) 0 0
-			var(--hub-table-search-border-radius);
+		--hub-input-border-radius: var(--hub-table-search-border-radius) 0 0 var(--hub-table-search-border-radius);
 
 		&-input {
 			position: relative;
@@ -464,8 +459,7 @@
 			// assumed the host application brought Bootstrap's `.btn` to supply the rest
 			// — this family does not ship it, so without it the browser's own button
 			// chrome showed through beside the search field.
-			border: var(--hub-table-search-border-width) solid
-				var(--hub-table-search-button-border-color);
+			border: var(--hub-table-search-border-width) solid var(--hub-table-search-button-border-color);
 			// One hairline between field and button, not two touching.
 			border-inline-start: 0;
 			border-radius: 0 var(--hub-table-search-border-radius) var(--hub-table-search-border-radius) 0;
@@ -774,7 +768,10 @@
 			padding: var(--hub-table-cell-padding-y) var(--hub-table-cell-padding-x);
 			vertical-align: var(--hub-table-cell-vertical-align);
 			// Following the cascade pattern: https://codepen.io/miriamsuzanne/full/vYNgodb
-			color: var(--hub-table-color-state, var(--hub-table-color-type, var(--hub-table-color, var(--hub-sys-text-primary, #212529))));
+			color: var(
+				--hub-table-color-state,
+				var(--hub-table-color-type, var(--hub-table-color, var(--hub-sys-text-primary, #212529)))
+			);
 			background-color: var(--hub-table-bg, var(--hub-ref-color-white, #fff));
 			border-bottom-style: solid;
 			border-bottom-color: var(--hub-table-row-divider-color);
@@ -1008,7 +1005,6 @@ $hub-table-variants: primary, secondary, success, danger, warning, info, neutral
 		}
 	}
 
-
 	.hub-table__search {
 		order: 1;
 		margin-inline-end: auto;
@@ -1097,4 +1093,3 @@ $hub-table-variants: primary, secondary, success, danger, warning, info, neutral
 		transform: scale(1);
 	}
 }
-

@@ -43,7 +43,13 @@ export { TooltipDirective } from 'ng-hub-ui-utils';
 
 // Interfaces
 export * from './interfaces';
-export type { PaginableStateContext, PaginableStateComponent, PaginableStateDefault, PaginableStateComponentLoader, ResolvedStateDefault } from './interfaces/paginable-state';
+export type {
+	PaginableStateContext,
+	PaginableStateComponent,
+	PaginableStateDefault,
+	PaginableStateComponentLoader,
+	ResolvedStateDefault
+} from './interfaces/paginable-state';
 
 // Services
 export { HubListDragService } from './services/hub-list-drag.service';

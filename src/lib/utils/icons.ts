@@ -9,14 +9,7 @@
  */
 export function containsFontAwesomeClass(input: string): boolean {
 	// Define an array of Font Awesome base classes to check for
-	const faClasses = [
-		'fa-solid',
-		'fa-regular',
-		'fa-light',
-		'fa-duotone',
-		'fa-thin',
-		'fa-brands'
-	];
+	const faClasses = ['fa-solid', 'fa-regular', 'fa-light', 'fa-duotone', 'fa-thin', 'fa-brands'];
 
 	// Use a regular expression to check if any of the Font Awesome classes are present in the input string
 	const faClassRegex = new RegExp(`\\b(${faClasses.join('|')})\\b`, 'i');

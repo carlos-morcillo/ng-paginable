@@ -27,9 +27,12 @@
 // scss-docs-start hub-table-theme
 @mixin hub-table-theme(
 	// ── Colour ──
-	$accent: null,            // semantic accent (drives the selected row)
-	$bg: null,                // table + container surface
-	$color: null,             // text colour
+	$accent: null,
+	// semantic accent (drives the selected row)
+	$bg: null,
+	// table + container surface
+	$color: null,
+	// text colour
 	$border-color: null,
 	$hover-bg: null,
 	$hover-color: null,
@@ -45,9 +48,11 @@
 	$cell-padding-y: null,
 	// ── Footer (bottom bar: paginator · settings · info) ──
 	$footer-gap: null,
-	$footer-justify: null,    // justify-content of the footer row
-	$footer-align: null,      // align-items of the footer row
-	$footer-wrap: null        // flex-wrap of the footer row
+	$footer-justify: null,
+	// justify-content of the footer row
+	$footer-align: null,
+	// align-items of the footer row
+	$footer-wrap: null // flex-wrap of the footer row
 ) {
 	// Colour
 	@if $accent != null {

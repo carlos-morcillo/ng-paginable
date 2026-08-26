@@ -74,7 +74,11 @@ export class TableClientDataService {
 	 * @param keys The data properties to inspect for each row.
 	 * @returns The matching rows.
 	 */
-	search<T>(rows: ReadonlyArray<TableRow<T>>, term: string | null | undefined, keys: ReadonlyArray<string>): Array<TableRow<T>> {
+	search<T>(
+		rows: ReadonlyArray<TableRow<T>>,
+		term: string | null | undefined,
+		keys: ReadonlyArray<string>
+	): Array<TableRow<T>> {
 		const needle = (term ?? '').trim().toLowerCase();
 		if (!needle || !keys.length) {
 			return rows.concat();

@@ -1047,9 +1047,7 @@ export class TableComponent<T = any> {
 		const classes = [`hub-table__cell-btn--${variant}`];
 
 		if (button.classlist) {
-			classes.push(
-				...(Array.isArray(button.classlist) ? button.classlist : [button.classlist])
-			);
+			classes.push(...(Array.isArray(button.classlist) ? button.classlist : [button.classlist]));
 		}
 
 		return classes;
@@ -1344,12 +1342,7 @@ export class TableComponent<T = any> {
 	 * @returns Normalized class name array.
 	 */
 	private normalizeClassList(classList: string | Array<string> | undefined): Array<string> {
-		const tokens = Array.isArray(classList)
-			? classList
-			: typeof classList === 'string'
-				? classList.split(/\s+/)
-				: [];
+		const tokens = Array.isArray(classList) ? classList : typeof classList === 'string' ? classList.split(/\s+/) : [];
 		return [...new Set(tokens.map((item) => item.trim()).filter(Boolean))];
 	}
-
 }

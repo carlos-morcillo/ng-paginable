@@ -25,8 +25,10 @@
 // scss-docs-start hub-list-theme
 @mixin hub-list-theme(
 	// ── Colour ──
-	$accent: null,             // semantic accent (drives the selected item)
-	$bg: null,                 // list container background
+	$accent: null,
+	// semantic accent (drives the selected item)
+	$bg: null,
+	// list container background
 	$item-bg: null,
 	$item-color: null,
 	$item-border-color: null,
@@ -34,12 +36,14 @@
 	$selected-bg: null,
 	$selected-color: null,
 	// ── Border / radius ──
-	$border-radius: null,      // list container radius
+	$border-radius: null,
+	// list container radius
 	$item-border-radius: null,
 	// ── Density / spacing ──
 	$item-padding-x: null,
 	$item-padding-y: null,
-	$gap: null,                // gap between items
+	$gap: null,
+	// gap between items
 	// ── Cards layout ──
 	$cards-bg: null,
 	$cards-border-color: null,

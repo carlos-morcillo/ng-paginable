@@ -1,9 +1,5 @@
 import { Component, forwardRef, input } from '@angular/core';
-import {
-    ControlValueAccessor,
-    FormsModule,
-    NG_VALUE_ACCESSOR
-} from '@angular/forms';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 
 @Component({
@@ -51,9 +47,7 @@ export class PaginableTableRangeInputComponent implements ControlValueAccessor {
 		}
 	}
 
-	registerOnChange(
-		fn: (value: [string | number, string | number]) => void
-	): void {
+	registerOnChange(fn: (value: [string | number, string | number]) => void): void {
 		this.onChange = fn;
 	}
 

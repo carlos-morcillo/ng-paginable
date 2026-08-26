@@ -35,8 +35,7 @@ export const locale = {
 		CLEAN_FILTERS: 'Limpiar filtros',
 		NAME: 'Nombre',
 		SELECT_ONE: 'Selecciona una opción',
-		A_VIEW_WILL_BE_CREATED:
-			'La vista se creará con las siguientes condiciones',
+		A_VIEW_WILL_BE_CREATED: 'La vista se creará con las siguientes condiciones',
 		MUST_PROVIDE_A_VIEW_NAME: 'El nombre de la vista es requerido.',
 		MUST_PROVIDE_VIEW_CONDITIONS: 'Debe añadir condiciones a la vista.',
 		TODAY: 'hoy',

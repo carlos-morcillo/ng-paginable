@@ -64,7 +64,9 @@ describe('PaginableTableFilterDirective', () => {
 		@Component({
 			template: `
 				<ng-template filterTpt [header]="'statusFilter'">
-					<select><option>All</option></select>
+					<select>
+						<option>All</option>
+					</select>
 				</ng-template>
 			`,
 			standalone: true,

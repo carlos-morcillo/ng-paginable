@@ -6,6 +6,4 @@ import { PaginableTableConfig } from '../interfaces/paginable-table-config';
  * It's just an InjectionTToken used to import the config object, provided from the outside
  */
 // tslint:disable-next-line: variable-name
-export const PaginableConfigService = new InjectionToken<PaginableTableConfig>(
-	'PaginableConfig'
-);
+export const PaginableConfigService = new InjectionToken<PaginableTableConfig>('PaginableConfig');
