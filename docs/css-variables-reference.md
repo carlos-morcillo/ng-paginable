@@ -105,8 +105,8 @@ Defined on `.hub-paginator`. Control the appearance of pagination controls used 
 | `--hub-paginator-link-border-radius` | `var(--hub-ref-radius-sm, 0.25rem)` | Border radius of page links |
 | `--hub-paginator-link-padding-x` | `0.75rem` | Horizontal padding of page links |
 | `--hub-paginator-link-padding-y` | `0.375rem` | Vertical padding of page links |
-| `--hub-paginator-link-focus-shadow` | `0 0 0 var(--hub-sys-focus-ring-width) var(--hub-sys-focus-ring-color)` | Focus ring of page links |
-| `--hub-paginator-transition` | `color/background/border/box-shadow 0.15s ease-in-out` | Transition applied to page links |
+| `--hub-paginator-link-focus-shadow` | `0 0 0 var(--hub-sys-focus-ring-width, 0.25rem) var(--hub-sys-focus-ring-color, rgba(13, 110, 253, 0.25))` | Focus ring of page links |
+| `--hub-paginator-transition` | `color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out` | Transition applied to page links |
 
 ### Page Links — Hover
 
