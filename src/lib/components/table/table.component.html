@@ -589,30 +589,40 @@
 <ng-template #defaultCellTpt let-property="property" let-item="item" let-row="row" let-header="header">
 	@if (header.buttons) {
 		<div class="hub-table__cell-buttons d-flex flex-nowrap gap-2 justify-content-end align-items-center">
-			@for (button of header.buttons; track button) {
-				@if (button.buttons) {
-					<hub-table-dropdown [options]="button" [row]="row" class="hub-table__cell-dropdown d-inline-block">
-					</hub-table-dropdown>
-				} @else {
-					@if (!(isHidden(button, row) | async)) {
-						<button
-							type="button"
-							class="hub-table__cell-btn"
-							[disabled]="(isDisabled(button, row) | async) ?? false"
-							[hubTableTooltip]="button.tooltip | unwrapAsync"
-							(click)="handleAction($event, button, row)"
-							[ngClass]="getRowActionClassList(button)"
-							[style.--hub-table-action-accent]="actionAccent(button)"
-						>
-							<div class="hub-table__cell-btn-content d-flex flex-nowrap align-items-center gap-1">
-								<ng-hub-ui-icon [config]="button.icon"></ng-hub-ui-icon>
-								@if (button.label) {
-									<span class="hub-table__cell-btn-label">{{ button.label | unwrapAsync }}</span>
-								} @else if (button.title) {
-									<span class="hub-table__cell-btn-label">{{ button.title | unwrapAsync }}</span>
-								}
-							</div>
-						</button>
+			@if (hasActionsAdapter) {
+				<!--
+					Drawn by the wired component library. Everything below is the markup this
+					table drew before an adapter was possible: it dresses itself in Bootstrap
+					class names, which resolve to nothing in a product that does not ship
+					Bootstrap, and it is kept only so that upgrading breaks nobody.
+				-->
+				<ng-container [hubPaginableActions]="header.buttons" [row]="row"></ng-container>
+			} @else {
+				@for (button of header.buttons; track button) {
+					@if (button.buttons) {
+						<hub-table-dropdown [options]="button" [row]="row" class="hub-table__cell-dropdown d-inline-block">
+						</hub-table-dropdown>
+					} @else {
+						@if (!(isHidden(button, row) | async)) {
+							<button
+								type="button"
+								class="hub-table__cell-btn"
+								[disabled]="(isDisabled(button, row) | async) ?? false"
+								[hubTableTooltip]="button.tooltip | unwrapAsync"
+								(click)="handleAction($event, button, row)"
+								[ngClass]="getRowActionClassList(button)"
+								[style.--hub-table-action-accent]="actionAccent(button)"
+							>
+								<div class="hub-table__cell-btn-content d-flex flex-nowrap align-items-center gap-1">
+									<ng-hub-ui-icon [config]="button.icon"></ng-hub-ui-icon>
+									@if (button.label) {
+										<span class="hub-table__cell-btn-label">{{ button.label | unwrapAsync }}</span>
+									} @else if (button.title) {
+										<span class="hub-table__cell-btn-label">{{ button.title | unwrapAsync }}</span>
+									}
+								</div>
+							</button>
+						}
 					}
 				}
 			}

@@ -144,6 +144,39 @@ controls. See the ecosystem-wide
 
 ---
 
+## Row-actions synergy (optional, agnostic)
+
+The table renders a row's buttons and menus itself by default, in Bootstrap class names —
+`.btn`, `.dropdown-menu`, `.dropdown-item`. In a product that does not ship Bootstrap those
+resolve to nothing: the menu trigger falls back to the browser's default grey button and the
+panel is a transparent box with no border, shadow or padding.
+
+Provide the adapter shipped by `ng-hub-ui-buttons` and the table stops drawing them. It
+*describes* what a row offers and the adapter draws it with the real components — placement,
+outside-click, Escape, scroll and focus already solved. **No hard dependency**, in either
+direction:
+
+```ts
+import { provideHubPaginableActions } from 'ng-hub-ui-paginable';
+import { hubActionsAdapter } from 'ng-hub-ui-buttons';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideHubPaginableActions(hubActionsAdapter)]
+};
+```
+
+Nothing changes in how actions are declared: `variant`, `color`, `icon`, `hidden`, `disabled`
+and `tooltip` stay the API, and a table already in use needs no edit to a single header. What
+the adapter receives is fully resolved for the row — hidden actions are absent, predicates are
+booleans, Observable labels are strings — so an adapter never has to know any of that is
+possible.
+
+To limit it to one table, provide the `HUB_PAGINABLE_ACTIONS` token in that component's
+`providers` instead. Without it the table keeps its built-in markup, which is deprecated as of
+22.16.0 and warns once per application in production builds.
+
+---
+
 ## ✨ Inspiration
 
 This library arises from the need to offer highly configurable, accessible, and modern data visualization components for Angular applications, enabling integrated lists, tables, and pagination with full support for signals, reactive forms, and complete render customization.
@@ -796,6 +829,8 @@ interface PaginableTableDropdown {
 	buttons: PaginableActionButton[];
 	position?: 'left' | 'right' | 'start' | 'end';
 	fill?: 'clear' | 'outline';
+	hidden?: boolean | ((row: TableRow) => boolean); // The menu does not exist for this row
+	disabled?: boolean | ((row: TableRow) => boolean); // It exists and cannot be opened right now
 }
 
 interface PaginableActionButton<T = any> {

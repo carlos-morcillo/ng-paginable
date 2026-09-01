@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import {
 	Component,
 	ElementRef,
@@ -11,23 +11,36 @@ import {
 	input,
 	viewChild
 } from '@angular/core';
+import { Observable, isObservable, of } from 'rxjs';
 import { UnwrapAsyncPipe } from 'ng-hub-ui-utils';
 import { TableRowEvent } from '../../interfaces';
+import { TableRow } from '../../interfaces/table-row';
 import { PaginableActionButton } from '../../interfaces/paginable-action-button';
 import { PaginableTableDropdown } from '../../interfaces/paginable-table-dropdown';
 import { HubIconComponent } from '../icon/icon.component';
 import { HubTableTooltipDirective } from '../../table-tooltip';
+import { warnDeprecatedActionsRendering } from '../../actions/actions.warning';
 
 @Component({
 	selector: 'hub-table-dropdown, paginable-table-dropdown',
 
 	standalone: true,
-	imports: [HubTableTooltipDirective, NgClass, HubIconComponent, UnwrapAsyncPipe],
+	imports: [AsyncPipe, HubTableTooltipDirective, NgClass, HubIconComponent, UnwrapAsyncPipe],
 	templateUrl: './paginable-table-dropdown.component.html',
 	styleUrls: ['./paginable-table-dropdown.component.scss']
 })
 /**
  * Component for displaying a dropdown menu within a paginable table row.
+ *
+ * @deprecated Since 22.16.0. Register an actions adapter with
+ * `provideHubPaginableActions(hubActionsAdapter)` from `ng-hub-ui-buttons`; the table then
+ * draws its menus with the design system's dropdown and this component is not used.
+ *
+ * It dresses itself in Bootstrap class names — `.btn`, `.dropdown-menu`, `.dropdown-item`
+ * — which resolve to nothing in a product that does not ship Bootstrap: the trigger falls
+ * back to the browser's default grey button and the panel to a transparent box. It also
+ * places its panel by hand on `document.body`, so it neither flips when it does not fit
+ * nor follows a scrolling container. Kept only so that upgrading breaks nobody.
  *
  * @export
  * @class PaginableTableDropdownComponent
@@ -35,6 +48,10 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
  */
 export class PaginableTableDropdownComponent<T = any> {
 	#elementRef = inject(ElementRef);
+
+	constructor() {
+		warnDeprecatedActionsRendering();
+	}
 
 	readonly dropdownTpt = viewChild.required<TemplateRef<any>>('dropdownTpt');
 
@@ -162,7 +179,47 @@ export class PaginableTableDropdownComponent<T = any> {
 	}
 
 	/**
+	 * Whether this item is refused on the row the dropdown belongs to.
+	 *
+	 * Same shape as the cell's own buttons — boolean or predicate, always an Observable —
+	 * because it is the same question about the same kind of action. Tucking an action
+	 * into the menu cannot change what a consumer is allowed to say about it.
+	 */
+	isItemDisabled(action: PaginableActionButton<T>, row?: TableRowEvent<T>): Observable<boolean> {
+		return this.resolveState(action.disabled, row);
+	}
+
+	/** Whether this item does not exist on this row at all. @see isItemDisabled */
+	isItemHidden(action: PaginableActionButton<T>, row?: TableRowEvent<T>): Observable<boolean> {
+		return this.resolveState(action.hidden, row);
+	}
+
+	/**
+	 * Resolves a boolean-or-predicate item flag against the current row.
+	 *
+	 * A predicate with no row to ask about answers `false`: an action is refused because
+	 * of what the row is, and with no row there is nothing to refuse it for.
+	 */
+	private resolveState(
+		flag: PaginableActionButton<T>['hidden'] | PaginableActionButton<T>['disabled'],
+		row?: TableRowEvent<T>
+	): Observable<boolean> {
+		if (typeof flag === 'function') {
+			if (!row) {
+				return of(false);
+			}
+			const result = (flag as (row: TableRow<T>) => boolean | Observable<boolean>)(row);
+			return isObservable(result) ? result : of(!!result);
+		}
+		return of(!!flag);
+	}
+
+	/**
 	 * Executes a dropdown action in row context when a handler is available.
+	 *
+	 * A disabled item never runs: the menu closes on click before the browser's own
+	 * `disabled` has anything to say, so the refusal is enforced here too rather than
+	 * relying on the attribute alone.
 	 *
 	 * @param action Action button configuration from dropdown options.
 	 */
@@ -172,6 +229,16 @@ export class PaginableTableDropdownComponent<T = any> {
 		if (!row || !handler) {
 			return;
 		}
+
+		let refused = false;
+		this.isItemDisabled(action, row)
+			.subscribe((value) => (refused = value))
+			.unsubscribe();
+
+		if (refused) {
+			return;
+		}
+
 		handler(row);
 	}
 

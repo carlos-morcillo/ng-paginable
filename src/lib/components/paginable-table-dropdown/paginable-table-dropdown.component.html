@@ -24,10 +24,11 @@
 			}"
 		>
 			@for (dropdownItem of options.buttons; track dropdownItem) {
-				@if (!dropdownItem.hidden) {
+				@if (!(isItemHidden(dropdownItem, row()) | async)) {
 					<button
 						class="table-dropdown__item dropdown-item"
 						type="button"
+						[disabled]="(isItemDisabled(dropdownItem, row()) | async) ?? false"
 						[hubTableTooltip]="dropdownItem.title | unwrapAsync"
 						[ngClass]="getDropdownItemClassList(dropdownItem)"
 						(click)="executeDropdownAction(dropdownItem)"

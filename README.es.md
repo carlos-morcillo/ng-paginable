@@ -119,6 +119,62 @@ import { TableComponent } from 'ng-hub-ui-paginable';
 
 ---
 
+## Sinergia con los controles de formulario (opcional, agnóstica)
+
+La tabla dibuja sus controles primitivos —el buscador global y el selector de filas por
+página— como `<input>` / `<select>` nativos por defecto: `ng-hub-ui-paginable` **no depende**
+de ninguna biblioteca de formularios. Registra una vez el adaptador que publica
+`ng-hub-ui-forms` y esos controles pasan a ser `hub-input` / `hub-select`, sin tocar ninguna
+plantilla:
+
+```ts
+import { provideHubPaginableFormControls } from 'ng-hub-ui-paginable';
+import { hubFormControlAdapter } from 'ng-hub-ui-forms';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideHubPaginableFormControls(hubFormControlAdapter)]
+};
+```
+
+Para limitarlo a una sola tabla, registra el token `HUB_PAGINABLE_FORM_CONTROLS` en los
+`providers` de ese componente. Si lo quitas, la tabla vuelve a los controles nativos.
+
+---
+
+## Sinergia con las acciones de fila (opcional, agnóstica)
+
+Por defecto la tabla dibuja ella misma los botones y menús de cada fila, con nombres de clase
+de Bootstrap: `.btn`, `.dropdown-menu`, `.dropdown-item`. En un producto que no sirve
+Bootstrap, esos nombres no resuelven a nada: el disparador del menú cae al botón gris por
+defecto del navegador y el panel queda como una caja transparente, sin borde, sin sombra y sin
+relleno.
+
+Registra el adaptador que publica `ng-hub-ui-buttons` y la tabla deja de dibujarlos: pasa a
+*describir* lo que ofrece cada fila y el adaptador lo dibuja con los componentes reales —con la
+colocación, el clic fuera, Escape, el desplazamiento y el foco ya resueltos—. **Sin dependencia
+dura**, en ninguna de las dos direcciones:
+
+```ts
+import { provideHubPaginableActions } from 'ng-hub-ui-paginable';
+import { hubActionsAdapter } from 'ng-hub-ui-buttons';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideHubPaginableActions(hubActionsAdapter)]
+};
+```
+
+No cambia nada en cómo se declaran las acciones: `variant`, `color`, `icon`, `hidden`,
+`disabled` y `tooltip` siguen siendo la API, y una tabla ya en uso no necesita editar ni una
+cabecera. Lo que recibe el adaptador viene ya resuelto para la fila —las acciones ocultas no
+llegan, los predicados son booleanos, las etiquetas Observable son cadenas—, así que un
+adaptador nunca tiene que saber que nada de eso es posible.
+
+Para limitarlo a una sola tabla, registra el token `HUB_PAGINABLE_ACTIONS` en los `providers`
+de ese componente. Sin él, la tabla conserva su marcado propio, que queda obsoleto desde la
+22.16.0 y avisa una vez por aplicación en compilaciones de producción.
+
+---
+
 ## ✨ Inspiración
 
 Esta biblioteca nace de la necesidad de ofrecer componentes de visualización de datos altamente configurables, accesibles y modernos para aplicaciones Angular, permitiendo listas, tablas y paginación integradas con soporte completo para señales, formularios reactivos y personalización total del renderizado.

@@ -11,6 +11,18 @@
 	&__item--default {
 		color: inherit;
 	}
+
+	// The same formula the cell's own buttons use, down to the token: a refused action
+	// has to read as refused in both places, or the menu becomes the one spot where
+	// `disabled` is set and nothing on screen says so.
+	&__item:disabled {
+		opacity: var(--hub-table-action-disabled-opacity, 0.5);
+		cursor: not-allowed;
+
+		&:hover {
+			background-color: inherit;
+		}
+	}
 }
 
 // Legacy support for dropdown-toggle class

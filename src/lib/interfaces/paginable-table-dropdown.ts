@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 import { PaginableActionButton } from './paginable-action-button';
+import { TableRow } from './table-row';
 
 /**
  * Represents a dropdown menu containing multiple action buttons.
@@ -42,4 +43,20 @@ export interface PaginableTableDropdown {
 	 * Visual fill style of the dropdown button.
 	 */
 	fill?: 'clear' | 'outline' | null;
+
+	/**
+	 * Whether the menu exists on this row at all.
+	 *
+	 * Same shape as a single action's, because it is the same question: a row that offers
+	 * none of the menu's actions should not be given a trigger that opens onto nothing.
+	 */
+	hidden?: boolean | ((row: TableRow) => boolean);
+
+	/**
+	 * Whether the menu is drawn and refused on this row.
+	 *
+	 * Distinct from hiding it: a menu that is there and greyed says the actions exist and
+	 * are not available now, which an absence cannot say.
+	 */
+	disabled?: boolean | ((row: TableRow) => boolean);
 }

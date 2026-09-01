@@ -58,6 +58,9 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 import { HubIconComponent } from '../icon/icon.component';
 import { MenuFilterComponent } from '../menu-filter/menu-filter.component';
 import { PaginableTableDropdownComponent } from '../paginable-table-dropdown/paginable-table-dropdown.component';
+import { HUB_PAGINABLE_ACTIONS } from '../../actions/actions.token';
+import { HubPaginableActionsDirective } from '../../actions/actions.directive';
+import { warnDeprecatedActionsRendering } from '../../actions/actions.warning';
 import { PaginableTableRangeInputComponent } from '../paginable-table-range-input/paginable-table-range-input.component';
 import { PaginatorComponent } from '../paginator/paginator.component';
 import { HubTableTooltipDirective } from '../../table-tooltip';
@@ -89,6 +92,7 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
 		GetPipe,
 		PaginableStateOutlet,
 		HubPaginableControlDirective,
+		HubPaginableActionsDirective,
 		HubStickyColumnsDirective
 	],
 	providers: [
@@ -254,6 +258,13 @@ export class TableComponent<T = any> {
 				Object.assign(header, { wrapping: 'nowrap', onlyButtons: true, align: 'end' }, header);
 			}
 		}
+
+		// Said here rather than in the constructor: a table with no actions has nothing to
+		// warn about, and whether it has any is only known once its headers arrive.
+		if (!this.hasActionsAdapter && fixedHeaders.some((header) => header.buttons?.length)) {
+			warnDeprecatedActionsRendering();
+		}
+
 		return fixedHeaders;
 	});
 
@@ -1088,6 +1099,17 @@ export class TableComponent<T = any> {
 		}
 		return of(!!button.disabled);
 	}
+
+	/**
+	 * Whether a component library is wired to draw the row actions.
+	 *
+	 * Read once and held, because it decides which branch of the cell template runs and
+	 * that answer cannot change while the application is alive. When nothing is wired the
+	 * table falls back to its own deprecated markup and says so, once.
+	 */
+	protected readonly hasActionsAdapter = !!inject(HUB_PAGINABLE_ACTIONS, {
+		optional: true
+	});
 
 	/**
 	 * Determines if a header column should be hidden based on its configuration.

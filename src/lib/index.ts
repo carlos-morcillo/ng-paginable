@@ -5,7 +5,9 @@ export { HubUITableModule as TableModule } from './paginable.module';
 // Providers
 export { providePaginable, paginableCoreProviders } from './paginable.providers';
 
-// Form-controls integration (optional, agnostic)
+// Cross-library integrations (optional, agnostic): a registered adapter draws these,
+// and without one the table keeps its own fallback.
+export * from './actions';
 export * from './form-controls';
 
 // Components

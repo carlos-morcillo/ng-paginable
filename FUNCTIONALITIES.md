@@ -30,6 +30,8 @@ This table lists the functionalities of the `ng-hub-ui-paginable` library:
 | | Dynamic row styling (`rowClass`) | ✅ | ✅ |
 | | Row action buttons (per-row `buttons`) | ✅ | ✅ |
 | | Conditional row actions (`hidden` / `disabled`, boolean or predicate) | ✅ | ✅ |
+| | Row dropdown menus (nested `buttons`) | ✅ | ✅ |
+| | Conditional row menus (`hidden` / `disabled` on `PaginableTableDropdown`) | ✅ | ✅ |
 | | Batch actions (on selected items) | ✅ | ✅ |
 | **Advanced Features** | Expandable rows (master-detail) | ✅ | ✅ |
 | | Sticky columns (start/end, multiple per side) | ✅ | ✅ |
@@ -49,6 +51,7 @@ This table lists the functionalities of the `ng-hub-ui-paginable` library:
 | | App-wide default state components (provider `states`) | ✅ | ✅ |
 | **Configuration** | App-wide input defaults (`providePaginable({ defaults })`) | ✅ | ❌ |
 | | Agnostic form-controls adapter (`provideHubPaginableFormControls`) | ✅ | ✅ |
+| | Agnostic row-actions adapter (`provideHubPaginableActions`) | ✅ | ✅ |
 | | RTL layout | ✅ | ✅ |
 | | Internationalization (i18n) | ✅ | ✅ |
 | | CSS variables theming | ✅ | ✅ |

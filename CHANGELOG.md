@@ -2,6 +2,71 @@
 
 ## [Unreleased]
 
+## [22.16.0] - 2026-09-01
+
+### Added
+
+- **`provideHubPaginableActions`**, so the table's row buttons and menus are drawn by a
+  real component library instead of by the table itself.
+
+  What the table drew was markup in Bootstrap class names — `.btn`, `.dropdown-menu`,
+  `.dropdown-item` — which resolve to nothing in a product that does not ship Bootstrap.
+  Measured in one: the menu trigger fell back to the browser's default grey button
+  (`2px outset`, square, the wrong height beside its neighbours) and the panel was a
+  transparent box with no border, no shadow and no padding. The row actions had been
+  given the design system's vocabulary; the menu was left behind wearing names that no
+  longer resolve.
+
+  Rather than restyle a second implementation of a dropdown the button library already
+  has — with placement, outside-click, Escape, scroll and focus already solved — the
+  table now *describes* what a row offers and an adapter draws it. Exactly the
+  arrangement `provideHubPaginableFormControls` already uses for the table's inputs, and
+  with the same consequence: **no new dependency**, in either direction.
+
+  ```ts
+  import { provideHubPaginableActions } from 'ng-hub-ui-paginable';
+  import { hubActionsAdapter } from 'ng-hub-ui-buttons';
+
+  providers: [provideHubPaginableActions(hubActionsAdapter)];
+  ```
+
+  Nothing changes in how actions are declared: `variant`, `color`, `icon`, `hidden`,
+  `disabled` and `tooltip` stay the API, and a table already in use needs no edit to a
+  single header. What the adapter receives is fully resolved for the row — hidden actions
+  are absent, predicates are booleans, Observable labels are strings — so an adapter never
+  has to know any of that is possible.
+
+- **`hidden` and `disabled` on `PaginableTableDropdown`**, so a menu can be refused on a
+  row like any other action.
+
+### Deprecated
+
+- **`PaginableTableDropdownComponent`**, and the built-in markup the table falls back to
+  when no adapter is registered. Both still work and nothing breaks by upgrading; the
+  table says so once per application, in production builds, naming the one line that
+  fixes it.
+
+### Fixed
+
+- **A dropdown item now answers `hidden` and `disabled` like any other row action.**
+
+  An action tucked into the ⋮ menu is the same action, and it answered to nothing. The
+  menu read `hidden` as a plain boolean, so the predicate form — the one every button
+  drawn directly in the cell accepts — was a function, and a function is always truthy:
+  an action meant to disappear on *some* rows disappeared from *every* row. `disabled`
+  was ignored outright, with no effect whatsoever.
+
+  That is what pushed consumers to keep row-dependent actions out of the menu, which is
+  precisely the crowding the menu exists to relieve: an action column with five buttons
+  had no way to fold two of them away if either depended on the row.
+
+  Both flags now take a boolean or a predicate over the row, resolved through the same
+  path the cell's buttons use, and the refusal is enforced in the handler as well — the
+  menu closes on click, so the `disabled` attribute alone would not stop it. A disabled
+  item is drawn with the table's own formula and token
+  (`--hub-table-action-disabled-opacity`), so it reads as refused in the menu exactly as
+  it does in the cell.
+
 ## [22.15.0] - 2026-09-01
 
 ### Added
