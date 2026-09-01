@@ -29,6 +29,7 @@ This table lists the functionalities of the `ng-hub-ui-paginable` library:
 | | Row click handling (`clickFn`) | ✅ | ✅ |
 | | Dynamic row styling (`rowClass`) | ✅ | ✅ |
 | | Row action buttons (per-row `buttons`) | ✅ | ✅ |
+| | Conditional row actions (`hidden` / `disabled`, boolean or predicate) | ✅ | ✅ |
 | | Batch actions (on selected items) | ✅ | ✅ |
 | **Advanced Features** | Expandable rows (master-detail) | ✅ | ✅ |
 | | Sticky columns (start/end, multiple per side) | ✅ | ✅ |

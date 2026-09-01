@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+## [22.15.0] - 2026-09-01
+
+### Added
+
+- **`disabled` on a row action** (`PaginableActionButton.disabled`), boolean or predicate,
+  shaped exactly like `hidden` because both answer the same question about the same button.
+
+  `hidden` was the only thing a consumer could say about an action that does not apply, and
+  it says the wrong thing for half the cases: a cancelled payment is not a row where editing
+  does not exist, it is a row where editing has nothing left to act on. Forced to choose,
+  consumers hid the action — so the column changed shape row by row and nothing on screen
+  said why the button was gone.
+
+  It reaches the rendered `<button>`, so the browser refuses the click and announces the
+  state, and the tooltip still shows — which is where the reason belongs. A refused action
+  also **looks** refused now: this table draws its own buttons, so the browser's default
+  disabled rendering never reached them, and without a rule a `disabled` action would have
+  kept its full tint and its pointer while swallowing every click. Tunable through
+  `--hub-table-action-disabled-opacity`.
+
+
 ## [22.14.1] - 2026-08-24
 
 ### Fixed

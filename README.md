@@ -804,7 +804,8 @@ interface PaginableActionButton<T = any> {
 	tooltip?: string | Observable<string>; // Hover tooltip (supports Observable)
 	icon?: string | Icon;
 	handler?: (event: TableRowEvent<T>) => void;
-	hidden?: boolean | ((row: TableRow<T>) => boolean);
+	hidden?: boolean | ((row: TableRow<T>) => boolean); // The action does not exist for this row
+	disabled?: boolean | ((row: TableRow<T>) => boolean); // It exists and cannot be taken right now
 	variant?: 'default' | 'solid' | 'soft' | 'outline' | 'ghost'; // default: 'default'
 	color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | (string & {});
 	classlist?: string[] | string;
@@ -887,7 +888,9 @@ const headers: PaginableTableHeader[] = [
 				tooltip: 'Edit this record',
 				color: 'primary',
 				handler: (row) => this.editUser(row.data),
-				hidden: (row) => !row.data.canEdit
+				hidden: (row) => !row.data.canEdit,
+				disabled: (row) => row.data.status === 'cancelled',
+				tooltip: 'A cancelled record cannot be edited'
 			},
 			{
 				title: 'More Actions',

@@ -1071,6 +1071,25 @@ export class TableComponent<T = any> {
 	}
 
 	/**
+	 * Determines if a row button is offered but refused for this row.
+	 *
+	 * Shaped exactly like {@link isHidden} — boolean or predicate, always an Observable —
+	 * because the two answer the same question about the same button and a consumer
+	 * declaring both should not have to write them differently.
+	 *
+	 * @param button The button configuration to check
+	 * @param row The table row context
+	 * @returns Observable<boolean> indicating if the button should be disabled
+	 */
+	isDisabled(button: PaginableActionButton, row: TableRow): Observable<boolean> {
+		if (typeof button.disabled === 'function') {
+			const result = button.disabled(row);
+			return isObservable(result) ? (result as Observable<boolean>) : of(result);
+		}
+		return of(!!button.disabled);
+	}
+
+	/**
 	 * Determines if a header column should be hidden based on its configuration.
 	 * Handles boolean values, synchronous functions, and asynchronous functions (Promise/Observable).
 	 *

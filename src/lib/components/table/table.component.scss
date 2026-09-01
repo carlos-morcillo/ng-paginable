@@ -367,6 +367,23 @@
 		}
 	}
 
+	/* A refused action still has to look refused.
+	 *
+	 * This table draws its own buttons, so the browser's default disabled rendering does
+	 * not reach them: a `disabled` action kept its full tint and its pointer, and read as
+	 * pressable while silently swallowing every click. The hover response is cancelled
+	 * too — a control that lights up under the cursor is promising something.
+	 */
+	.hub-table__cell-btn:disabled,
+	.hub-table__batch-actions-btn:disabled {
+		opacity: var(--hub-table-action-disabled-opacity, 0.5);
+		cursor: not-allowed;
+
+		&:hover {
+			background-color: inherit;
+		}
+	}
+
 	.hub-table__batch-actions-btn--default,
 	.hub-table__cell-btn--default {
 		border: var(--hub-table-border-width) solid var(--hub-table-border-color);

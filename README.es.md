@@ -721,7 +721,9 @@ const headers: PaginableTableHeader[] = [
 				title: 'Edit',
 				color: 'primary',
 				handler: (row) => this.editUser(row.data),
-				hidden: (row) => !row.data.canEdit
+				hidden: (row) => !row.data.canEdit,
+				disabled: (row) => row.data.status === 'cancelled',
+				tooltip: 'Un registro cancelado no se puede editar'
 			},
 			{
 				title: 'More Actions',

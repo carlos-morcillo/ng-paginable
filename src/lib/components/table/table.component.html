@@ -598,6 +598,7 @@
 						<button
 							type="button"
 							class="hub-table__cell-btn"
+							[disabled]="(isDisabled(button, row) | async) ?? false"
 							[hubTableTooltip]="button.tooltip | unwrapAsync"
 							(click)="handleAction($event, button, row)"
 							[ngClass]="getRowActionClassList(button)"

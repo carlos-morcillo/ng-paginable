@@ -39,6 +39,24 @@ export interface PaginableActionButton<T = any> {
 	hidden?: boolean | ((row: TableRow<T>) => boolean);
 
 	/**
+	 * Whether the action is offered but refused for this row.
+	 *
+	 * The counterpart of `hidden`, and a different statement about the same button:
+	 * `hidden` says the action does not exist here, `disabled` says it exists and cannot
+	 * be taken right now. A cancelled payment is the second kind — editing it is a real
+	 * action of that screen, it just has nothing left to act on — and without this a
+	 * consumer had to choose between an action that vanishes and one that fails.
+	 *
+	 * Reaches the rendered `<button>`, so the browser refuses the click and announces the
+	 * state; the tooltip still shows, which is where the reason belongs.
+	 *
+	 * Honoured on row actions only. A batch action is refused by having nothing selected,
+	 * and the predicate here is handed a row — which a batch action, acting on a selection,
+	 * does not have.
+	 */
+	disabled?: boolean | ((row: TableRow<T>) => boolean);
+
+	/**
 	 * Appearance of the button, from the same vocabulary `hubButton` uses.
 	 *
 	 * This table draws its own action buttons — plain `<button>` elements, not the
