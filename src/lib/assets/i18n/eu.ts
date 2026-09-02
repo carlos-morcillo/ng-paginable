@@ -48,6 +48,7 @@ export const locale = {
 			VARIABLE: 'Aldagaia'
 		},
 		CLEAR: 'garbitu',
+		CLEAR_SEARCH: 'Garbitu bilaketa',
 		ADD_RULE: 'gehitu baldintza',
 		REMOVE_RULE: 'kendu baldintza',
 		MATCH_ALL: 'denekin bat etorri',

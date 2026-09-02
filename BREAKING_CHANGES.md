@@ -1,6 +1,20 @@
 # Breaking Changes: ng-hub-ui-paginable
 
-## Unreleased
+## v22.17.0
+
+### The column filters and the clear-filters button no longer wear Bootstrap class names
+
+- **Change**: the default filter controls dropped `.form-control` / `.form-select` for `hub-table__filter-control` (`--select` on the two selects), and the clear-filters button dropped `.btn.btn-outline-danger`. Each is now drawn from `--hub-table-filter-control-*` / `--hub-table-delete-filters-*`. The range control dropped three sets: `.form-control d-flex flex-column` on its root, `d-flex align-items-center justify-content-between` on each field, and `.text-muted` on each label.
+- **Impact**: CSS that reached the filter row through those names — `.hub-table__filter-cell .form-control`, `.hub-table__delete-filters-btn.btn-outline-danger` — no longer matches. Bootstrap consumers see the library's field instead of Bootstrap's; the two are the same shape, but the clear button is now neutral at rest and destructive only on hover.
+- **Migration**: theme through the tokens (`--hub-table-filter-control-border-color`, `--hub-table-delete-filters-hover-bg`, …), or target `.hub-table__filter-control` / `.hub-table__delete-filters-btn`. To keep the old red-at-rest button: `--hub-table-delete-filters-color: var(--hub-sys-color-danger); --hub-table-delete-filters-border-color: var(--hub-sys-color-danger);`.
+- **Why not keep both**: the names promised a stylesheet this family does not ship, so in a product without Bootstrap the whole filter row was invisible — the bug this release fixes. Keeping them would leave two owners of one appearance, free to drift apart, and the library's own rules would have to out-specify a stylesheet it cannot see.
+
+### The range control no longer ships a `.form-control` compatibility block
+
+- **Change**: `paginable-table-range-input.component.scss` carried a `// Legacy support for form-control` rule that gave anything inside a `.form-control` the range control's own layout. It is deleted.
+- **Impact**: this is the vector the entry above does not cover, and it reaches further. A **custom filter template** of your own — `filterTpt` markup wrapped in `.form-control`, which is exactly what this library's own README has been instructing — inherited that block and now inherits nothing. The control keeps its shape; a hand-written template that leaned on the block loses its layout.
+- **Migration**: give your template its own layout, or reach for `.hub-table__filter-control`, which the library now styles. The README snippets are corrected in this release, so copying them afresh produces markup that works in a product with or without Bootstrap.
+- **Why**: the block existed to make a Bootstrap name work inside a library that no longer emits one. Keeping a compatibility shim for a class the library has stopped writing means maintaining an appearance nobody owns.
 
 ### Rebuilding `items` keeps the whole selection and publishes nothing
 
@@ -8,7 +22,6 @@
 - **Impact**: a consumer that paged or filtered its own data and relied on the list pruning the value for it now keeps entries that are not on the current page. A consumer that listened for that publication to learn "the selection shrank" no longer hears it — which is the point: it was indistinguishable from the user clearing the field.
 - **Migration**: prune on the consumer's side, where the reason for the change is known. If the offer really shrank (an item was deleted), intersect the value with the new items and write it back. If it only paged, do nothing — which is what most callers wanted and could not get.
 - **Why not an option**: a flag would ask every consumer to answer a question the library cannot pose properly. The distinction is not "prune or not", it is "why did `items` change", and only the caller holds that.
-
 
 ## v22.12.0
 
@@ -24,7 +37,6 @@
 - **Change**: with `bindChildren`, ticking a group's checkbox now selects **its children**, and the group's own value no longer enters the selection. A group whose children are partly selected renders indeterminate.
 - **Impact**: a consumer who relied on a group's value appearing in the array — treating a heading as a selectable datum — gets the leaves instead.
 - **Migration**: read the leaves. If a group genuinely is a datum in your data, it should not have `children`.
-
 
 ## v22.1.1
 

@@ -133,7 +133,7 @@ import { provideHubPaginableFormControls } from 'ng-hub-ui-paginable';
 import { hubFormControlAdapter } from 'ng-hub-ui-forms';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHubPaginableFormControls(hubFormControlAdapter)]
+	providers: [provideHubPaginableFormControls(hubFormControlAdapter)]
 };
 ```
 
@@ -152,7 +152,7 @@ resolve to nothing: the menu trigger falls back to the browser's default grey bu
 panel is a transparent box with no border, shadow or padding.
 
 Provide the adapter shipped by `ng-hub-ui-buttons` and the table stops drawing them. It
-*describes* what a row offers and the adapter draws it with the real components — placement,
+_describes_ what a row offers and the adapter draws it with the real components — placement,
 outside-click, Escape, scroll and focus already solved. **No hard dependency**, in either
 direction:
 
@@ -161,7 +161,7 @@ import { provideHubPaginableActions } from 'ng-hub-ui-paginable';
 import { hubActionsAdapter } from 'ng-hub-ui-buttons';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHubPaginableActions(hubActionsAdapter)]
+	providers: [provideHubPaginableActions(hubActionsAdapter)]
 };
 ```
 
@@ -533,19 +533,19 @@ const headers: PaginableTableHeader[] = [
 
 ### Header Properties Reference
 
-| Property      | Type                                             | Description                                           | Default          | Example                                              |
-| ------------- | ------------------------------------------------ | ----------------------------------------------------- | ---------------- | ---------------------------------------------------- |
-| `property`    | `string`                                         | **Required.** Data property to display in this column | -                | `'name'`, `'user.email'`                             |
-| `title`       | `string \| Observable<string>`                   | Column header title. Can be static or reactive        | `property` value | `'User Name'`, `this.translate.get('user.name')`     |
-| `icon`        | `string \| Icon`                                 | Icon to display in header                             | -                | `'fa-user'`, `{ type: 'material', value: 'person' }` |
-| `align`       | `'start' \| 'end' \| 'center'`                   | Text alignment for column                             | `'start'`        | `'center'` for numbers                               |
-| `sortable`    | `boolean`                                        | Enable sorting for this column                        | `false`          | `true`                                               |
-| `wrapping`    | `'wrap' \| 'nowrap'`                             | Text wrapping behavior                                | `'wrap'`         | `'nowrap'` for IDs                                   |
-| `sticky`      | `'start' \| 'end'`                               | Make column sticky during scroll                      | -                | `'end'` for actions                                  |
+| Property      | Type                                                     | Description                                           | Default          | Example                                              |
+| ------------- | -------------------------------------------------------- | ----------------------------------------------------- | ---------------- | ---------------------------------------------------- |
+| `property`    | `string`                                                 | **Required.** Data property to display in this column | -                | `'name'`, `'user.email'`                             |
+| `title`       | `string \| Observable<string>`                           | Column header title. Can be static or reactive        | `property` value | `'User Name'`, `this.translate.get('user.name')`     |
+| `icon`        | `string \| Icon`                                         | Icon to display in header                             | -                | `'fa-user'`, `{ type: 'material', value: 'person' }` |
+| `align`       | `'start' \| 'end' \| 'center'`                           | Text alignment for column                             | `'start'`        | `'center'` for numbers                               |
+| `sortable`    | `boolean`                                                | Enable sorting for this column                        | `false`          | `true`                                               |
+| `wrapping`    | `'wrap' \| 'nowrap'`                                     | Text wrapping behavior                                | `'wrap'`         | `'nowrap'` for IDs                                   |
+| `sticky`      | `'start' \| 'end'`                                       | Make column sticky during scroll                      | -                | `'end'` for actions                                  |
 | `buttons`     | `Array<PaginableActionButton \| PaginableTableDropdown>` | Action buttons in this column                         | -                | See [Action Buttons](#action-buttons)                |
-| `filter`      | `InputFilter \| DropdownFilter \| BooleanFilter` | Filter configuration                                  | -                | See [Column Filters](#column-filters)                |
-| `onlyButtons` | `boolean`                                        | Optimize layout for button-only columns               | `false`          | `true` for action columns                            |
-| `hidden`      | `boolean \| Function`                            | Control column visibility                             | `false`          | See [Column Visibility](#column-visibility)          |
+| `filter`      | `InputFilter \| DropdownFilter \| BooleanFilter`         | Filter configuration                                  | -                | See [Column Filters](#column-filters)                |
+| `onlyButtons` | `boolean`                                                | Optimize layout for button-only columns               | `false`          | `true` for action columns                            |
+| `hidden`      | `boolean \| Function`                                    | Control column visibility                             | `false`          | See [Column Visibility](#column-visibility)          |
 
 ### Column Visibility Control (`hidden` Property) 🆕
 
@@ -858,10 +858,10 @@ built with the primitive's own arithmetic, so the two read the same side by side
 
 ```typescript
 buttons: [
-	{ icon: 'icon--ph--eye', tooltip: 'View', handler: view },                      // plain bordered
+	{ icon: 'icon--ph--eye', tooltip: 'View', handler: view }, // plain bordered
 	{ icon: 'icon--ph--pencil', variant: 'soft', color: 'primary', handler: edit },
 	{ icon: 'icon--ph--trash', variant: 'soft', color: 'danger', handler: remove },
-	{ icon: 'icon--ph--dots-three-vertical', variant: 'ghost', handler: more }      // neutral
+	{ icon: 'icon--ph--dots-three-vertical', variant: 'ghost', handler: more } // neutral
 ];
 ```
 
@@ -869,12 +869,12 @@ buttons: [
 table has always drawn, and colouring it would be giving it a variant by the back door. A
 variant that names no colour is `neutral`, not colourless.
 
-### Range Input Component (`<hub-ui-range-input>`)
+### Range Input Component (`<hub-table-range-input>`)
 
 Specialized component for number and date range filters:
 
 ```html
-<hub-ui-range-input [type]="'number'" [placeholder]="'Min - Max'" [formControl]="rangeControl"> </hub-ui-range-input>
+<hub-table-range-input [type]="'number'" [formControl]="rangeControl" />
 ```
 
 ### Menu Filters (automatic in `mode: 'menu'`)
@@ -1094,34 +1094,34 @@ filters = signal({
 
 #### Inputs
 
-| Name                 | Type                                          | Default         | Description                                                                                              |
-| -------------------- | --------------------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------- |
-| `headers`            | `PaginableTableHeader[]`                      | `[]`            | Column definitions with titles, sorting, filtering, and actions.                                         |
-| `data` / `rows`      | `T[]` or `PaginationState<T>`                 | `[]`            | Table data. A plain array → client-side mode (in-memory pagination); a `PaginationState` → server mode.   |
-| `page`               | `number`                                      | `null`          | Current page number (1-based, model signal). Defaulted to `1` automatically in client-side mode.          |
-| `perPage`            | `number`                                      | `10`            | Number of items per page (model signal).                                                                 |
-| `perPageOptions`     | `number[]`                                    | `[10, 20, 50, 100]` | Available options for items per page.                                                                |
-| `totalItems`         | `number`                                      | `null`          | Total items across all pages. Setting it selects **server mode** (the table renders `data` as-is).        |
-| `searchable`         | `boolean`                                     | `true`          | Whether to show the global search input.                                                                 |
-| `searchTerm`         | `string`                                      | `''`            | Current search term (model signal).                                                                      |
-| `searchFn`           | `(a: T, b: T) => boolean`                     | `null`          | Custom search function for filtering.                                                                    |
-| `selectable`         | `boolean`                                     | `false`         | Whether rows can be selected.                                                                            |
-| `multiple`           | `boolean`                                     | `false`         | Whether multiple row selection is allowed.                                                               |
-| `flush`              | `boolean`                                     | `false`         | Drops the outer border, the radius, the head rule and the cell padding, keeping the row divider. For a table of choices inside a dialog, where the surface already drew the frame. |
-| `bindValue`          | `string`                                      | `null`          | Property used to uniquely identify selected items.                                                       |
-| `ordination`         | `PaginableTableOrdination`                    | `null`          | Current sorting configuration (model signal).                                                            |
-| `filters`            | `Record<string, any>`                         | `{}`            | Active column filters (model signal).                                                                    |
-| `debounce`           | `number`                                      | `0`             | Debounce time in ms for search and filter inputs.                                                        |
-| `loading`            | `boolean`                                     | `false`         | Loading state indicator (model signal).                                                                  |
-| `paginate`           | `boolean`                                     | `true`          | Enables pagination. With a plain array and no `totalItems`, this turns on automatic client-side mode. `false` renders the whole array unpaginated. |
-| `paginationPosition` | `'top' \| 'bottom' \| 'both'`                 | `'bottom'`      | Where to display pagination controls.                                                                    |
-| `paginationInfo`     | `boolean`                                     | `true`          | Whether to show pagination info (e.g., "Showing 1 to 10 of 100").                                        |
-| `stickyActions`      | `boolean`                                     | `false`         | Whether action buttons should stick during scrolling.                                                    |
-| `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`            | Actions available for selected rows.                                                                     |
-| `responsive`         | `TableBreakpoint`                             | `null`          | Responsive breakpoint for table layout.                                                                  |
-| `options`            | `PaginableTableOptions`                       | `{}`            | Visual configuration (cursor, hover, striped, variant).                                                  |
-| `clickFn`            | `(event: TableRowEvent<T>) => void`           | `null`          | Handler for row click events.                                                                            |
-| `rowClass`           | `string \| ((item: T) => string)`             | `null`          | Custom CSS class for a row. Can be a fixed string or a function that returns a class based on item data. |
+| Name                 | Type                                                     | Default             | Description                                                                                                                                                                        |
+| -------------------- | -------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `headers`            | `PaginableTableHeader[]`                                 | `[]`                | Column definitions with titles, sorting, filtering, and actions.                                                                                                                   |
+| `data` / `rows`      | `T[]` or `PaginationState<T>`                            | `[]`                | Table data. A plain array → client-side mode (in-memory pagination); a `PaginationState` → server mode.                                                                            |
+| `page`               | `number`                                                 | `null`              | Current page number (1-based, model signal). Defaulted to `1` automatically in client-side mode.                                                                                   |
+| `perPage`            | `number`                                                 | `10`                | Number of items per page (model signal).                                                                                                                                           |
+| `perPageOptions`     | `number[]`                                               | `[10, 20, 50, 100]` | Available options for items per page.                                                                                                                                              |
+| `totalItems`         | `number`                                                 | `null`              | Total items across all pages. Setting it selects **server mode** (the table renders `data` as-is).                                                                                 |
+| `searchable`         | `boolean`                                                | `true`              | Whether to show the global search input.                                                                                                                                           |
+| `searchTerm`         | `string`                                                 | `''`                | Current search term (model signal).                                                                                                                                                |
+| `searchFn`           | `(a: T, b: T) => boolean`                                | `null`              | Custom search function for filtering.                                                                                                                                              |
+| `selectable`         | `boolean`                                                | `false`             | Whether rows can be selected.                                                                                                                                                      |
+| `multiple`           | `boolean`                                                | `false`             | Whether multiple row selection is allowed.                                                                                                                                         |
+| `flush`              | `boolean`                                                | `false`             | Drops the outer border, the radius, the head rule and the cell padding, keeping the row divider. For a table of choices inside a dialog, where the surface already drew the frame. |
+| `bindValue`          | `string`                                                 | `null`              | Property used to uniquely identify selected items.                                                                                                                                 |
+| `ordination`         | `PaginableTableOrdination`                               | `null`              | Current sorting configuration (model signal).                                                                                                                                      |
+| `filters`            | `Record<string, any>`                                    | `{}`                | Active column filters (model signal).                                                                                                                                              |
+| `debounce`           | `number`                                                 | `0`                 | Debounce time in ms for search and filter inputs.                                                                                                                                  |
+| `loading`            | `boolean`                                                | `false`             | Loading state indicator (model signal).                                                                                                                                            |
+| `paginate`           | `boolean`                                                | `true`              | Enables pagination. With a plain array and no `totalItems`, this turns on automatic client-side mode. `false` renders the whole array unpaginated.                                 |
+| `paginationPosition` | `'top' \| 'bottom' \| 'both'`                            | `'bottom'`          | Where to display pagination controls.                                                                                                                                              |
+| `paginationInfo`     | `boolean`                                                | `true`              | Whether to show pagination info (e.g., "Showing 1 to 10 of 100").                                                                                                                  |
+| `stickyActions`      | `boolean`                                                | `false`             | Whether action buttons should stick during scrolling.                                                                                                                              |
+| `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`                | Actions available for selected rows.                                                                                                                                               |
+| `responsive`         | `TableBreakpoint`                                        | `null`              | Responsive breakpoint for table layout.                                                                                                                                            |
+| `options`            | `PaginableTableOptions`                                  | `{}`                | Visual configuration (cursor, hover, striped, variant).                                                                                                                            |
+| `clickFn`            | `(event: TableRowEvent<T>) => void`                      | `null`              | Handler for row click events.                                                                                                                                                      |
+| `rowClass`           | `string \| ((item: T) => string)`                        | `null`              | Custom CSS class for a row. Can be a fixed string or a function that returns a class based on item data.                                                                           |
 
 #### Outputs & Events
 
@@ -1153,21 +1153,21 @@ interface TableRowEvent<T> {
 
 #### Inputs
 
-| Name           | Type                                          | Default      | Description                                                                                                    |
-| -------------- | --------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------- |
-| `items`        | `T[]`                                         | `[]`         | Hierarchical list data.                                                                                        |
-| `bindValue`    | `string`                                      | `null`       | Property for unique item identification.                                                                       |
-| `bindLabel`    | `string`                                      | `'label'`    | Property to display as item label.                                                                             |
-| `bindChildren` | `string`                                      | `'children'` | Property containing child items.                                                                               |
-| `selectable`   | `string`                                      | `null`       | Selection mode configuration.                                                                                  |
-| `options`      | `PaginableTableOptions`                       | `{}`         | Visual and behavioral options.                                                                                 |
-| `batchActions` | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`         | Actions for selected items.                                                                                    |
-| `clickFn`      | `(event: ListClickEvent<T>) => void`          | `null`       | Handler for item click events. The event carries the **item** in `item`, its label in `value` (per `bindLabel`), a group's children as items in `children`, plus `selected`, `collapsed`, `depth`, `index` and the native `mouseEvent`. |
-| `searchTerm`   | `string`                                      | `''`         | The term the list is filtered by while `options.searchable` is on. A model, so it can be driven and read from outside. |
-| `searchFn`     | `(item: T, term: string) => boolean`          | `null`       | How an item is matched. The default reads `bindLabel`; a group survives while any descendant matches. Same shape as the table's. |
-| `rowClass`     | `string \| ((item: T) => string)`             | `null`       | Custom CSS class for a list item. Can be a fixed string or a function that returns a class based on item data. |
-| `connected`    | `boolean`                                     | `false`      | Draws a vertical connector between consecutive items for a timeline / pipeline look (list display only, skipped in cards). Themed via `--hub-list-connector-color` / `-width` / `-style` / `-offset`. |
-| `flush`        | `boolean`                                     | `false`      | Draws the list as a list rather than a stack of cards: no border, radius or surface per row, a rule between them instead. Themed via `--hub-list-divider-width` / `-color`. Applies to the cards display too. An input rather than CSS because the token defaults sit on the host, where a consumer class ties on specificity and loses on source order. |
+| Name           | Type                                                     | Default      | Description                                                                                                                                                                                                                                                                                                                                              |
+| -------------- | -------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`        | `T[]`                                                    | `[]`         | Hierarchical list data.                                                                                                                                                                                                                                                                                                                                  |
+| `bindValue`    | `string`                                                 | `null`       | Property for unique item identification.                                                                                                                                                                                                                                                                                                                 |
+| `bindLabel`    | `string`                                                 | `'label'`    | Property to display as item label.                                                                                                                                                                                                                                                                                                                       |
+| `bindChildren` | `string`                                                 | `'children'` | Property containing child items.                                                                                                                                                                                                                                                                                                                         |
+| `selectable`   | `string`                                                 | `null`       | Selection mode configuration.                                                                                                                                                                                                                                                                                                                            |
+| `options`      | `PaginableTableOptions`                                  | `{}`         | Visual and behavioral options.                                                                                                                                                                                                                                                                                                                           |
+| `batchActions` | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`         | Actions for selected items.                                                                                                                                                                                                                                                                                                                              |
+| `clickFn`      | `(event: ListClickEvent<T>) => void`                     | `null`       | Handler for item click events. The event carries the **item** in `item`, its label in `value` (per `bindLabel`), a group's children as items in `children`, plus `selected`, `collapsed`, `depth`, `index` and the native `mouseEvent`.                                                                                                                  |
+| `searchTerm`   | `string`                                                 | `''`         | The term the list is filtered by while `options.searchable` is on. A model, so it can be driven and read from outside.                                                                                                                                                                                                                                   |
+| `searchFn`     | `(item: T, term: string) => boolean`                     | `null`       | How an item is matched. The default reads `bindLabel`; a group survives while any descendant matches. Same shape as the table's.                                                                                                                                                                                                                         |
+| `rowClass`     | `string \| ((item: T) => string)`                        | `null`       | Custom CSS class for a list item. Can be a fixed string or a function that returns a class based on item data.                                                                                                                                                                                                                                           |
+| `connected`    | `boolean`                                                | `false`      | Draws a vertical connector between consecutive items for a timeline / pipeline look (list display only, skipped in cards). Themed via `--hub-list-connector-color` / `-width` / `-style` / `-offset`.                                                                                                                                                    |
+| `flush`        | `boolean`                                                | `false`      | Draws the list as a list rather than a stack of cards: no border, radius or surface per row, a rule between them instead. Themed via `--hub-list-divider-width` / `-color`. Applies to the cards display too. An input rather than CSS because the token defaults sit on the host, where a consumer class ties on specificity and loses on source order. |
 
 Theming it from a stylesheet instead of a template — every list in a region, without touching
 the markup — is the `hub-list-flush` mixin:
@@ -2065,7 +2065,7 @@ headers = [
 
 ```html
 <ng-template filterTpt header="status" let-formControl="formControl">
-	<select [formControl]="formControl" class="form-select">
+	<select [formControl]="formControl" class="hub-table__filter-control hub-table__filter-control--select">
 		<option value="">All</option>
 		<option value="active">Active</option>
 		<option value="inactive">Inactive</option>
@@ -2185,22 +2185,22 @@ use the built-in menu filter UI.
 
 ```html
 <ng-template filterTpt header="birthday" let-formControl="formControl">
-	<input type="date" class="form-control" [formControl]="formControl" placeholder="Filter by date" />
+	<input type="date" class="hub-table__filter-control" [formControl]="formControl" placeholder="Filter by date" />
 </ng-template>
 ```
 
 ```html
 <ng-template filterTpt header="age" let-formControl="formControl">
 	<div class="d-flex gap-2">
-		<input type="number" class="form-control" [formControl]="formControl.controls.start" placeholder="Min." />
-		<input type="number" class="form-control" [formControl]="formControl.controls.end" placeholder="Max." />
+		<input type="number" class="hub-table__filter-control" [formControl]="formControl.controls.start" placeholder="Min." />
+		<input type="number" class="hub-table__filter-control" [formControl]="formControl.controls.end" placeholder="Max." />
 	</div>
 </ng-template>
 ```
 
 ```html
 <ng-template filterTpt header="adult" let-formControl="formControl">
-	<select class="form-select" [formControl]="formControl">
+	<select class="hub-table__filter-control hub-table__filter-control--select" [formControl]="formControl">
 		<option [ngValue]="null">All</option>
 		<option [ngValue]="true">Yes</option>
 		<option [ngValue]="false">No</option>

@@ -1,7 +1,7 @@
-<div class="range-input form-control d-flex flex-column">
-	<div class="range-input__field d-flex align-items-center justify-content-between">
+<div class="range-input">
+	<div class="range-input__field">
 		@if (type() == 'date') {
-			<label class="range-input__label text-muted">{{ 'FROM' | translate | ucfirst }}:</label>
+			<label class="range-input__label">{{ 'FROM' | translate | ucfirst }}:</label>
 		}
 		<input
 			class="range-input__control"
@@ -11,9 +11,9 @@
 			(change)="onChange($any(value))"
 		/>
 	</div>
-	<div class="range-input__field d-flex align-items-center justify-content-between">
+	<div class="range-input__field">
 		@if (type() == 'date') {
-			<label class="range-input__label text-muted">{{ 'TO' | translate | ucfirst }}:</label>
+			<label class="range-input__label">{{ 'TO' | translate | ucfirst }}:</label>
 		}
 		<input
 			class="range-input__control"

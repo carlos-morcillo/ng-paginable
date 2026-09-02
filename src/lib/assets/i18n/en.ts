@@ -53,6 +53,7 @@ export const locale = {
 			VARIABLE: 'Variable'
 		},
 		CLEAR: 'clean',
+		CLEAR_SEARCH: 'Clear search',
 		ADD_RULE: 'add condition',
 		REMOVE_RULE: 'remove condition',
 		MATCH_ALL: 'match all',

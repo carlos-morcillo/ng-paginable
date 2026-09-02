@@ -15,7 +15,14 @@ import {
 	viewChildren
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { FormGroup, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import {
+	AbstractControl,
+	FormGroup,
+	FormsModule,
+	NG_VALUE_ACCESSOR,
+	ReactiveFormsModule,
+	UntypedFormBuilder
+} from '@angular/forms';
 import {
 	debouncedSignal,
 	generateUniqueId,
@@ -301,10 +308,17 @@ export class TableComponent<T = any> {
 	protected readonly fullColspan = 1000;
 
 	/** Computed list of headers that have filter configurations */
-	headerFilters = computed(() => {
-		const headerFilters = this.fixedHeaders().filter((header) => header.filter);
-		setTimeout(() => this.initializeFilterFG());
-		return headerFilters;
+	headerFilters = computed(() => this.fixedHeaders().filter((header) => header.filter));
+
+	/**
+	 * Rebuilds the filter form whenever the filterable columns change.
+	 *
+	 * It used to be a `setTimeout` fired from inside the `headerFilters` computed — a side effect
+	 * in a memoised read, which also means it never runs again if nothing re-reads the computed.
+	 */
+	filterFGEffect = effect(() => {
+		this.headerFilters();
+		this.initializeFilterFG();
 	});
 
 	/** Model for filter values applied to the table columns */
@@ -318,6 +332,17 @@ export class TableComponent<T = any> {
 	 */
 	filtersFG: FormGroup = new FormGroup({});
 
+	/**
+	 * The controls currently living in `filtersFG`, published as a signal.
+	 *
+	 * `addControl` is invisible to change detection: the group is a plain object, so a template
+	 * that asks it for a control keeps the answer it got on the first render. The filter row is
+	 * built from controls created *after* that render, so it kept the first answer — `null` — and
+	 * stayed empty until some unrelated event happened to redraw the table. Reading the set from
+	 * a signal is what makes the row appear when its controls do.
+	 */
+	readonly filterControls = signal<Record<string, AbstractControl>>({});
+
 	/** Indicates if filters are currently being applied or processed */
 	filterLoading: boolean = false;
 
@@ -328,7 +353,34 @@ export class TableComponent<T = any> {
 		// Le damos un poco de tiempo para
 		setTimeout(() => {
 			this.filtersFG.patchValue(filters ?? {}, { emitEvent: false });
+			this.#filterFormWrites.update((count) => count + 1);
 		}, 16);
+	});
+
+	/**
+	 * Counts the writes the form receives with `emitEvent: false` — the way a consumer's
+	 * `[filters]` reaches it. They are invisible to `valueChanges` by design, so without this
+	 * the row would never learn that a filter arrived from outside.
+	 */
+	readonly #filterFormWrites = signal(0);
+
+	/** Live value of the filter form: the other way a filter gets one, a person typing. */
+	readonly #filterFormValue = toSignal(this.filtersFG.valueChanges);
+
+	/**
+	 * Which columns are currently narrowing the collection, keyed by control name.
+	 *
+	 * Derived from the form rather than from the `filters` model: the form is what the row is
+	 * showing, and it holds the value the instant it is set, while the model is written a
+	 * debounce later (and only when the table itself published the change).
+	 */
+	readonly activeFilters = computed<Record<string, boolean>>(() => {
+		this.#filterFormValue();
+		this.#filterFormWrites();
+
+		return Object.fromEntries(
+			Object.entries(this.filterControls()).map(([name, control]) => [name, this.isFilterActive(control.value)])
+		);
 	});
 
 	/** Debounced signal for filter form changes to prevent excessive API calls */
@@ -693,6 +745,19 @@ export class TableComponent<T = any> {
 			return sub.unsubscribe();
 		};
 	});
+
+	/**
+	 * Empties the search box.
+	 *
+	 * Both the proxy and the term are written: the proxy so a keystroke still sitting in the
+	 * debounce window cannot re-apply the term that was just cleared (and so `distinctUntilChanged`
+	 * keeps agreeing with what the field shows), the model so the collection reloads at the click
+	 * rather than a debounce later.
+	 */
+	clearSearch(): void {
+		this.searchProxy$.next('');
+		this.searchTerm.set('');
+	}
 
 	/** Custom search function for filtering table data */
 	readonly searchFn = input<(a: T, b: T) => boolean>();
@@ -1308,6 +1373,8 @@ export class TableComponent<T = any> {
 		for (const { filter = null, property } of this.headerFilters()) {
 			this.filtersFG.addControl(filter?.key || property, this.#fb.control(null));
 		}
+
+		this.filterControls.set({ ...this.filtersFG.controls });
 		// NOTE: Evitamos que al saltar el cambio de filtros del formulario, se restablezcan los filtros.
 		this.setFilters = false;
 	}
@@ -1323,6 +1390,23 @@ export class TableComponent<T = any> {
 	 */
 	clearFilters(): void {
 		this.filtersFG.reset();
+	}
+
+	/**
+	 * Whether an inline column filter is currently narrowing the collection, which the
+	 * filter row shows as a state on the cell.
+	 *
+	 * A range control holds a two-slot array that stays an array once the field has been
+	 * touched, so emptiness has to be read slot by slot: `[null, null]` is a range nobody
+	 * has set, not a range of nothing.
+	 *
+	 * @param value Current value of the filter's form control
+	 * @returns `true` when the filter holds a value that narrows the collection
+	 */
+	isFilterActive(value: unknown): boolean {
+		const isSet = (slot: unknown) => slot !== null && slot !== undefined && slot !== '';
+
+		return Array.isArray(value) ? value.some(isSet) : isSet(value);
 	}
 
 	/**

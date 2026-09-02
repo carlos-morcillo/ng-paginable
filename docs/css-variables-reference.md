@@ -410,6 +410,10 @@ The table reads a single accent slot and derives its family locally (same genera
 | `--hub-table-search-button-min-width` | `2.75rem` | Minimum width of the search button |
 | `--hub-table-search-border-width` | `var(--hub-table-border-width)` | Shared border width for search input/button |
 | `--hub-table-search-border-radius` | `var(--hub-table-border-radius)` | Shared border radius for search input/button |
+| `--hub-table-search-clear-color` | `var(--hub-sys-text-muted, #6c757d)` | Colour of the clear (×) affordance, shown while the box holds a term |
+| `--hub-table-search-clear-hover-color` | `var(--hub-table-container-color, var(--hub-sys-text-primary, #212529))` | Colour of the clear affordance on hover/focus |
+| `--hub-table-search-clear-icon-size` | `0.75em` | Size of the clear affordance's glyph |
+| `--hub-table-search-clear-padding-x` | `var(--hub-ref-space-2, 0.5rem)` | Horizontal padding of the clear affordance |
 
 ### Table Element
 
@@ -489,6 +493,49 @@ These variables power the cascade pattern for row states (`striped`, `hover`, `a
 | `--hub-table-filter-count-border-radius` | `var(--hub-ref-radius-pill, 50rem)` | Border radius of the count badge |
 | `--hub-table-batch-actions-btn-icon-gap` | `var(--hub-ref-space-1, 0.25rem)` | Spacing between a batch action button's icon and text |
 
+### Column Filter Row
+
+The inline filter controls the table draws under the header (`filter.mode` other than `menu`),
+including the two-ended range field. A cell whose filter currently holds a value takes the
+`--active` state, so the row shows both which columns can be filtered and which of them are.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hub-table-filter-row-bg` | `var(--hub-table-head-bg)` | Background of the filter row |
+| `--hub-table-filter-cell-padding-x` | `var(--hub-table-head-padding-x)` | Horizontal padding of a filter cell |
+| `--hub-table-filter-cell-padding-y` | `var(--hub-table-head-padding-y)` | Vertical padding of a filter cell |
+| `--hub-table-filter-control-bg` | `var(--hub-table-container-bg, var(--hub-ref-color-white, #fff))` | Background of a filter control |
+| `--hub-table-filter-control-color` | `var(--hub-table-container-color, var(--hub-sys-text-primary, #212529))` | Text color of a filter control |
+| `--hub-table-filter-control-placeholder-color` | `var(--hub-sys-text-muted, #6c757d)` | Placeholder and range-label color |
+| `--hub-table-filter-control-border-color` | `var(--hub-table-border-color)` | Border color of a filter control |
+| `--hub-table-filter-control-border-width` | `var(--hub-table-border-width)` | Border width of a filter control |
+| `--hub-table-filter-control-border-radius` | `var(--hub-ref-radius-sm, 0.25rem)` | Border radius of a filter control |
+| `--hub-table-filter-control-padding-x` | `var(--hub-ref-space-2, 0.5rem)` | Horizontal padding inside a filter control |
+| `--hub-table-filter-control-padding-y` | `var(--hub-ref-space-1, 0.25rem)` | Vertical padding inside a filter control |
+| `--hub-table-filter-control-font-size` | `var(--hub-ref-font-size-sm, 0.875rem)` | Font size of a filter control |
+| `--hub-table-filter-control-focus-border-color` | `var(--hub-table-accent)` | Border color while focused |
+| `--hub-table-filter-control-focus-shadow` | `0 0 0 0.2rem color-mix(in oklch, var(--hub-table-accent) 25%, transparent)` | Focus ring |
+| `--hub-table-filter-control-active-bg` | `var(--hub-table-filter-button-active-bg)` | Background when the filter holds a value |
+| `--hub-table-filter-control-active-border-color` | `var(--hub-table-filter-button-active-border-color)` | Border color when the filter holds a value |
+
+### Clear Filters Button
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hub-table-delete-filters-bg` | `var(--hub-table-container-bg, var(--hub-ref-color-white, #fff))` | Background of the button |
+| `--hub-table-delete-filters-color` | `var(--hub-table-container-color, var(--hub-sys-text-primary, #212529))` | Text and icon color |
+| `--hub-table-delete-filters-border-color` | `var(--hub-table-border-color)` | Border color |
+| `--hub-table-delete-filters-border-width` | `var(--hub-table-border-width)` | Border width |
+| `--hub-table-delete-filters-border-radius` | `var(--hub-table-border-radius)` | Border radius |
+| `--hub-table-delete-filters-padding-x` | `0.75rem` | Horizontal padding |
+| `--hub-table-delete-filters-padding-y` | `0.375rem` | Vertical padding |
+| `--hub-table-delete-filters-font-size` | `var(--hub-table-search-input-font-size)` | Font size (matches the search field beside it) |
+| `--hub-table-delete-filters-gap` | `var(--hub-ref-space-2, 0.5rem)` | Gap between the eraser icon and the label |
+| `--hub-table-delete-filters-hover-bg` | `color-mix(in oklch, var(--hub-sys-color-danger, #dc3545) 10%, transparent)` | Background on hover/focus |
+| `--hub-table-delete-filters-hover-border-color` | `var(--hub-sys-color-danger, #dc3545)` | Border color on hover/focus |
+| `--hub-table-delete-filters-hover-color` | `var(--hub-sys-color-danger, #dc3545)` | Text and icon color on hover/focus |
+| `--hub-table-delete-filters-disabled-opacity` | `0.5` | Opacity while a filter request is in flight |
+
 ### Icons
 
 | Variable | Default | Description |
@@ -503,6 +550,7 @@ These variables power the cascade pattern for row states (`striped`, `hover`, `a
 | `--hub-table-icon-search` | `url("…")` (SVG) | Table search icon (SVG, overridable via mask-image) |
 | `--hub-table-icon-filter` | `url("…")` (SVG) | Table filter icon (SVG, overridable via mask-image) |
 | `--hub-table-icon-eraser` | `url("…")` (SVG) | Table eraser icon (SVG, overridable via mask-image) |
+| `--hub-table-icon-close` | `url("…")` (SVG) | Close/dismiss glyph used by the search box's clear affordance |
 | `--hub-table-icon-info` | `url("…")` (SVG) | Table info icon (SVG, overridable via mask-image) |
 | `--hub-table-icon-chevron-up` | `url("…")` (SVG) | Table chevron-up icon (SVG, overridable via mask-image) |
 | `--hub-table-icon-chevron-down` | `url("…")` (SVG) | Table chevron-down icon (SVG, overridable via mask-image) |

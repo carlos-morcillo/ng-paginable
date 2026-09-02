@@ -48,6 +48,7 @@ export const locale = {
 			VARIABLE: 'Переменная'
 		},
 		CLEAR: 'очистить',
+		CLEAR_SEARCH: 'Очистить поиск',
 		ADD_RULE: 'добавить условие',
 		REMOVE_RULE: 'удалить условие',
 		MATCH_ALL: 'соответствовать всем',

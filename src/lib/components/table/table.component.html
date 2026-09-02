@@ -40,6 +40,19 @@
 					>
 						<i class="hub-table__search-icon hub-table__icon hub-table__icon--search" aria-hidden="true"></i>
 					</button>
+					@if (searchProxy$ | async) {
+						<button
+							class="hub-table__search-clear"
+							type="button"
+							(click)="clearSearch()"
+							[attr.aria-label]="'CLEAR_SEARCH' | translate | ucfirst"
+						>
+							<i
+								class="hub-table__search-clear-icon hub-table__icon hub-table__icon--close"
+								aria-hidden="true"
+							></i>
+						</button>
+					}
 					@if (formControlsAdapter) {
 						<ng-container
 							hubPaginableControl="input"
@@ -81,6 +94,19 @@
 							[attr.aria-label]="'SEARCH' | translate | ucfirst"
 						/>
 					}
+					@if (searchProxy$ | async) {
+						<button
+							class="hub-table__search-clear"
+							type="button"
+							(click)="clearSearch()"
+							[attr.aria-label]="'CLEAR_SEARCH' | translate | ucfirst"
+						>
+							<i
+								class="hub-table__search-clear-icon hub-table__icon hub-table__icon--close"
+								aria-hidden="true"
+							></i>
+						</button>
+					}
 					<button
 						class="hub-table__search-button btn btn-outline-dark"
 						type="button"
@@ -93,12 +119,7 @@
 		}
 		@if (headerFilters().length) {
 			<div class="hub-table__delete-filters">
-				<button
-					type="button"
-					class="hub-table__delete-filters-btn btn btn-outline-danger"
-					(click)="clearFilters()"
-					[disabled]="filterLoading"
-				>
+				<button type="button" class="hub-table__delete-filters-btn" (click)="clearFilters()" [disabled]="filterLoading">
 					<i class="hub-table__delete-filters-icon hub-table__icon hub-table__icon--eraser"></i>
 					{{ 'CLEAN_FILTERS' | translate | ucfirst }}
 				</button>
@@ -171,6 +192,7 @@
 											}
 										</button>
 										@if (header.filter?.mode === 'menu') {
+											@let menuControl = filterControls()[header.filter.key || header.property];
 											<hub-dropdown
 												#dropdown
 												(open)="onDropdownFilterOpened($event)"
@@ -178,18 +200,12 @@
 											>
 												<div
 													class="hub-table__filter-button button"
-													[class.hub-table__filter-button--active]="
-														filtersFG.get(header.filter.key || header.property)?.value?.rules
-															?.length
-													"
+													[class.hub-table__filter-button--active]="menuControl?.value?.rules?.length"
 												>
 													<i
 														class="hub-table__filter-button-icon hub-table__icon hub-table__icon--filter"
 													></i>
-													@if (
-														filtersFG.get(header.filter.key || header.property)?.value?.rules;
-														as rules
-													) {
+													@if (menuControl?.value?.rules; as rules) {
 														@if (rules.length) {
 															<span class="hub-table__filter-count">
 																{{ rules.length }}
@@ -230,18 +246,20 @@
 					@for (header of fixedHeaders(); track $index; let last = $last) {
 						@if (!(isColumnHidden(header) | async)) {
 							@let formControlName = header.filter?.key || header.property;
+							@let filterControl = filterControls()[formControlName];
 							<th
 								class="hub-table__filter-cell"
 								[attr.data-col]="header.property"
 								[class.sticky-start]="header.sticky === 'start'"
 								[class.sticky-end]="header.sticky === 'end'"
+								[class.hub-table__filter-cell--active]="activeFilters()[formControlName]"
 							>
-								@if (header.filter && header.filter.mode !== 'menu' && filtersFG.get(formControlName)) {
+								@if (header.filter && header.filter.mode !== 'menu' && filterControl) {
 									<ng-container
 										[ngTemplateOutlet]="getFilterTemplate(header) || defaultFilterTpt"
 										[ngTemplateOutletContext]="{
 											header: header,
-											formControl: filtersFG.get(formControlName)
+											formControl: filterControl
 										}"
 									>
 									</ng-container>
@@ -534,7 +552,7 @@
 <ng-template #defaultFilterTpt let-header="header" let-formControl="formControl">
 	@switch (header.filter.type) {
 		@case ('dropdown') {
-			<select [formControl]="formControl" class="form-select form-control">
+			<select [formControl]="formControl" class="hub-table__filter-control hub-table__filter-control--select">
 				@if (header.filter.placeholder) {
 					<option [ngValue]="null">
 						{{ header.filter.placeholder }}
@@ -563,7 +581,7 @@
 			<hub-table-range-input type="date" [formControl]="formControl"> </hub-table-range-input>
 		}
 		@case ('boolean') {
-			<select [formControl]="formControl" class="form-select form-control">
+			<select [formControl]="formControl" class="hub-table__filter-control hub-table__filter-control--select">
 				<option [ngValue]="null">
 					{{ header.filter.placeholder ?? 'SELECT_ONE' | translate | ucfirst }}
 				</option>
@@ -579,7 +597,7 @@
 			<input
 				[type]="header.filter.type"
 				[formControl]="formControl"
-				class="form-control"
+				class="hub-table__filter-control"
 				[placeholder]="header.filter.placeholder || ''"
 			/>
 		}

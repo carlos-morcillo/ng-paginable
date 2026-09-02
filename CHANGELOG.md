@@ -2,6 +2,70 @@
 
 ## [Unreleased]
 
+## [22.17.0] - 2026-09-02
+
+### Fixed
+
+- **The column-filter row is visible again**, so a column that offers a filter looks
+  different from one that does not.
+
+    The inline filter controls were dressed in `.form-control` / `.form-select`, and the
+    clear-filters button in `.btn.btn-outline-danger` — Bootstrap's names, which resolve to
+    nothing in a product that does not ship Bootstrap. Measured in one: the row under the
+    header rendered as bare text on the header surface, a numeric range showed the words
+    "from" and "to" floating with no field around them, and the clear button fell back to
+    the browser's native chrome, a different height and shape from the search field it
+    stands beside. The documentation site never showed it because the site itself ships
+    Bootstrap.
+
+    The row is now drawn from this table's own tokens, exactly as the search field beside
+    it already was — same story, same fix as the row actions in 22.16.0.
+
+- **The filter row draws its controls on the first render.** They are built from
+  `filtersFG`, and `FormGroup.addControl` is invisible to change detection: the cells were
+  drawn before the controls existed, asked the group once, got `null`, and kept the empty
+  answer until some unrelated event happened to redraw the table. A table that was merely
+  looked at — the case in the documentation site — showed a filter row with nothing in it.
+  The set of controls is now published as a signal, so a cell appears when its control
+  does. The rebuild also moved out of a `setTimeout` fired from inside a memoised
+  `computed` and into an effect of its own.
+
+- **The mirrored (RTL) search group draws its outer edge.** The button dropped its
+  inline-start border to avoid doubling the hairline it shares with the field — correct
+  while it trails the field, but in RTL it leads, so the group was open on its left edge.
+  It now drops whichever edge it actually shares.
+
+### Added
+
+- **A clear affordance in the search box.** While the box holds a term, an × appears
+  between the field and the magnifier and empties it in one click — both the term and the
+  keystroke still sitting in the debounce window, so nothing re-applies a moment later.
+  It is a segment of the search group rather than a glyph floating over the field, because
+  with `provideHubPaginableFormControls` the field is a component created at runtime that
+  no rule in this table can reach. Themed through `--hub-table-search-clear-*` and labelled
+  by the new `CLEAR_SEARCH` key, translated in all eleven shipped languages.
+
+- **A filter that holds a value says so.** The filter cell takes
+  `hub-table__filter-cell--active` while its control is set, tinting the field in the
+  same green the menu-filter trigger already uses. The row now answers both questions at
+  a glance: which columns can be filtered, and which of them currently are. An emptied
+  range (`[null, null]`) reads as inactive, so clearing a filter clears its state too.
+
+- **`--hub-table-filter-row-bg`, `--hub-table-filter-cell-padding-x` / `-y` and the
+  `--hub-table-filter-control-*` family** (background, colour, placeholder colour,
+  border, radius, padding, font size, focus ring and the two `-active-*` slots) — the
+  filter row's surface and the fields on it. The range control reads the same family, so
+  a two-ended range and a plain text filter are the same field in the same row.
+
+- **`--hub-table-delete-filters-*`** — background, colour, border, radius, padding, font
+  size, gap, the three `-hover-*` slots and `-disabled-opacity` for the clear-filters
+  button. It defaults to the toolbar chrome of the search button next to it and turns
+  destructive only under the cursor, where the intent is already declared.
+
+- **`--hub-table-search-clear-*`** (colour, hover colour, icon size, padding) and
+  **`--hub-table-icon-close`**, the glyph the clear affordance wears — replaceable like
+  every other icon in this table.
+
 ## [22.16.0] - 2026-09-01
 
 ### Added
@@ -9,32 +73,32 @@
 - **`provideHubPaginableActions`**, so the table's row buttons and menus are drawn by a
   real component library instead of by the table itself.
 
-  What the table drew was markup in Bootstrap class names — `.btn`, `.dropdown-menu`,
-  `.dropdown-item` — which resolve to nothing in a product that does not ship Bootstrap.
-  Measured in one: the menu trigger fell back to the browser's default grey button
-  (`2px outset`, square, the wrong height beside its neighbours) and the panel was a
-  transparent box with no border, no shadow and no padding. The row actions had been
-  given the design system's vocabulary; the menu was left behind wearing names that no
-  longer resolve.
+    What the table drew was markup in Bootstrap class names — `.btn`, `.dropdown-menu`,
+    `.dropdown-item` — which resolve to nothing in a product that does not ship Bootstrap.
+    Measured in one: the menu trigger fell back to the browser's default grey button
+    (`2px outset`, square, the wrong height beside its neighbours) and the panel was a
+    transparent box with no border, no shadow and no padding. The row actions had been
+    given the design system's vocabulary; the menu was left behind wearing names that no
+    longer resolve.
 
-  Rather than restyle a second implementation of a dropdown the button library already
-  has — with placement, outside-click, Escape, scroll and focus already solved — the
-  table now *describes* what a row offers and an adapter draws it. Exactly the
-  arrangement `provideHubPaginableFormControls` already uses for the table's inputs, and
-  with the same consequence: **no new dependency**, in either direction.
+    Rather than restyle a second implementation of a dropdown the button library already
+    has — with placement, outside-click, Escape, scroll and focus already solved — the
+    table now _describes_ what a row offers and an adapter draws it. Exactly the
+    arrangement `provideHubPaginableFormControls` already uses for the table's inputs, and
+    with the same consequence: **no new dependency**, in either direction.
 
-  ```ts
-  import { provideHubPaginableActions } from 'ng-hub-ui-paginable';
-  import { hubActionsAdapter } from 'ng-hub-ui-buttons';
+    ```ts
+    import { provideHubPaginableActions } from 'ng-hub-ui-paginable';
+    import { hubActionsAdapter } from 'ng-hub-ui-buttons';
 
-  providers: [provideHubPaginableActions(hubActionsAdapter)];
-  ```
+    providers: [provideHubPaginableActions(hubActionsAdapter)];
+    ```
 
-  Nothing changes in how actions are declared: `variant`, `color`, `icon`, `hidden`,
-  `disabled` and `tooltip` stay the API, and a table already in use needs no edit to a
-  single header. What the adapter receives is fully resolved for the row — hidden actions
-  are absent, predicates are booleans, Observable labels are strings — so an adapter never
-  has to know any of that is possible.
+    Nothing changes in how actions are declared: `variant`, `color`, `icon`, `hidden`,
+    `disabled` and `tooltip` stay the API, and a table already in use needs no edit to a
+    single header. What the adapter receives is fully resolved for the row — hidden actions
+    are absent, predicates are booleans, Observable labels are strings — so an adapter never
+    has to know any of that is possible.
 
 - **`hidden` and `disabled` on `PaginableTableDropdown`**, so a menu can be refused on a
   row like any other action.
@@ -50,22 +114,22 @@
 
 - **A dropdown item now answers `hidden` and `disabled` like any other row action.**
 
-  An action tucked into the ⋮ menu is the same action, and it answered to nothing. The
-  menu read `hidden` as a plain boolean, so the predicate form — the one every button
-  drawn directly in the cell accepts — was a function, and a function is always truthy:
-  an action meant to disappear on *some* rows disappeared from *every* row. `disabled`
-  was ignored outright, with no effect whatsoever.
+    An action tucked into the ⋮ menu is the same action, and it answered to nothing. The
+    menu read `hidden` as a plain boolean, so the predicate form — the one every button
+    drawn directly in the cell accepts — was a function, and a function is always truthy:
+    an action meant to disappear on _some_ rows disappeared from _every_ row. `disabled`
+    was ignored outright, with no effect whatsoever.
 
-  That is what pushed consumers to keep row-dependent actions out of the menu, which is
-  precisely the crowding the menu exists to relieve: an action column with five buttons
-  had no way to fold two of them away if either depended on the row.
+    That is what pushed consumers to keep row-dependent actions out of the menu, which is
+    precisely the crowding the menu exists to relieve: an action column with five buttons
+    had no way to fold two of them away if either depended on the row.
 
-  Both flags now take a boolean or a predicate over the row, resolved through the same
-  path the cell's buttons use, and the refusal is enforced in the handler as well — the
-  menu closes on click, so the `disabled` attribute alone would not stop it. A disabled
-  item is drawn with the table's own formula and token
-  (`--hub-table-action-disabled-opacity`), so it reads as refused in the menu exactly as
-  it does in the cell.
+    Both flags now take a boolean or a predicate over the row, resolved through the same
+    path the cell's buttons use, and the refusal is enforced in the handler as well — the
+    menu closes on click, so the `disabled` attribute alone would not stop it. A disabled
+    item is drawn with the table's own formula and token
+    (`--hub-table-action-disabled-opacity`), so it reads as refused in the menu exactly as
+    it does in the cell.
 
 ## [22.15.0] - 2026-09-01
 
@@ -74,19 +138,18 @@
 - **`disabled` on a row action** (`PaginableActionButton.disabled`), boolean or predicate,
   shaped exactly like `hidden` because both answer the same question about the same button.
 
-  `hidden` was the only thing a consumer could say about an action that does not apply, and
-  it says the wrong thing for half the cases: a cancelled payment is not a row where editing
-  does not exist, it is a row where editing has nothing left to act on. Forced to choose,
-  consumers hid the action — so the column changed shape row by row and nothing on screen
-  said why the button was gone.
+    `hidden` was the only thing a consumer could say about an action that does not apply, and
+    it says the wrong thing for half the cases: a cancelled payment is not a row where editing
+    does not exist, it is a row where editing has nothing left to act on. Forced to choose,
+    consumers hid the action — so the column changed shape row by row and nothing on screen
+    said why the button was gone.
 
-  It reaches the rendered `<button>`, so the browser refuses the click and announces the
-  state, and the tooltip still shows — which is where the reason belongs. A refused action
-  also **looks** refused now: this table draws its own buttons, so the browser's default
-  disabled rendering never reached them, and without a rule a `disabled` action would have
-  kept its full tint and its pointer while swallowing every click. Tunable through
-  `--hub-table-action-disabled-opacity`.
-
+    It reaches the rendered `<button>`, so the browser refuses the click and announces the
+    state, and the tooltip still shows — which is where the reason belongs. A refused action
+    also **looks** refused now: this table draws its own buttons, so the browser's default
+    disabled rendering never reached them, and without a rule a `disabled` action would have
+    kept its full tint and its pointer while swallowing every click. Tunable through
+    `--hub-table-action-disabled-opacity`.
 
 ## [22.14.1] - 2026-08-24
 
@@ -108,7 +171,6 @@
 
     The accent is a value now, written on the element through `resolveHubAccent` — the same helper this component already used for its own variant, and the list for hers. A bare word becomes `var(--hub-sys-color-<word>, <word>)` so both the system's roles and a consumer's own resolve; anything already a colour passes through untouched. The seven rules are gone, and the bench now pins that the stylesheet names no colours at all.
 
-
 ### Added
 
 - **`variant` and `color` on a row action, so it can look like the buttons beside it.** The table draws these buttons itself — plain `<button>` elements — and `hub-buttons` styles appearance through `:host(...)`, which matches nothing on an element the primitive did not create. A consumer who wanted a tinted row action therefore rebuilt the tint in its own stylesheet: two copies of one formula, free to drift the moment either side changed.
@@ -117,9 +179,9 @@
 
 ### Fixed
 
-- **The table's chrome controls survive being rendered through the hub-forms adapter.** `provideHubPaginableFormControls` swaps the search box and the page-size picker for `<hub-input>` and `<hub-select>`, and the CSS for them was written for the native fallbacks. The two encapsulation modes then failed in opposite directions: the table's stylesheet is **emulated**, so its `.hub-table__search-input` rule carried an `_ngcontent` attribute and never reached a dynamically created component — the field came out with none of the group geometry, a standalone rounded control beside the button it was meant to be joined to; the paginator's ships with **`encapsulation: None`**, so its `.hub-paginator__select` rule *did* reach the component's host and drew a second border and padding around a control that already draws its own. One rule too narrow, one too wide, from the same assumption. The native skin now names the native element, the adapter's host draws no box, and the search field is reached through `::ng-deep` scoped to the table's host.
+- **The table's chrome controls survive being rendered through the hub-forms adapter.** `provideHubPaginableFormControls` swaps the search box and the page-size picker for `<hub-input>` and `<hub-select>`, and the CSS for them was written for the native fallbacks. The two encapsulation modes then failed in opposite directions: the table's stylesheet is **emulated**, so its `.hub-table__search-input` rule carried an `_ngcontent` attribute and never reached a dynamically created component — the field came out with none of the group geometry, a standalone rounded control beside the button it was meant to be joined to; the paginator's ships with **`encapsulation: None`**, so its `.hub-paginator__select` rule _did_ reach the component's host and drew a second border and padding around a control that already draws its own. One rule too narrow, one too wide, from the same assumption. The native skin now names the native element, the adapter's host draws no box, and the search field is reached through `::ng-deep` scoped to the table's host.
 
-- **The search button declares its own border.** It set a border *colour* and no width or style, which draws nothing unless something else supplies them — Bootstrap's `.btn`, which this family does not ship. Without it, the browser's own button chrome showed beside the search field.
+- **The search button declares its own border.** It set a border _colour_ and no width or style, which draws nothing unless something else supplies them — Bootstrap's `.btn`, which this family does not ship. Without it, the browser's own button chrome showed beside the search field.
 
 - **The sort trigger stops borrowing chrome the host may not have.** `<hub-table>` draws its own sort button and styled only the glyph inside it, leaving the `<button>` to whatever the application provided — and it carried a bare `btn`, which is Bootstrap's and which this family neither ships nor depends on. In an application without Bootstrap the class matched nothing and every sortable column header showed the browser's native grey button around the glyph. The class is gone from the markup and the component now styles its own trigger: no box, no background, no padding, the header cell's own colour, and `--hub-table-sort-btn-hover-color` for the hover.
 
@@ -128,7 +190,6 @@
 - **Rebuilding `items` no longer prunes the selection, and no longer publishes.** The setter used to recompute the value from whatever survived the rebuild and, if it differed, announce it through the CVA. It reads as tidy and it is a guess: `items` shrinking means "those are gone" on a filtered catalogue and "this is page two" on a paged one, and the component sees the same thing in both cases — only the consumer, who did the paging, can tell. So a list that merely turned a page told its consumer the user had removed a selection they never touched, with no way to distinguish that from a real removal. The written value is now kept whole and only the part that is on offer is ticked. Angular's own `<select>` takes the same position: an option disappearing does not clear the model.
 
     **This is a behaviour change.** A consumer that relied on the list pruning its own value has to prune it itself, where it knows why the offer changed.
-
 
 ## [22.13.0] - 2026-08-18
 
@@ -166,7 +227,6 @@
 
 - **A group row gets no radio in single selection.** The control was drawn on every row, so in a list grouped with `bindChildren` a heading became one of the things to choose — picking "Edificio Triana" answered with a building, which nobody can book. Only leaves carry a radio now, which is the single-selection twin of the cascade 22.12.0 gave `multiple`. It was the last thing standing between a grouped single-choice list and the primitive: a consumer needing one had to draw the control itself.
 
-
 ## [22.12.0] - 2026-08-17
 
 ### Changed
@@ -177,12 +237,11 @@
 
 ### Fixed
 
-- **Rebuilding `items` no longer clears the selection, nor claims the user did.** The setter emptied the form and published the empty selection through the CVA, so a list that merely re-read its data dropped the choice *and* told the consumer the user had cleared it — with no way to tell a refresh from an edit. The selection is carried across the rebuild and matched by `bindValue`; only what the new items no longer offer falls out of it; and nothing is published unless something really went.
+- **Rebuilding `items` no longer clears the selection, nor claims the user did.** The setter emptied the form and published the empty selection through the CVA, so a list that merely re-read its data dropped the choice _and_ told the consumer the user had cleared it — with no way to tell a refresh from an edit. The selection is carried across the rebuild and matched by `bindValue`; only what the new items no longer offer falls out of it; and nothing is published unless something really went.
 
 - **`setDisabledState` disables.** It assigned a flag the template never read, so a disabled list still changed its selection. The flag now disables the form — reaching every `selected` control, however deep — and the selection is left alone even when something drives it programmatically. Through the form and not a `[disabled]` binding, because Angular ignores that binding on a reactive control: it warns and the box stays live.
 
 - **`options.searchable` searches.** The component rendered a search box wired to a `filter()` whose body was entirely commented out: a control the API offered and the component ignored. It filters now, with a `searchTerm` model and an optional `searchFn` — the same two names `hub-table` uses, so the components do not disagree about what "searchable" means. A group survives while any descendant matches, because hiding a building for not being named "Timple" would hide the Timple room inside it. Submitting returns to the first page: staying on page four of a list that just became three rows long shows an empty list, which reads as "nothing matched".
-
 
 ## [22.11.0] - 2026-08-17
 
@@ -203,7 +262,6 @@
 - **The package's stylesheets ship where the documentation says they do.** `ng-package.json` copied `src/lib/styles` with the short `assets` form, which **preserves the source path**, so the theming mixins landed at `ng-hub-ui-paginable/src/lib/styles/mixins/…` while their own docblocks told consumers to `@use 'ng-hub-ui-paginable/styles/mixins/list-theme'`. That path never resolved — `hub-list-theme` has been documented at an address it was not published to since it shipped. Now the long form with `output: "styles"`, which is what `utils` and `forms` already use.
 
 - **The single-selection radio has a rule.** It shipped with the mode in 22.10.0 and had no CSS at all: `.hub-list__radio` matched nothing in the component, so the control rendered at the browser's own size beside a themed list, visibly not part of it. It now takes `--hub-list-radio-size` — defaulting to the checkbox's, since the two are the same control wearing a different rule about how many may be on — and the list's accent.
-
 
 ## [22.10.0] - 2026-08-17
 
@@ -231,17 +289,17 @@
 
     ```ts
     provideHubTableTooltip({
-        attach: (host, text) => {
-            const controller = new HubTooltipController(host);
-            controller.setText(text);
-            return { update: (next) => controller.setText(next), destroy: () => controller.destroy() };
-        }
+    	attach: (host, text) => {
+    		const controller = new HubTooltipController(host);
+    		controller.setText(text);
+    		return { update: (next) => controller.setText(next), destroy: () => controller.destroy() };
+    	}
     });
     ```
 
 ### Fixed
 
-- **Icon-only row actions had no accessible name.** `title` was quietly serving as it. Moving the label to a tooltip and stopping there would have left a screen reader with an unlabelled button, so the text is now mirrored to `aria-label` — but only where the control renders no text of its own. Where a visible label exists it *is* the name, and overriding it with different words breaks WCAG 2.5.3 (Label in Name) in the belief of improving it.
+- **Icon-only row actions had no accessible name.** `title` was quietly serving as it. Moving the label to a tooltip and stopping there would have left a screen reader with an unlabelled button, so the text is now mirrored to `aria-label` — but only where the control renders no text of its own. Where a visible label exists it _is_ the name, and overriding it with different words breaks WCAG 2.5.3 (Label in Name) in the belief of improving it.
 
 ## [22.8.1] - 2026-08-16
 
@@ -384,14 +442,14 @@
 ### Added
 
 - **list:** native drag-and-drop reordering. Enable it with `[sortable]="true"` on `<hub-list>`; works in the `list` and `cards` layouts and in nested trees. Reorder within a list, between siblings of the same parent, and **between lists** that share a `[dragGroup]` (cross-list transfer). The list reorders its own view optimistically and emits a typed `(sorted)` event — `ListSortEvent<T>` (`{ previousIndex, currentIndex, item, items, isTransfer, previousGroup, group, previousItems?, depth, parentItem }`); only the destination list emits on a cross-list transfer. Built on the native HTML5 drag-and-drop API with a **Pointer Events fallback** for touch/pen devices (floating ghost + edge autoscroll), plus opt-in **keyboard reordering** via `[keyboardSortable]` (Space/Enter to grab and drop, arrows to move, Escape to cancel) with `aria-live` announcements.
-  - New projected directives: `HubListDragHandleDirective` (`[hubListDragHandle]` / `[listDragHandle]`) to restrict the drag start to a handle, `HubListDragPlaceholderDirective` (`[hubListDragPlaceholder]` / `[listDragPlaceholder]`) for a custom drop placeholder, and `HubListDragPreviewDirective` (`[hubListDragPreview]` / `[listDragPreview]`) for a custom drag image / touch ghost.
-  - New inputs `sortable`, `dragGroup`, `sortDisabled` and `keyboardSortable`; new output `sorted`. New public `HubListDragService` coordinator and `ListSortEvent<T>` interface.
-  - New CSS variables: `--hub-list-drag-handle-color/-cursor/-size`, `--hub-list-item-dragging-opacity`, `--hub-list-item-dragging-cursor`, `--hub-list-drop-target-outline-color/-width`, `--hub-list-placeholder-bg/-border-color/-border-width/-border-style/-border-radius/-min-height`, `--hub-list-ghost-opacity/-shadow`.
+    - New projected directives: `HubListDragHandleDirective` (`[hubListDragHandle]` / `[listDragHandle]`) to restrict the drag start to a handle, `HubListDragPlaceholderDirective` (`[hubListDragPlaceholder]` / `[listDragPlaceholder]`) for a custom drop placeholder, and `HubListDragPreviewDirective` (`[hubListDragPreview]` / `[listDragPreview]`) for a custom drag image / touch ghost.
+    - New inputs `sortable`, `dragGroup`, `sortDisabled` and `keyboardSortable`; new output `sorted`. New public `HubListDragService` coordinator and `ListSortEvent<T>` interface.
+    - New CSS variables: `--hub-list-drag-handle-color/-cursor/-size`, `--hub-list-item-dragging-opacity`, `--hub-list-item-dragging-cursor`, `--hub-list-drop-target-outline-color/-width`, `--hub-list-placeholder-bg/-border-color/-border-width/-border-style/-border-radius/-min-height`, `--hub-list-ghost-opacity/-shadow`.
 - **`hub-table-theme()` Sass mixin** (`styles/mixins/table-theme`) — theme a `<hub-table>` in one call: colours (`$accent`, `$bg`, `$color`, `$hover-*`, `$selected-*`, `$striped-*`, `$border-color`), borders (`$border-width`, `$border-radius`), density (`$cell-padding-x/y`) and the footer/bottom-bar layout (`$footer-gap/justify/align/wrap`). Every parameter is optional and defaults to `null`, so only the ones you pass are emitted as `--hub-table-*` overrides; the rest keep their defaults. Token-based, no Bootstrap dependency.
 - **`hub-list-theme()` Sass mixin** (`styles/mixins/list-theme`) — the same one-call theming for `<hub-list>` (both `list` and `cards` layouts): colours (`$accent`, `$bg`, `$item-*`, `$hover-bg`, `$selected-*`), borders/radius, item density (`$item-padding-x/y`, `$gap`), the cards grid (`$cards-bg/border-color/border-radius/padding/min-column-width/gap`) and the footer layout. Optional params default to `null` — only the ones you pass are emitted.
 - **Semantic `variant` accent** for the table and list (incl. its `cards` display), mirroring panels/nav. Set `options.variant` (`primary` / `success` / `danger` / `warning` / `info`) and the component re-bases a single accent through a CSS loop over the `--hub-sys-color-<variant>` family.
-  - **Table**: the **selected row** is now styled (previously the `--selected` class carried no CSS) — it reads as a soft accent tint. New tokens `--hub-table-accent`, `--hub-table-accent-subtle`, `--hub-table-selected-bg`, `--hub-table-selected-color`. `options.variant` keeps applying the existing `.hub-table__<variant>` class, which now re-bases `--hub-table-accent`.
-  - **List / cards**: the selected item accent now resolves through the new `--hub-list-accent` (was hard-wired to `--hub-sys-color-primary`). `options.variant` is reflected as `[data-variant]` on the host and re-bases the accent; applies to both the `list` and `cards` display modes.
+    - **Table**: the **selected row** is now styled (previously the `--selected` class carried no CSS) — it reads as a soft accent tint. New tokens `--hub-table-accent`, `--hub-table-accent-subtle`, `--hub-table-selected-bg`, `--hub-table-selected-color`. `options.variant` keeps applying the existing `.hub-table__<variant>` class, which now re-bases `--hub-table-accent`.
+    - **List / cards**: the selected item accent now resolves through the new `--hub-list-accent` (was hard-wired to `--hub-sys-color-primary`). `options.variant` is reflected as `[data-variant]` on the host and re-bases the accent; applies to both the `list` and `cards` display modes.
 
 ### Changed
 

@@ -132,7 +132,7 @@ import { provideHubPaginableFormControls } from 'ng-hub-ui-paginable';
 import { hubFormControlAdapter } from 'ng-hub-ui-forms';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHubPaginableFormControls(hubFormControlAdapter)]
+	providers: [provideHubPaginableFormControls(hubFormControlAdapter)]
 };
 ```
 
@@ -150,7 +150,7 @@ defecto del navegador y el panel queda como una caja transparente, sin borde, si
 relleno.
 
 Registra el adaptador que publica `ng-hub-ui-buttons` y la tabla deja de dibujarlos: pasa a
-*describir* lo que ofrece cada fila y el adaptador lo dibuja con los componentes reales —con la
+_describir_ lo que ofrece cada fila y el adaptador lo dibuja con los componentes reales —con la
 colocación, el clic fuera, Escape, el desplazamiento y el foco ya resueltos—. **Sin dependencia
 dura**, en ninguna de las dos direcciones:
 
@@ -159,7 +159,7 @@ import { provideHubPaginableActions } from 'ng-hub-ui-paginable';
 import { hubActionsAdapter } from 'ng-hub-ui-buttons';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideHubPaginableActions(hubActionsAdapter)]
+	providers: [provideHubPaginableActions(hubActionsAdapter)]
 };
 ```
 
@@ -521,19 +521,19 @@ const headers: PaginableTableHeader[] = [
 
 ### Referencia de propiedades de cabecera
 
-| Propiedad     | Tipo                                             | Descripción                                                   | Por defecto         | Ejemplo                                                                    |
-| ------------- | ------------------------------------------------ | ------------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------- |
-| `property`    | `string`                                         | **Obligatoria.** Propiedad del dato a mostrar en esta columna | -                   | `'name'`, `'user.email'`                                                   |
-| `title`       | `string \| Observable<string>`                   | Título de cabecera. Puede ser estático o reactivo             | valor de `property` | `'User Name'`, `this.translate.get('user.name')`                           |
-| `icon`        | `string \| Icon`                                 | Icono a mostrar en la cabecera                                | -                   | `'fa-user'`, `{ type: 'material', value: 'person' }`                       |
-| `align`       | `'start' \| 'end' \| 'center'`                   | Alineación de texto de la columna                             | `'start'`           | `'center'` para números                                                    |
-| `sortable`    | `boolean`                                        | Habilita la ordenación en esta columna                        | `false`             | `true`                                                                     |
-| `wrapping`    | `'wrap' \| 'nowrap'`                             | Comportamiento de salto de línea                              | `'wrap'`            | `'nowrap'` para IDs                                                        |
-| `sticky`      | `'start' \| 'end'`                               | Fija la columna durante el scroll                             | -                   | `'end'` para acciones                                                      |
+| Propiedad     | Tipo                                                     | Descripción                                                   | Por defecto         | Ejemplo                                                                    |
+| ------------- | -------------------------------------------------------- | ------------------------------------------------------------- | ------------------- | -------------------------------------------------------------------------- |
+| `property`    | `string`                                                 | **Obligatoria.** Propiedad del dato a mostrar en esta columna | -                   | `'name'`, `'user.email'`                                                   |
+| `title`       | `string \| Observable<string>`                           | Título de cabecera. Puede ser estático o reactivo             | valor de `property` | `'User Name'`, `this.translate.get('user.name')`                           |
+| `icon`        | `string \| Icon`                                         | Icono a mostrar en la cabecera                                | -                   | `'fa-user'`, `{ type: 'material', value: 'person' }`                       |
+| `align`       | `'start' \| 'end' \| 'center'`                           | Alineación de texto de la columna                             | `'start'`           | `'center'` para números                                                    |
+| `sortable`    | `boolean`                                                | Habilita la ordenación en esta columna                        | `false`             | `true`                                                                     |
+| `wrapping`    | `'wrap' \| 'nowrap'`                                     | Comportamiento de salto de línea                              | `'wrap'`            | `'nowrap'` para IDs                                                        |
+| `sticky`      | `'start' \| 'end'`                                       | Fija la columna durante el scroll                             | -                   | `'end'` para acciones                                                      |
 | `buttons`     | `Array<PaginableActionButton \| PaginableTableDropdown>` | Botones de acción en esta columna                             | -                   | Ver [Botones de acción](#botones-de-accion)                                |
-| `filter`      | `InputFilter \| DropdownFilter \| BooleanFilter` | Configuración del filtro                                      | -                   | Ver [Filtros de columna](#filtros-de-columna)                              |
-| `onlyButtons` | `boolean`                                        | Optimiza el layout para columnas solo de botones              | `false`             | `true` para columnas de acción                                             |
-| `hidden`      | `boolean \| Function`                            | Controla la visibilidad de la columna                         | `false`             | Ver [Visibilidad de columnas](#control-de-visibilidad-de-columnas-hidden-) |
+| `filter`      | `InputFilter \| DropdownFilter \| BooleanFilter`         | Configuración del filtro                                      | -                   | Ver [Filtros de columna](#filtros-de-columna)                              |
+| `onlyButtons` | `boolean`                                                | Optimiza el layout para columnas solo de botones              | `false`             | `true` para columnas de acción                                             |
+| `hidden`      | `boolean \| Function`                                    | Controla la visibilidad de la columna                         | `false`             | Ver [Visibilidad de columnas](#control-de-visibilidad-de-columnas-hidden-) |
 
 ### Control de visibilidad de columnas (`hidden`) 🆕
 
@@ -728,12 +728,12 @@ interface PaginableTableDropdown {
 }
 ```
 
-### Componente de rango (`<hub-ui-range-input>`)
+### Componente de rango (`<hub-table-range-input>`)
 
 Componente especializado para rangos numéricos y de fecha:
 
 ```html
-<hub-ui-range-input [type]="'number'" [placeholder]="'Min - Max'" [formControl]="rangeControl"> </hub-ui-range-input>
+<hub-table-range-input [type]="'number'" [formControl]="rangeControl" />
 ```
 
 ### Filtros de menú (automáticos en `mode: 'menu'`)
@@ -907,32 +907,32 @@ filters = signal({
 
 #### Inputs
 
-| Nombre               | Tipo                                          | Por defecto     | Descripción                                                            |
-| -------------------- | --------------------------------------------- | --------------- | ---------------------------------------------------------------------- |
-| `headers`            | `PaginableTableHeader[]`                      | `[]`            | Definición de columnas con títulos, ordenación, filtros y acciones.    |
-| `data` / `rows`      | `T[]` o `PaginationState<T>`                  | `[]`            | Datos de tabla. Array plano → modo cliente (paginación en memoria); `PaginationState` → modo servidor. |
-| `page`               | `number`                                      | `null`          | Número de página actual (1-based, señal model). En modo cliente se pone a `1` automáticamente. |
-| `perPage`            | `number`                                      | `10`            | Número de elementos por página (señal model).                          |
-| `perPageOptions`     | `number[]`                                    | `[10, 20, 50, 100]` | Opciones disponibles de elementos por página.                      |
-| `totalItems`         | `number`                                      | `null`          | Total de elementos en todas las páginas. Indicarlo selecciona **modo servidor** (renderiza `data` tal cual). |
-| `searchable`         | `boolean`                                     | `true`          | Si se muestra el input de búsqueda global.                             |
-| `searchTerm`         | `string`                                      | `''`            | Término de búsqueda actual (señal model).                              |
-| `searchFn`           | `(a: T, b: T) => boolean`                     | `null`          | Función de búsqueda personalizada para filtrar.                        |
-| `selectable`         | `boolean`                                     | `false`         | Si las filas son seleccionables.                                       |
-| `multiple`           | `boolean`                                     | `false`         | Si se permite la selección múltiple.                                   |
-| `bindValue`          | `string`                                      | `null`          | Propiedad para identificar de forma única los elementos seleccionados. |
-| `ordination`         | `PaginableTableOrdination`                    | `null`          | Configuración actual de ordenación (señal model).                      |
-| `filters`            | `Record<string, any>`                         | `{}`            | Filtros de columna activos (señal model).                              |
-| `debounce`           | `number`                                      | `0`             | Tiempo de debounce en ms para inputs de búsqueda y filtros.            |
-| `loading`            | `boolean`                                     | `false`         | Indicador de estado de carga (señal model).                            |
-| `paginate`           | `boolean`                                     | `true`          | Habilita la paginación. Con un array y sin `totalItems`, activa el modo cliente automático. `false` renderiza todo el array sin paginar. |
-| `paginationPosition` | `'top' \| 'bottom' \| 'both'`                 | `'bottom'`      | Dónde mostrar los controles de paginación.                             |
-| `paginationInfo`     | `boolean`                                     | `true`          | Si se muestra info de paginación (p. ej. "Mostrando 1 a 10 de 100").   |
-| `stickyActions`      | `boolean`                                     | `false`         | Si los botones de acción quedan fijos durante el scroll.               |
-| `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`            | Acciones disponibles para filas seleccionadas.                         |
-| `responsive`         | `TableBreakpoint`                             | `null`          | Breakpoint responsive para el layout de la tabla.                      |
-| `options`            | `PaginableTableOptions`                       | `{}`            | Configuración visual (cursor, hover, striped, variant).                |
-| `clickFn`            | `(event: TableRowEvent<T>) => void`           | `null`          | Manejador para eventos de click en fila.                               |
+| Nombre               | Tipo                                                     | Por defecto         | Descripción                                                                                                                              |
+| -------------------- | -------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `headers`            | `PaginableTableHeader[]`                                 | `[]`                | Definición de columnas con títulos, ordenación, filtros y acciones.                                                                      |
+| `data` / `rows`      | `T[]` o `PaginationState<T>`                             | `[]`                | Datos de tabla. Array plano → modo cliente (paginación en memoria); `PaginationState` → modo servidor.                                   |
+| `page`               | `number`                                                 | `null`              | Número de página actual (1-based, señal model). En modo cliente se pone a `1` automáticamente.                                           |
+| `perPage`            | `number`                                                 | `10`                | Número de elementos por página (señal model).                                                                                            |
+| `perPageOptions`     | `number[]`                                               | `[10, 20, 50, 100]` | Opciones disponibles de elementos por página.                                                                                            |
+| `totalItems`         | `number`                                                 | `null`              | Total de elementos en todas las páginas. Indicarlo selecciona **modo servidor** (renderiza `data` tal cual).                             |
+| `searchable`         | `boolean`                                                | `true`              | Si se muestra el input de búsqueda global.                                                                                               |
+| `searchTerm`         | `string`                                                 | `''`                | Término de búsqueda actual (señal model).                                                                                                |
+| `searchFn`           | `(a: T, b: T) => boolean`                                | `null`              | Función de búsqueda personalizada para filtrar.                                                                                          |
+| `selectable`         | `boolean`                                                | `false`             | Si las filas son seleccionables.                                                                                                         |
+| `multiple`           | `boolean`                                                | `false`             | Si se permite la selección múltiple.                                                                                                     |
+| `bindValue`          | `string`                                                 | `null`              | Propiedad para identificar de forma única los elementos seleccionados.                                                                   |
+| `ordination`         | `PaginableTableOrdination`                               | `null`              | Configuración actual de ordenación (señal model).                                                                                        |
+| `filters`            | `Record<string, any>`                                    | `{}`                | Filtros de columna activos (señal model).                                                                                                |
+| `debounce`           | `number`                                                 | `0`                 | Tiempo de debounce en ms para inputs de búsqueda y filtros.                                                                              |
+| `loading`            | `boolean`                                                | `false`             | Indicador de estado de carga (señal model).                                                                                              |
+| `paginate`           | `boolean`                                                | `true`              | Habilita la paginación. Con un array y sin `totalItems`, activa el modo cliente automático. `false` renderiza todo el array sin paginar. |
+| `paginationPosition` | `'top' \| 'bottom' \| 'both'`                            | `'bottom'`          | Dónde mostrar los controles de paginación.                                                                                               |
+| `paginationInfo`     | `boolean`                                                | `true`              | Si se muestra info de paginación (p. ej. "Mostrando 1 a 10 de 100").                                                                     |
+| `stickyActions`      | `boolean`                                                | `false`             | Si los botones de acción quedan fijos durante el scroll.                                                                                 |
+| `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`                | Acciones disponibles para filas seleccionadas.                                                                                           |
+| `responsive`         | `TableBreakpoint`                                        | `null`              | Breakpoint responsive para el layout de la tabla.                                                                                        |
+| `options`            | `PaginableTableOptions`                                  | `{}`                | Configuración visual (cursor, hover, striped, variant).                                                                                  |
+| `clickFn`            | `(event: TableRowEvent<T>) => void`                      | `null`              | Manejador para eventos de click en fila.                                                                                                 |
 
 #### Outputs y eventos
 
@@ -964,16 +964,16 @@ interface TableRowEvent<T> {
 
 #### Inputs
 
-| Nombre         | Tipo                                          | Por defecto  | Descripción                                   |
-| -------------- | --------------------------------------------- | ------------ | --------------------------------------------- |
-| `items`        | `T[]`                                         | `[]`         | Datos de lista jerárquica.                    |
-| `bindValue`    | `string`                                      | `null`       | Propiedad para identificación única de ítems. |
-| `bindLabel`    | `string`                                      | `'label'`    | Propiedad a mostrar como etiqueta del ítem.   |
-| `bindChildren` | `string`                                      | `'children'` | Propiedad que contiene los hijos.             |
-| `selectable`   | `string`                                      | `null`       | Configuración del modo de selección.          |
-| `options`      | `PaginableTableOptions`                       | `{}`         | Opciones visuales y de comportamiento.        |
+| Nombre         | Tipo                                                     | Por defecto  | Descripción                                   |
+| -------------- | -------------------------------------------------------- | ------------ | --------------------------------------------- |
+| `items`        | `T[]`                                                    | `[]`         | Datos de lista jerárquica.                    |
+| `bindValue`    | `string`                                                 | `null`       | Propiedad para identificación única de ítems. |
+| `bindLabel`    | `string`                                                 | `'label'`    | Propiedad a mostrar como etiqueta del ítem.   |
+| `bindChildren` | `string`                                                 | `'children'` | Propiedad que contiene los hijos.             |
+| `selectable`   | `string`                                                 | `null`       | Configuración del modo de selección.          |
+| `options`      | `PaginableTableOptions`                                  | `{}`         | Opciones visuales y de comportamiento.        |
 | `batchActions` | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`         | Acciones para ítems seleccionados.            |
-| `clickFn`      | `(event: ListClickEvent<T>) => void`          | `null`       | Manejador para eventos de click en ítems.     |
+| `clickFn`      | `(event: ListClickEvent<T>) => void`                     | `null`       | Manejador para eventos de click en ítems.     |
 
 **Evento de click en lista (`ListClickEvent<T>`):**
 
@@ -1138,7 +1138,12 @@ En lugar de fijar los tokens `--hub-*` a mano, puedes tematizar la tabla o la li
 
 ```scss
 .tabla-facturas {
-	@include hub-table-theme($accent: var(--hub-sys-color-success), $border-radius: 0.5rem, $cell-padding-y: 0.375rem, $footer-justify: end);
+	@include hub-table-theme(
+		$accent: var(--hub-sys-color-success),
+		$border-radius: 0.5rem,
+		$cell-padding-y: 0.375rem,
+		$footer-justify: end
+	);
 }
 ```
 
@@ -1146,7 +1151,12 @@ En lugar de fijar los tokens `--hub-*` a mano, puedes tematizar la tabla o la li
 
 ```scss
 .lista-equipo {
-	@include hub-list-theme($accent: var(--hub-sys-color-success), $item-border-radius: 0.75rem, $gap: 0.5rem, $cards-min-column-width: 16rem);
+	@include hub-list-theme(
+		$accent: var(--hub-sys-color-success),
+		$item-border-radius: 0.75rem,
+		$gap: 0.5rem,
+		$cards-min-column-width: 16rem
+	);
 }
 ```
 
@@ -1335,22 +1345,22 @@ Estas plantillas se renderizan para filtros `mode: 'row'`. Los filtros de `mode:
 
 ```html
 <ng-template filterTpt header="birthday" let-formControl="formControl">
-	<input type="date" class="form-control" [formControl]="formControl" placeholder="Filtrar por fecha" />
+	<input type="date" class="hub-table__filter-control" [formControl]="formControl" placeholder="Filtrar por fecha" />
 </ng-template>
 ```
 
 ```html
 <ng-template filterTpt header="age" let-formControl="formControl">
 	<div class="d-flex gap-2">
-		<input type="number" class="form-control" [formControl]="formControl.controls.start" placeholder="Min." />
-		<input type="number" class="form-control" [formControl]="formControl.controls.end" placeholder="Max." />
+		<input type="number" class="hub-table__filter-control" [formControl]="formControl.controls.start" placeholder="Min." />
+		<input type="number" class="hub-table__filter-control" [formControl]="formControl.controls.end" placeholder="Max." />
 	</div>
 </ng-template>
 ```
 
 ```html
 <ng-template filterTpt header="adult" let-formControl="formControl">
-	<select class="form-select" [formControl]="formControl">
+	<select class="hub-table__filter-control hub-table__filter-control--select" [formControl]="formControl">
 		<option [ngValue]="null">Todos</option>
 		<option [ngValue]="true">Sí</option>
 		<option [ngValue]="false">No</option>

@@ -48,6 +48,7 @@ export const locale = {
 			VARIABLE: '变量'
 		},
 		CLEAR: '清除',
+		CLEAR_SEARCH: '清除搜索',
 		ADD_RULE: '添加条件',
 		REMOVE_RULE: '移除条件',
 		MATCH_ALL: '满足全部',

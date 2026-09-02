@@ -48,6 +48,7 @@ export const locale = {
 			VARIABLE: 'Variable'
 		},
 		CLEAR: 'löschen',
+		CLEAR_SEARCH: 'Suche löschen',
 		ADD_RULE: 'Bedingung hinzufügen',
 		REMOVE_RULE: 'Bedingung entfernen',
 		MATCH_ALL: 'alle Bedingungen',

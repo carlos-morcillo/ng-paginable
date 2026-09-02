@@ -48,6 +48,7 @@ export const locale = {
 			VARIABLE: 'Variable'
 		},
 		CLEAR: 'llimpiar',
+		CLEAR_SEARCH: 'Llimpiar la gueta',
 		ADD_RULE: 'amestar condición',
 		REMOVE_RULE: 'desaniciar condición',
 		MATCH_ALL: 'coincidir con tou',

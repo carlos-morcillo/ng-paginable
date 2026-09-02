@@ -1,50 +1,73 @@
+/*
+ * The two ends of a range are one field, so they are drawn inside one box: the border
+ * belongs to the wrapper and each end is a bare input on a shared surface, divided by a
+ * hairline. Before, the box was Bootstrap's `.form-control` — a class this family does
+ * not ship — so in a product without Bootstrap the control was two invisible inputs and
+ * the words "from" and "to" floating in the header.
+ *
+ * The tokens are the table's own `--hub-table-filter-control-*` family, read through
+ * `var()` with a literal fallback: inside a filter cell they inherit and the range field
+ * matches the plain ones beside it; standing alone, the fallbacks still draw a field.
+ */
+:host {
+	display: block;
+}
+
 .range-input {
-	padding: 0;
-	height: auto;
+	display: flex;
+	flex-direction: column;
+	inline-size: 100%;
+	color: var(--hub-table-filter-control-color, inherit);
+	background-color: var(--hub-table-filter-control-bg, #fff);
+	background-clip: padding-box;
+	border: var(--hub-table-filter-control-border-width, 1px) solid var(--hub-table-filter-control-border-color, #dee2e6);
+	border-radius: var(--hub-table-filter-control-border-radius, 0.25rem);
+	transition:
+		border-color 0.15s ease-in-out,
+		box-shadow 0.15s ease-in-out;
+
+	&:focus-within {
+		border-color: var(--hub-table-filter-control-focus-border-color, #0d6efd);
+		box-shadow: var(--hub-table-filter-control-focus-shadow, none);
+	}
+
+	&__field {
+		display: flex;
+		align-items: center;
+		gap: var(--hub-ref-space-1, 0.25rem);
+		padding-inline: var(--hub-table-filter-control-padding-x, 0.5rem);
+
+		// One hairline between the two ends, none above the first or below the last:
+		// the wrapper's own border already closes the field.
+		& + & {
+			border-block-start: var(--hub-table-filter-control-border-width, 1px) solid
+				var(--hub-table-filter-control-border-color, #dee2e6);
+		}
+	}
 
 	&__label {
-		//font-size: 10px;
 		margin-bottom: 0;
-		padding-left: var(--hub-ref-space-1, 0.25rem);
+		color: var(--hub-table-filter-control-placeholder-color, #6c757d);
+		font-size: var(--hub-table-filter-control-font-size, 0.875rem);
+		white-space: nowrap;
 	}
 
 	&__control {
+		flex: 1 1 auto;
+		// A date input carries its own intrinsic width, which is wider than a narrow
+		// column: without this it pushes the field past the cell instead of shrinking.
+		min-inline-size: 0;
+		inline-size: 100%;
+		padding-block: var(--hub-table-filter-control-padding-y, 0.25rem);
+		font-family: inherit;
+		font-size: var(--hub-table-filter-control-font-size, 0.875rem);
+		color: inherit;
+		background-color: transparent;
 		border: none;
 		outline: none;
-		height: 20px;
-		margin: var(--hub-ref-space-1, 0.25rem);
 
-		&[type='number'] {
-			width: 64px;
-			// width: 40px;
-		}
-
-		&::-webkit-calendar-picker-indicator {
-			margin-left: 0;
-		}
-	}
-}
-
-// Legacy support for form-control
-.form-control {
-	padding: 0;
-	height: auto;
-
-	label {
-		//font-size: 10px;
-		margin-bottom: 0;
-		padding-left: var(--hub-ref-space-1, 0.25rem);
-	}
-
-	input {
-		border: none;
-		outline: none;
-		height: 20px;
-		margin: var(--hub-ref-space-1, 0.25rem);
-
-		&[type='number'] {
-			width: 64px;
-			// width: 40px;
+		&::placeholder {
+			color: var(--hub-table-filter-control-placeholder-color, #6c757d);
 		}
 
 		&::-webkit-calendar-picker-indicator {

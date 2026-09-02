@@ -409,6 +409,10 @@ Estos tokens estilizan el paginador embebido desde el host de la tabla:
 | `--hub-table-search-button-min-width` | `2.75rem` | Anchura mínima del botón de búsqueda |
 | `--hub-table-search-border-width` | `var(--hub-table-border-width)` | Grosor de borde compartido para input/botón de búsqueda |
 | `--hub-table-search-border-radius` | `var(--hub-table-border-radius)` | Radio de borde compartido para input/botón de búsqueda |
+| `--hub-table-search-clear-color` | `var(--hub-sys-text-muted)` | Color de la × que limpia la búsqueda, visible cuando hay término |
+| `--hub-table-search-clear-hover-color` | `var(--hub-table-container-color)` | Color de la × en hover/foco |
+| `--hub-table-search-clear-icon-size` | `0.75em` | Tamaño del glifo de la × |
+| `--hub-table-search-clear-padding-x` | `var(--hub-ref-space-2)` | Padding horizontal de la × |
 
 ### Table Element
 
@@ -498,6 +502,35 @@ El tinte de selección se aplica tanto a la selección propia de la librería co
 | `--hub-table-filter-count-font-weight` | `700` | Font weight of the count badge |
 | `--hub-table-filter-count-border-radius` | `50rem` | Border radius of the count badge |
 | `--hub-table-batch-actions-btn-icon-gap` | `var(--hub-ref-space-1)` | Spacing between a batch action button's icon and text |
+| `--hub-table-filter-row-bg` | `var(--hub-table-head-bg)` | Fondo de la fila de filtros bajo la cabecera |
+| `--hub-table-filter-cell-padding-x` | `var(--hub-table-head-padding-x)` | Padding horizontal de una celda de filtro |
+| `--hub-table-filter-cell-padding-y` | `var(--hub-table-head-padding-y)` | Padding vertical de una celda de filtro |
+| `--hub-table-filter-control-bg` | `var(--hub-table-container-bg)` | Fondo de un control de filtro |
+| `--hub-table-filter-control-color` | `var(--hub-table-container-color)` | Color de texto de un control de filtro |
+| `--hub-table-filter-control-placeholder-color` | `var(--hub-sys-text-muted)` | Color del placeholder y de las etiquetas del rango |
+| `--hub-table-filter-control-border-color` | `var(--hub-table-border-color)` | Color del borde de un control de filtro |
+| `--hub-table-filter-control-border-width` | `var(--hub-table-border-width)` | Grosor del borde de un control de filtro |
+| `--hub-table-filter-control-border-radius` | `var(--hub-ref-radius-sm)` | Radio del borde de un control de filtro |
+| `--hub-table-filter-control-padding-x` | `var(--hub-ref-space-2)` | Padding horizontal dentro del control |
+| `--hub-table-filter-control-padding-y` | `var(--hub-ref-space-1)` | Padding vertical dentro del control |
+| `--hub-table-filter-control-font-size` | `var(--hub-ref-font-size-sm)` | Tamaño de fuente del control de filtro |
+| `--hub-table-filter-control-focus-border-color` | `var(--hub-table-accent)` | Color del borde con el foco puesto |
+| `--hub-table-filter-control-focus-shadow` | `0 0 0 0.2rem color-mix(…)` | Anillo de foco |
+| `--hub-table-filter-control-active-bg` | `var(--hub-table-filter-button-active-bg)` | Fondo cuando el filtro tiene valor |
+| `--hub-table-filter-control-active-border-color` | `var(--hub-table-filter-button-active-border-color)` | Color del borde cuando el filtro tiene valor |
+| `--hub-table-delete-filters-bg` | `var(--hub-table-container-bg)` | Fondo del botón de limpiar filtros |
+| `--hub-table-delete-filters-color` | `var(--hub-table-container-color)` | Color del texto y del icono |
+| `--hub-table-delete-filters-border-color` | `var(--hub-table-border-color)` | Color del borde |
+| `--hub-table-delete-filters-border-width` | `var(--hub-table-border-width)` | Grosor del borde |
+| `--hub-table-delete-filters-border-radius` | `var(--hub-table-border-radius)` | Radio del borde |
+| `--hub-table-delete-filters-padding-x` | `0.75rem` | Padding horizontal |
+| `--hub-table-delete-filters-padding-y` | `0.375rem` | Padding vertical |
+| `--hub-table-delete-filters-font-size` | `var(--hub-table-search-input-font-size)` | Tamaño de fuente (igual que el buscador contiguo) |
+| `--hub-table-delete-filters-gap` | `var(--hub-ref-space-2)` | Separación entre el icono y la etiqueta |
+| `--hub-table-delete-filters-hover-bg` | `color-mix(…, danger 10%, transparent)` | Fondo en hover/foco |
+| `--hub-table-delete-filters-hover-border-color` | `var(--hub-sys-color-danger)` | Color del borde en hover/foco |
+| `--hub-table-delete-filters-hover-color` | `var(--hub-sys-color-danger)` | Color del texto y del icono en hover/foco |
+| `--hub-table-delete-filters-disabled-opacity` | `0.5` | Opacidad mientras hay una petición de filtrado en curso |
 | `--hub-table-icon-color` | `currentColor` | Color of table icons (sort, filter, etc.) |
 | `--hub-table-icon-size` | `1em` | Base size of table icons |
 | `--hub-table-icon-sort` | `url("…")` (SVG) | Glifo del indicador de orden (sin ordenar) |
@@ -505,6 +538,7 @@ El tinte de selección se aplica tanto a la selección propia de la librería co
 | `--hub-table-icon-sort-down` | `url("…")` (SVG) | Glifo del indicador de orden descendente |
 | `--hub-table-icon-caret-up` | `url("…")` (SVG) | Glifo del expansor de fila (expandido) |
 | `--hub-table-icon-caret-down` | `url("…")` (SVG) | Glifo del expansor de fila (colapsado) |
+| `--hub-table-icon-close` | `url("…")` (SVG) | Glifo de cierre que usa el borrado del cuadro de búsqueda |
 
 ### Responsive Breakpoints
 

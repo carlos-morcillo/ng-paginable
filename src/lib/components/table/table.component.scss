@@ -67,6 +67,7 @@
 	--hub-table-icon-search: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z'/%3E%3C/svg%3E");
 	--hub-table-icon-filter: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z'/%3E%3C/svg%3E");
 	--hub-table-icon-eraser: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3Cpath d='M290.7 57.4L57.4 290.7c-25 25-25 65.5 0 90.5l80 80c12 12 28.3 18.7 45.3 18.7H288h9.4H512c17.7 0 32-14.3 32-32s-14.3-32-32-32H387.9L518.6 285.3c25-25 25-65.5 0-90.5L381.3 57.4c-25-25-65.5-25-90.5 0zM297.4 416H288l-105.4 0-80-80L227.3 211.3 364.7 348.7 297.4 416z'/%3E%3C/svg%3E");
+	--hub-table-icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/%3E%3C/svg%3E");
 	--hub-table-icon-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z'/%3E%3C/svg%3E");
 	--hub-table-icon-chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z'/%3E%3C/svg%3E");
 	--hub-table-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5 12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z'/%3E%3C/svg%3E");
@@ -153,6 +154,34 @@
 	--hub-table-search-input-padding-x: 0.75rem;
 	--hub-table-search-input-padding-y: 0.375rem;
 	--hub-table-search-input-font-size: 1rem;
+	// Clear affordance inside the search group — muted until pointed at, so it does not
+	// compete with the term it erases.
+	--hub-table-search-clear-color: var(--hub-sys-text-muted, #6c757d);
+	--hub-table-search-clear-hover-color: var(--hub-table-container-color, var(--hub-sys-text-primary, #212529));
+	--hub-table-search-clear-icon-size: 0.75em;
+	--hub-table-search-clear-padding-x: var(--hub-ref-space-2, 0.5rem);
+	// Column-filter row — the inline controls this table draws under the header, and
+	// the band they sit on. The row reads as header chrome (its own surface), the
+	// controls as fields, so a filterable column is visibly a filterable column.
+	--hub-table-filter-row-bg: var(--hub-table-head-bg);
+	--hub-table-filter-cell-padding-x: var(--hub-table-head-padding-x);
+	--hub-table-filter-cell-padding-y: var(--hub-table-head-padding-y);
+	--hub-table-filter-control-bg: var(--hub-table-container-bg, var(--hub-ref-color-white, #fff));
+	--hub-table-filter-control-color: var(--hub-table-container-color, var(--hub-sys-text-primary, #212529));
+	--hub-table-filter-control-placeholder-color: var(--hub-sys-text-muted, #6c757d);
+	--hub-table-filter-control-border-color: var(--hub-table-border-color);
+	--hub-table-filter-control-border-width: var(--hub-table-border-width);
+	--hub-table-filter-control-border-radius: var(--hub-ref-radius-sm, 0.25rem);
+	--hub-table-filter-control-padding-x: var(--hub-ref-space-2, 0.5rem);
+	--hub-table-filter-control-padding-y: var(--hub-ref-space-1, 0.25rem);
+	--hub-table-filter-control-font-size: var(--hub-ref-font-size-sm, 0.875rem);
+	--hub-table-filter-control-focus-border-color: var(--hub-table-accent);
+	--hub-table-filter-control-focus-shadow: 0 0 0 0.2rem color-mix(in oklch, var(--hub-table-accent) 25%, transparent);
+	// A filter that is actually narrowing the collection wears the same green the
+	// menu-filter trigger already uses, so "there is a filter here" and "it is on"
+	// read the same wherever the filter lives.
+	--hub-table-filter-control-active-bg: var(--hub-table-filter-button-active-bg);
+	--hub-table-filter-control-active-border-color: var(--hub-table-filter-button-active-border-color);
 	--hub-table-filter-button-active-bg: color-mix(in oklch, var(--hub-sys-color-success, #198754) 10%, transparent);
 	--hub-table-filter-button-active-border-color: var(--hub-sys-color-success, #198754);
 	--hub-table-filter-button-hover-bg: rgba(0, 0, 0, 0.05);
@@ -172,6 +201,22 @@
 	--hub-table-filter-count-font-size: 0.7rem;
 	--hub-table-filter-count-font-weight: var(--hub-ref-font-weight-bold, 700);
 	--hub-table-filter-count-border-radius: var(--hub-ref-radius-pill, 50rem);
+	// Clear-filters button — toolbar chrome at rest (it stands beside the search
+	// group and is not a destructive act on the data), destructive only under the
+	// cursor, where the intent is already declared.
+	--hub-table-delete-filters-bg: var(--hub-table-container-bg, var(--hub-ref-color-white, #fff));
+	--hub-table-delete-filters-color: var(--hub-table-container-color, var(--hub-sys-text-primary, #212529));
+	--hub-table-delete-filters-border-color: var(--hub-table-border-color);
+	--hub-table-delete-filters-border-width: var(--hub-table-border-width);
+	--hub-table-delete-filters-border-radius: var(--hub-table-border-radius);
+	--hub-table-delete-filters-padding-x: 0.75rem;
+	--hub-table-delete-filters-padding-y: 0.375rem;
+	--hub-table-delete-filters-font-size: var(--hub-table-search-input-font-size);
+	--hub-table-delete-filters-gap: var(--hub-ref-space-2, 0.5rem);
+	--hub-table-delete-filters-hover-bg: color-mix(in oklch, var(--hub-sys-color-danger, #dc3545) 10%, transparent);
+	--hub-table-delete-filters-hover-border-color: var(--hub-sys-color-danger, #dc3545);
+	--hub-table-delete-filters-hover-color: var(--hub-sys-color-danger, #dc3545);
+	--hub-table-delete-filters-disabled-opacity: 0.5;
 	--hub-table-batch-actions-btn-icon-gap: var(--hub-ref-space-1, 0.25rem);
 	--hub-table-hover-bg: var(--hub-sys-state-hover-bg, rgba(0, 0, 0, 0.075));
 	--hub-table-hover-color: var(--hub-sys-text-primary, #212529);
@@ -465,6 +510,39 @@
 				box-shadow 0.15s ease-in-out;
 		}
 
+		/*
+		 * The clear affordance, shown only while the box holds a term.
+		 *
+		 * It is a segment of the group rather than a glyph floating over the field: when a
+		 * consumer wires `provideHubPaginableFormControls` the field is a component created at
+		 * runtime, which no rule here can reach — so the padding an overlaid glyph needs to
+		 * avoid sitting on top of the text cannot be guaranteed. Sharing the group's border,
+		 * height and surface, and dropping the border it would otherwise double up on, it reads
+		 * as being inside the box while never covering what is typed there.
+		 */
+		&-clear {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding-inline: var(--hub-table-search-clear-padding-x);
+			color: var(--hub-table-search-clear-color);
+			background-color: var(--hub-table-search-input-bg);
+			border: var(--hub-table-search-border-width) solid var(--hub-table-search-input-border-color);
+			border-inline-start: 0;
+			border-radius: 0;
+			cursor: pointer;
+			transition: color 0.15s ease-in-out;
+
+			&:hover,
+			&:focus-visible {
+				color: var(--hub-table-search-clear-hover-color);
+			}
+		}
+
+		&-clear-icon {
+			--hub-table-icon-size: var(--hub-table-search-clear-icon-size);
+		}
+
 		&-button {
 			display: inline-flex;
 			align-items: center;
@@ -568,6 +646,106 @@
 		animation: badge-appear 0.2s ease;
 	}
 
+	/*
+	 * The column-filter row.
+	 *
+	 * Its controls were dressed in `.form-control` / `.form-select` — Bootstrap's names,
+	 * which resolve to nothing in a product that does not ship Bootstrap. Measured in one:
+	 * the row rendered as bare text on the header surface, so a column offering a filter
+	 * was indistinguishable from one offering none, and a numeric range showed the words
+	 * "from" and "to" floating under the header with no field around them.
+	 *
+	 * The row is this table's own chrome, so it is drawn here, from tokens, exactly as the
+	 * search field beside it already is.
+	 */
+	.hub-table__filter-row > .hub-table__filter-cell {
+		padding: var(--hub-table-filter-cell-padding-y) var(--hub-table-filter-cell-padding-x);
+		background-color: var(--hub-table-filter-row-bg);
+		vertical-align: middle;
+	}
+
+	.hub-table__filter-control {
+		display: block;
+		inline-size: 100%;
+		min-inline-size: 0;
+		padding: var(--hub-table-filter-control-padding-y) var(--hub-table-filter-control-padding-x);
+		font-family: inherit;
+		font-size: var(--hub-table-filter-control-font-size);
+		font-weight: var(--hub-ref-font-weight-base, 400);
+		line-height: var(--hub-ref-line-height-base, 1.5);
+		color: var(--hub-table-filter-control-color);
+		background-color: var(--hub-table-filter-control-bg);
+		background-clip: padding-box;
+		border: var(--hub-table-filter-control-border-width) solid var(--hub-table-filter-control-border-color);
+		border-radius: var(--hub-table-filter-control-border-radius);
+		transition:
+			border-color 0.15s ease-in-out,
+			box-shadow 0.15s ease-in-out;
+
+		&::placeholder {
+			color: var(--hub-table-filter-control-placeholder-color);
+		}
+
+		&:focus {
+			outline: 0;
+			border-color: var(--hub-table-filter-control-focus-border-color);
+			box-shadow: var(--hub-table-filter-control-focus-shadow);
+		}
+
+		// The select keeps the platform's own disclosure arrow: drawing one here would
+		// mean shipping a second chevron that a consumer cannot replace, and the native
+		// one already answers "this opens a list".
+		&--select {
+			appearance: auto;
+		}
+	}
+
+	// A filter holding a value says so, so the row answers both questions at a glance:
+	// which columns can be filtered, and which of them currently are.
+	.hub-table__filter-cell--active {
+		--hub-table-filter-control-bg: var(--hub-table-filter-control-active-bg);
+		--hub-table-filter-control-border-color: var(--hub-table-filter-control-active-border-color);
+	}
+
+	/*
+	 * Clear-filters button.
+	 *
+	 * Same story as the search button beside it: only the eraser glyph was ever styled,
+	 * and the `.btn.btn-outline-danger` around it named a stylesheet this family does not
+	 * ship — so the control fell back to the browser's native chrome, a different height
+	 * and a different shape from the field it stands next to.
+	 */
+	.hub-table__delete-filters-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--hub-table-delete-filters-gap);
+		padding: var(--hub-table-delete-filters-padding-y) var(--hub-table-delete-filters-padding-x);
+		font-family: inherit;
+		font-size: var(--hub-table-delete-filters-font-size);
+		line-height: var(--hub-ref-line-height-base, 1.5);
+		color: var(--hub-table-delete-filters-color);
+		background-color: var(--hub-table-delete-filters-bg);
+		border: var(--hub-table-delete-filters-border-width) solid var(--hub-table-delete-filters-border-color);
+		border-radius: var(--hub-table-delete-filters-border-radius);
+		cursor: pointer;
+		transition:
+			color 0.15s ease-in-out,
+			background-color 0.15s ease-in-out,
+			border-color 0.15s ease-in-out;
+
+		&:hover:not(:disabled),
+		&:focus-visible:not(:disabled) {
+			color: var(--hub-table-delete-filters-hover-color);
+			background-color: var(--hub-table-delete-filters-hover-bg);
+			border-color: var(--hub-table-delete-filters-hover-border-color);
+		}
+
+		&:disabled {
+			opacity: var(--hub-table-delete-filters-disabled-opacity);
+			cursor: not-allowed;
+		}
+	}
+
 	// No data icon spacing
 	.hub-table__no-data-icon {
 		margin-right: var(--hub-ref-space-4, 1.5rem);
@@ -637,6 +815,12 @@
 		&--eraser {
 			-webkit-mask-image: var(--hub-table-icon-eraser);
 			mask-image: var(--hub-table-icon-eraser);
+		}
+
+		// Close/Dismiss icon
+		&--close {
+			-webkit-mask-image: var(--hub-table-icon-close);
+			mask-image: var(--hub-table-icon-close);
 		}
 
 		// Info icon
@@ -1034,8 +1218,18 @@ $hub-table-variants: primary, secondary, success, danger, warning, info, neutral
 			border-radius: 0 var(--hub-table-search-border-radius) var(--hub-table-search-border-radius) 0;
 		}
 
+		// Mirrored group: the button is now the LEADING segment, so the edge it drops is the
+		// one it shares with the field — the right — and the outer left edge it was left
+		// without gets its hairline back. Same for the clear segment between them.
 		&-button {
+			border-inline-start: var(--hub-table-search-border-width) solid var(--hub-table-search-button-border-color);
+			border-inline-end: 0;
 			border-radius: var(--hub-table-search-border-radius) 0 0 var(--hub-table-search-border-radius);
+		}
+
+		&-clear {
+			border-inline-start: var(--hub-table-search-border-width) solid var(--hub-table-search-input-border-color);
+			border-inline-end: 0;
 		}
 	}
 

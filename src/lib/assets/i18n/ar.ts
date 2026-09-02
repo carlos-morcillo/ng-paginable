@@ -48,6 +48,7 @@ export const locale = {
 			VARIABLE: 'متغير'
 		},
 		CLEAR: 'مسح',
+		CLEAR_SEARCH: 'مسح البحث',
 		ADD_RULE: 'إضافة شرط',
 		REMOVE_RULE: 'إزالة الشرط',
 		MATCH_ALL: 'مطابقة الكل',
