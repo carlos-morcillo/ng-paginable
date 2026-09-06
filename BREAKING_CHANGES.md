@@ -1,5 +1,29 @@
 # Breaking Changes: ng-hub-ui-paginable
 
+## [22.19.0] - 2026-09-06
+
+### Single selection renders `input[type="radio"]`
+
+- **Change**: with `[selectable]="true"` (or `'single'`) and `[multiple]` left off, the selection cell
+  drew `<input type="checkbox">`. It now draws `<input type="radio">`, grouped by a `name` unique to
+  that table instance. Multiple selection still draws a checkbox.
+- **Impact**: a stylesheet that reaches the box through `input[type="checkbox"]`, or a test that
+  queries it that way, stops matching in single-selection tables. Behaviour is unchanged: one row at
+  a time, and clicking the chosen row again still clears the pick.
+- **Migration**: select the cell rather than the input type, which covers both modes.
+
+    ```scss
+    // Before
+    .hub-table__cell--select input[type='checkbox'] {
+    	accent-color: rebeccapurple;
+    }
+
+    // After
+    .hub-table__cell--select input {
+    	accent-color: rebeccapurple;
+    }
+    ```
+
 ## [22.18.0] - 2026-09-06
 
 ### `searchFn` on the table takes an item and a term

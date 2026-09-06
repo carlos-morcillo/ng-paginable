@@ -202,6 +202,14 @@ export class TableComponent<T = any> {
 	/** Unique identifier for the table component instance */
 	id = input(generateUniqueId(16));
 
+	/**
+	 * Name shared by the selection radios of THIS table, and by no other.
+	 *
+	 * A radio group is scoped by name across the whole document, so two single-selection tables
+	 * on one page would silently fight over a single choice if they shared one.
+	 */
+	readonly radioGroupName = `hub-table-selection-${generateUniqueId(8)}`;
+
 	/** Visual and behavioral options for the table */
 	readonly options = input<PaginableTableOptions>({
 		cursor: 'default',

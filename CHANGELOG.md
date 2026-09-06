@@ -1,5 +1,26 @@
 # Changelog
 
+## [22.19.0] - 2026-09-06
+
+### Changed
+
+- **Single selection draws a radio, not a checkbox.** With `[selectable]="true"` and no `[multiple]`,
+  the table drew a checkbox per row and then released the previous pick when a second one was
+  ticked. A checkbox says the rows are independent, so the control was describing something the
+  table does not do, and a screen reader announced it that way too. `hub-list` in this same package
+  has always drawn a radio here. The radios of one table share a name of that table's own, so two
+  single-selection tables on a page do not fight over one choice, and clicking the chosen radio
+  again still clears the selection, which a native radio cannot do on its own. Multiple selection
+  is untouched. See `BREAKING_CHANGES.md`.
+
+### Fixed
+
+- **The select-all box in the header lines up with the boxes in the rows again.** 22.18.0 gave the
+  row checkbox the whole cell as its hit area, wrapped in a label that centres it. The header kept
+  a bare `<input>`, so the two were centred by different rules and the selection column read as two
+  columns that did not quite meet. The header now wears the same label, which also gives the
+  select-all box the generous hit area the row boxes got.
+
 ## [22.18.0] - 2026-09-06
 
 ### Added
@@ -115,13 +136,13 @@
   **behaves exactly as before**; it is removed in `23.0.0`, the release that moves this family to
   Angular 23. See `BREAKING_CHANGES.md`.
 
-  The tag sits above `@NgModule(…)`, which is where it has to sit to exist at all: a decorated
-  class begins at its decorator, so a JSDoc block written between the decorator and `export class`
-  falls inside the declaration and TypeScript attaches nothing — no strike-through in the editor,
-  no warning from a build that fails on deprecations, a notice visible only to whoever opens the
-  file. `PaginableTableDropdownComponent`, deprecated back in 22.16.0, had been carrying its tag
-  in exactly that dead spot ever since; it is moved too. `library-module-deprecations.spec.ts`
-  asks the compiler rather than the text, so the placement cannot rot back.
+    The tag sits above `@NgModule(…)`, which is where it has to sit to exist at all: a decorated
+    class begins at its decorator, so a JSDoc block written between the decorator and `export class`
+    falls inside the declaration and TypeScript attaches nothing — no strike-through in the editor,
+    no warning from a build that fails on deprecations, a notice visible only to whoever opens the
+    file. `PaginableTableDropdownComponent`, deprecated back in 22.16.0, had been carrying its tag
+    in exactly that dead spot ever since; it is moved too. `library-module-deprecations.spec.ts`
+    asks the compiler rather than the text, so the placement cannot rot back.
 
 ### Fixed
 
@@ -137,7 +158,6 @@
   pointer landing anywhere else in that cell ran the consumer's `clickFn` instead. That commonly
   navigates, which took the selection built up so far with it. The whole selection cell now stops
   the click and the control fills it, so there is no near-miss left to catch.
-
 
 - **The package declares a `styles` entry point, so the theming mixins can be reached the way
   the README says they can.** `package.json` carried no `exports` map at all, which left the

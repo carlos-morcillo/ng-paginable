@@ -143,13 +143,15 @@
 				@if (selectable()) {
 					<th class="hub-table__header-cell hub-table__header-cell--actions sticky-start" data-col="__hub_select">
 						@if (multipleSelectable()) {
-							<input
-								type="checkbox"
-								[(ngModel)]="allRowsSelected"
-								[ngModelOptions]="{ standalone: true }"
-								(click)="toggleAll()"
-								[disabled]="disabled"
-							/>
+							<label class="hub-table__select-hit">
+								<input
+									type="checkbox"
+									[(ngModel)]="allRowsSelected"
+									[ngModelOptions]="{ standalone: true }"
+									(click)="toggleAll()"
+									[disabled]="disabled"
+								/>
+							</label>
 						}
 					</th>
 				}
@@ -408,12 +410,16 @@
 				(click)="$event.stopPropagation()"
 			>
 				<label class="hub-table__select-hit">
-					<input
-						type="checkbox"
-						[(ngModel)]="item.selected"
-						[ngModelOptions]="{ standalone: true }"
-						(click)="toggle(item)"
-					/>
+					@if (multipleSelectable()) {
+						<input
+							type="checkbox"
+							[(ngModel)]="item.selected"
+							[ngModelOptions]="{ standalone: true }"
+							(click)="toggle(item)"
+						/>
+					} @else {
+						<input type="radio" [name]="radioGroupName" [checked]="item.selected" (click)="toggle(item)" />
+					}
 				</label>
 			</td>
 		}

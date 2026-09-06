@@ -1306,6 +1306,10 @@ $hub-table-variants: primary, secondary, success, danger, warning, info, neutral
  * 13px wide inside a cell several times that, and everything around it used to fall
  * through to the row: on a clickable table that meant a near-miss ran the consumer's
  * click handler, which commonly navigates away and takes the selection with it.
+ *
+ * The header's select-all box wears the same label, so it gets the same hit area and both
+ * cells centre their box the same way. Giving it only to the body left the column looking
+ * like two columns.
  */
 .hub-table__select-hit {
 	display: flex;
