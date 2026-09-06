@@ -4,7 +4,7 @@
  */
 
 import { NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Icon } from '../../interfaces/paginable-table-header';
 import { containsFontAwesomeClass } from '../../utils/icons';
 
@@ -13,6 +13,13 @@ import { containsFontAwesomeClass } from '../../utils/icons';
  * @typedef {'font-awesome' | 'material' | 'bootstrap'} IconType
  */
 export type IconType = 'font-awesome' | 'material' | 'bootstrap';
+
+/** The `config` input once normalized: a bare string is the icon value on its own. */
+interface ResolvedIcon {
+	type: IconType | null;
+	value: string;
+	variant: string;
+}
 
 /**
  * @component HubIconComponent
@@ -35,67 +42,66 @@ export class HubIconComponent {
 	 * @description Sets the icon configuration. Can be a string or an Icon object.
 	 * @type {string | Icon}
 	 */
-	// TODO: Skipped for migration because:
-	//  Accessor inputs cannot be migrated as they are too complex.
-	@Input({ required: true })
-	set config(value: string | Icon | undefined) {
-		if (!value) {
-			value = '';
+	readonly config = input.required<string | Icon | undefined>();
+
+	/** The two shapes `config` accepts, reduced to the one the rest of the class reads. */
+	readonly #resolved = computed<ResolvedIcon>(() => {
+		const value = this.config();
+
+		if (!value || typeof value === 'string') {
+			return { type: null, value: value ?? '', variant: '' };
 		}
-		if (typeof value === 'string') {
-			this.value = value;
-		} else {
-			this.type = value.type ?? null;
-			this.variant = value.variant ?? '';
-			this.value = value.value ?? null;
-		}
-	}
+
+		return {
+			type: value.type ?? null,
+			value: value.value ?? '',
+			variant: value.variant ?? ''
+		};
+	});
 
 	/**
-	 * @input type
 	 * @description The type of icon (font-awesome, material, or bootstrap).
 	 * @type {IconType}
 	 */
-	type: IconType | null = null;
+	readonly type = computed<IconType | null>(() => this.#resolved().type);
 
 	/**
-	 * @input value
 	 * @description The icon value or class name.
 	 * @type {string}
 	 */
-	value: string = '';
+	readonly value = computed<string>(() => this.#resolved().value);
 
 	/**
-	 * @input variant
 	 * @description The variant of the icon (if applicable).
 	 * @type {string}
 	 */
-	variant: string = '';
+	readonly variant = computed<string>(() => this.#resolved().variant);
 
 	/**
-	 * @getter classlist
 	 * @description Computes the CSS classes for the icon based on its type and value.
 	 * @returns {string | null} The computed CSS class string or null if no value is set.
 	 */
-	get classlist(): string | null {
-		if (!this.value) {
+	readonly classlist = computed<string | null>(() => {
+		const value = this.value();
+		if (!value) {
 			return null;
 		}
 
-		if (!this.type) {
-			return this.value;
+		const type = this.type();
+		if (!type) {
+			return value;
 		}
 
 		const classlist: Array<string> = [];
-		if (['font-awesome', 'bootstrap'].includes(this.type)) {
-			if (Array.isArray(this.value)) {
-				classlist.push(...this.value);
+		if (['font-awesome', 'bootstrap'].includes(type)) {
+			if (Array.isArray(value)) {
+				classlist.push(...value);
 			} else {
-				classlist.push(...this.value.split(' '));
+				classlist.push(...value.split(' '));
 			}
 		}
 
-		switch (this.type) {
+		switch (type) {
 			case 'font-awesome':
 				if (!containsFontAwesomeClass(classlist.join(' '))) {
 					classlist.push('fa');
@@ -112,14 +118,11 @@ export class HubIconComponent {
 		}
 
 		return classlist.join(' ');
-	}
+	});
 
 	/**
-	 * @getter content
 	 * @description Gets the content for material icons.
 	 * @returns {string | null} The icon content for material icons, or null for other types.
 	 */
-	get content(): string | null {
-		return this.type === 'material' ? this.value : null;
-	}
+	readonly content = computed<string | null>(() => (this.type() === 'material' ? this.value() : null));
 }

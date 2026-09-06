@@ -12,6 +12,7 @@ Complete reference of all CSS custom properties (CSS variables) exposed by the `
 - [Paginator Variables](#paginator-variables)
 - [List Variables](#list-variables)
 - [Table Variables](#table-variables)
+- [Internal Panels](#internal-panels)
 - [Customization Examples](#customization-examples)
   - [Override a Single Component](#override-a-single-component)
   - [Dark Theme](#dark-theme)
@@ -43,10 +44,12 @@ ref (primitives)  →  sys (semantic)  →  component
 
 ## Importing Styles
 
-Add the following import to your global `styles.scss`:
+Component structure ships compiled with each component, so nothing has to be imported for the
+table, the list or the paginator to render. The package's `styles` entry point carries the
+opt-in theming mixins:
 
 ```scss
-@use 'ng-hub-ui-paginable/src/lib/styles/paginable.scss';
+@use 'ng-hub-ui-paginable/styles' as *;
 ```
 
 > **Tip**: Use `@use` instead of `@import` for proper SCSS scoping.
@@ -325,6 +328,19 @@ Opt-in con el input `connected` — dibuja una línea vertical entre items conse
 | `--hub-list-connector-offset` | `var(--hub-list-item-padding-x, var(--hub-ref-space-3, 1rem))` | Desplazamiento en línea desde el borde inicial del item |
 
 
+### Icons (List)
+
+La lista dibuja sus propios glifos y es dueña de las variables que hay detrás, así que cambiar aquí el chevron no toca el de la tabla.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hub-list-icon-color` | `currentColor` | Color de relleno de los glifos de la lista |
+| `--hub-list-icon-size` | `var(--hub-ref-icon-size, 1em)` | Tamaño de los glifos de la lista |
+| `--hub-list-icon-chevron-up` | `url("…")` (SVG) | Glifo del disparador de un item padre desplegado |
+| `--hub-list-icon-chevron-down` | `url("…")` (SVG) | Glifo del disparador de un item padre plegado |
+| `--hub-list-icon-info` | `url("…")` (SVG) | Glifo delante de los mensajes de carga, error y sin resultados |
+| `--hub-list-icon-search` | `url("…")` (SVG) | Glifo del botón de búsqueda |
+
 ### Misc
 
 | Variable | Default | Description |
@@ -543,6 +559,29 @@ El tinte de selección se aplica tanto a la selección propia de la librería co
 ### Responsive Breakpoints
 
 Las variantes responsive de la tabla (`.hub-table__responsive-sm|md|lg|xl|xxl`) se activan en breakpoints **fijos** — `576px`, `768px`, `992px`, `1200px`, `1400px` — definidos directamente en los `@media` del componente. **No** son personalizables mediante variables CSS, porque las custom properties no pueden leerse dentro de las condiciones `@media`.
+
+---
+
+## Internal Panels
+
+El panel de filtro de columna y el menú de acciones de fila heredado toman su superficie de los tokens del sistema en vez de publicar una propia. Sus glifos son la excepción: un glifo no se puede sustituir de ninguna otra forma.
+
+### Column Filter Panel
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hub-filter-icon-color` | `currentColor` | Color de relleno de los glifos del panel de filtro |
+| `--hub-filter-icon-size` | `1em` | Tamaño de los glifos del panel de filtro |
+| `--hub-filter-icon-trash` | `url("…")` (SVG) | Glifo del disparador que quita una regla |
+| `--hub-filter-icon-plus` | `url("…")` (SVG) | Glifo del disparador que añade una regla |
+
+### Row Actions Menu (deprecated)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hub-table-dropdown-icon-color` | `currentColor` | Color de relleno del glifo del disparador |
+| `--hub-table-dropdown-icon-size` | `1em` | Tamaño del glifo del disparador |
+| `--hub-table-dropdown-icon-ellipsis-v` | `url("…")` (SVG) | Glifo por defecto del disparador del menú, sustituido entero por `options.icon` |
 
 ---
 

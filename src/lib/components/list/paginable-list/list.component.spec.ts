@@ -589,7 +589,7 @@ describe('ListComponent', () => {
 			component.filter();
 			fixture.detectChanges();
 
-			expect(component.getVisibleItems(component.items, true).length).toBe(1);
+			expect(component.getVisibleItems(component.items(), true).length).toBe(1);
 		});
 
 		it('returns to the first page, so a narrowed list is not shown empty', () => {

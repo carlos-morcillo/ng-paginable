@@ -33,11 +33,7 @@
 		@if (searchable()) {
 			<div class="hub-table__search">
 				@if (isRtl()) {
-					<button
-						class="hub-table__search-button btn btn-outline-dark"
-						type="button"
-						[attr.aria-label]="'SEARCH' | translate | ucfirst"
-					>
+					<button class="hub-table__search-button" type="button" [attr.aria-label]="'SEARCH' | translate | ucfirst">
 						<i class="hub-table__search-icon hub-table__icon hub-table__icon--search" aria-hidden="true"></i>
 					</button>
 					@if (searchProxy$ | async) {
@@ -107,11 +103,7 @@
 							></i>
 						</button>
 					}
-					<button
-						class="hub-table__search-button btn btn-outline-dark"
-						type="button"
-						[attr.aria-label]="'SEARCH' | translate | ucfirst"
-					>
+					<button class="hub-table__search-button" type="button" [attr.aria-label]="'SEARCH' | translate | ucfirst">
 						<i class="hub-table__search-icon hub-table__icon hub-table__icon--search" aria-hidden="true"></i>
 					</button>
 				}
@@ -126,6 +118,10 @@
 			</div>
 		}
 	</div>
+}
+
+@if (paginated() && (paginationPosition() === 'top' || paginationPosition() === 'both')) {
+	<ng-container [ngTemplateOutlet]="paginationBar" [ngTemplateOutletContext]="{ $implicit: 'top' }"></ng-container>
 }
 
 <div class="hub-table__container {{ responsiveCSSClass() }}" [class.hub-table__responsive]="responsiveCSSClass()">
@@ -214,12 +210,12 @@
 													}
 												</div>
 												@if (dropdown.isOpened()) {
-													<menu-filter
+													<hub-menu-filter
 														class="hub-table__filter-dropdown-content content"
 														[header]="header"
 														[formControlName]="header.filter.key || header.property"
 													>
-													</menu-filter>
+													</hub-menu-filter>
 												}
 											</hub-dropdown>
 										}
@@ -321,17 +317,24 @@
 </div>
 
 <!-- Pagination -->
-@if (page() !== undefined && page() !== null) {
-	<div class="hub-table__bottom-bar">
-		@if (paginationPosition() == 'bottom' || paginationPosition() === 'both') {
-			<hub-paginator
-				class="hub-table__paginator hub-table__bottom-bar-paginator"
-				[(page)]="$any(page)"
-				[numberOfPages]="numberOfPages()"
-				[rtl]="isRtl()"
-			>
-			</hub-paginator>
-		}
+@if (paginated() && (paginationPosition() === 'bottom' || paginationPosition() === 'both')) {
+	<ng-container [ngTemplateOutlet]="paginationBar" [ngTemplateOutletContext]="{ $implicit: 'bottom' }"></ng-container>
+}
+
+<!--
+	The bar carries the page-size selector and the row count as well as the paginator, so a
+	`paginationPosition` that moved only the paginator would leave half of it behind. One
+	template, instantiated wherever the input asks for it — twice under `both`.
+-->
+<ng-template #paginationBar let-placement>
+	<div class="hub-table__bottom-bar hub-table__bottom-bar--{{ placement }}">
+		<hub-paginator
+			class="hub-table__paginator hub-table__bottom-bar-paginator"
+			[(page)]="$any(page)"
+			[numberOfPages]="numberOfPages()"
+			[rtl]="isRtl()"
+		>
+		</hub-paginator>
 		<div class="hub-table__bottom-bar-settings hub-paginator__settings">
 			<label class="hub-paginator__label"> {{ 'ROWS_PER_PAGE' | translate | ucfirst }}: </label>
 			@if (formControlsAdapter) {
@@ -358,7 +361,7 @@
 				</select>
 			}
 		</div>
-		@if (clientMode() || (totalItems() !== null && totalItems() !== undefined)) {
+		@if (paginationInfo() && (clientMode() || (totalItems() !== null && totalItems() !== undefined))) {
 			<p class="hub-table__bottom-bar-info hub-paginator__info">
 				{{
 					'SHOWING_X_OF_Y_ROWS'
@@ -372,23 +375,46 @@
 			</p>
 		}
 	</div>
-}
+</ng-template>
+
 <ng-template #defaultRowTemplate let-item>
+	<!--
+		A clickable row is a control, so it has to be reachable without a pointer. It keeps its
+		implicit `row` role rather than taking `role="button"`: the row already contains a
+		checkbox and action buttons, and a button role would nest interactive controls and cost
+		the table its grid semantics. The row takes focus and answers to Enter and Space instead.
+	-->
 	<tr
 		class="hub-table__body-row"
 		(click)="onItemClick($event, item)"
+		(keydown.enter)="onItemKeydown($event, item)"
+		(keydown.space)="onItemKeydown($event, item)"
+		[attr.tabindex]="clickFn() ? 0 : null"
 		[class.hub-table__body-row--selected]="selectable() && item.selected"
 		[class.hub-table__body-row--clickable]="clickFn()"
 		[ngClass]="_getRowClass(item)"
 	>
 		@if (selectable() || batchActions.length) {
-			<td class="hub-table__cell hub-table__cell--select sticky-start" data-col="__hub_select">
-				<input
-					type="checkbox"
-					[(ngModel)]="item.selected"
-					[ngModelOptions]="{ standalone: true }"
-					(click)="$event.stopPropagation(); toggle(item)"
-				/>
+			<!--
+				The whole cell stops the click, not just the box. A pointer landing anywhere in here
+				means "select this row", and a near-miss used to bubble up to the row and run the
+				consumer's clickFn instead — which commonly navigates, so the selection built up so
+				far was lost. The label makes the cell the control's own hit area, so there is no
+				near-miss left to catch.
+			-->
+			<td
+				class="hub-table__cell hub-table__cell--select sticky-start"
+				data-col="__hub_select"
+				(click)="$event.stopPropagation()"
+			>
+				<label class="hub-table__select-hit">
+					<input
+						type="checkbox"
+						[(ngModel)]="item.selected"
+						[ngModelOptions]="{ standalone: true }"
+						(click)="toggle(item)"
+					/>
+				</label>
 			</td>
 		}
 		@for (header of fixedHeaders(); track $index) {
@@ -423,7 +449,7 @@
 				[class.sticky-end]="stickyActions()"
 			>
 				@if (templateExpandingRows().length) {
-					<button (click)="toggleExpandedRow(item)" type="button" class="hub-table__expander-btn btn btn-link px-2">
+					<button (click)="toggleExpandedRow(item)" type="button" class="hub-table__expander-btn">
 						<i
 							class="hub-table__expander-icon hub-table__icon"
 							[class.hub-table__icon--caret-up]="!item.collapsed"

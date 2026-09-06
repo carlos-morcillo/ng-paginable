@@ -1,5 +1,5 @@
 import { UpperCasePipe } from '@angular/common';
-import { Component, Input, forwardRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, forwardRef, inject, input } from '@angular/core';
 import {
 	ControlValueAccessor,
 	FormArray,
@@ -24,8 +24,9 @@ import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 
 @Component({
-	selector: 'menu-filter',
+	selector: 'hub-menu-filter',
 	standalone: true,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [ReactiveFormsModule, UpperCasePipe, TranslatePipe, UcfirstPipe],
 	templateUrl: './menu-filter.component.html',
 	styleUrls: ['./menu-filter.component.scss'],
@@ -41,24 +42,50 @@ export class MenuFilterComponent implements ControlValueAccessor {
 	#fb = inject(FormBuilder);
 	#parent = inject(DropdownComponent);
 
-	#header!: PaginableTableHeader;
-	// TODO: Skipped for migration because:
-	//  Accessor inputs cannot be migrated as they are too complex.
 	/**
 	 * The table header configuration associated with this filter.
 	 *
 	 * @type {PaginableTableHeader}
 	 * @memberof MenuFilterComponent
 	 */
-	@Input()
-	get header(): PaginableTableHeader {
-		return this.#header;
-	}
-	set header(v: PaginableTableHeader) {
-		this.#header = v;
-		this.setMatchMode();
-		this.setDefaultValue();
-	}
+	readonly header = input<PaginableTableHeader>();
+
+	/**
+	 * Match modes offered for this column, derived from the filter type.
+	 *
+	 * Derived rather than assigned from the input's setter: the setter also had to write
+	 * `defaultValue`, so the two could only ever be right in the order they were written.
+	 */
+	readonly matchModes = computed<Array<MatchModes>>(() => {
+		let matchModes;
+		switch (this.header()?.filter?.type) {
+			case 'number':
+				matchModes = NumberMatchModes;
+				break;
+			case 'date':
+			case 'date-range':
+				matchModes = DateMatchModes;
+				break;
+			case 'boolean':
+				matchModes = BooleanMatchModes;
+				break;
+			default:
+				matchModes = StringMatchModes;
+				break;
+		}
+		return [...Object.values(matchModes as any), ...Object.values(NullMatchModes)] as MatchModes[];
+	});
+
+	/** The one empty rule the filter falls back to when the form writes nothing. */
+	readonly defaultValue = computed<MenuFilterValue>(() => ({
+		operator: MenuFilterOperators.And,
+		rules: [
+			{
+				value: null,
+				matchMode: this.matchModes()[0]
+			}
+		]
+	}));
 
 	form = this.#fb.group({
 		operator: [MenuFilterOperators.And],
@@ -72,10 +99,7 @@ export class MenuFilterComponent implements ControlValueAccessor {
 	onChange = (value: MenuFilterValue | null) => {};
 	onTouched = () => {};
 
-	matchModes: Array<MatchModes> = [];
 	nullMatchModes = NullMatchModes;
-
-	defaultValue!: MenuFilterValue;
 
 	/**
 	 * Clears existing rules, sets a default value if none is provided, adds rules based on the input value, and patches the form with the input value.
@@ -84,7 +108,7 @@ export class MenuFilterComponent implements ControlValueAccessor {
 	writeValue(value: MenuFilterValue | null): void {
 		this.rulesFA.clear();
 		if (!value) {
-			value = this.defaultValue;
+			value = this.defaultValue();
 		}
 		value.rules.forEach((_) => this.add());
 		this.form.patchValue(value);
@@ -109,7 +133,7 @@ export class MenuFilterComponent implements ControlValueAccessor {
 		const rulesFA = this.form.get('rules') as FormArray;
 		const ruleFG = this.#fb.group({
 			value: [null],
-			matchMode: [this.matchModes[0]]
+			matchMode: [this.matchModes()[0]]
 		});
 		if (value) {
 			ruleFG.patchValue(value as any);
@@ -146,45 +170,6 @@ export class MenuFilterComponent implements ControlValueAccessor {
 				: null
 		);
 		this.#parent.closeDropdown();
-	}
-
-	/**
-	 * Determines the appropriate match modes based on the filter type and assigns them to the `matchModes` property.
-	 */
-	setMatchMode() {
-		let matchModes;
-		switch (this.header.filter?.type) {
-			case 'number':
-				matchModes = NumberMatchModes;
-				break;
-			case 'date':
-			case 'date-range':
-				matchModes = DateMatchModes;
-				break;
-			case 'boolean':
-				matchModes = BooleanMatchModes;
-				break;
-			default:
-				matchModes = StringMatchModes;
-				break;
-		}
-		this.matchModes = [...Object.values(matchModes as any), ...Object.values(NullMatchModes)] as MatchModes[];
-	}
-
-	/**
-	 * Initializes a default value for a menu filter with an operator and a rule containing a null value and a match mode.
-	 */
-	setDefaultValue() {
-		const matchMode = Object.values(this.matchModes)[0];
-		this.defaultValue = {
-			operator: MenuFilterOperators.And,
-			rules: [
-				{
-					value: null,
-					matchMode
-				}
-			]
-		};
 	}
 
 	/**

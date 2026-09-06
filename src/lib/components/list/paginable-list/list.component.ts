@@ -1,19 +1,24 @@
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import {
+	ChangeDetectionStrategy,
 	ChangeDetectorRef,
 	Component,
 	DestroyRef,
 	ElementRef,
-	Input,
+	OnChanges,
+	SimpleChanges,
 	TemplateRef,
 	booleanAttribute,
 	computed,
 	contentChild,
+	effect,
 	inject,
 	input,
+	linkedSignal,
 	model,
 	output,
-	signal
+	signal,
+	untracked
 } from '@angular/core';
 import {
 	AbstractControl,
@@ -45,6 +50,8 @@ import { PaginableActionButton } from '../../../interfaces/paginable-action-butt
 import { PaginableTableDropdown } from '../../../interfaces/paginable-table-dropdown';
 import { PaginableStateDefault } from '../../../interfaces/paginable-state';
 import { PaginableTableOptions } from '../../../interfaces/paginable-table-options';
+import { HubPaginableResource } from '../../../interfaces/paginable-resource';
+import { readPaginableSource } from '../../../utils/paginable-source';
 import { DragPointerMode, DragTarget, HubListDragService } from '../../../services/hub-list-drag.service';
 import { PaginableDefaultsService } from '../../../services/paginable-defaults.service';
 import { PaginableService } from '../../../services/paginable.service';
@@ -77,15 +84,28 @@ interface KeyboardDragState {
 	item: any;
 }
 
+/** The options every list starts from, folded back in on every `options` assignment. */
+const DEFAULT_LIST_OPTIONS: PaginableTableOptions = {
+	display: 'list',
+	rtl: false,
+	cursor: 'default',
+	hoverableRows: false,
+	striped: null,
+	variant: null,
+	searchable: false,
+	collapsed: true
+};
+
 @Component({
 	selector: 'hub-list, hub-ui-list, hub-paginable-list',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	templateUrl: './list.component.html',
 	styleUrl: './list.component.scss',
 	host: {
 		class: 'hub-list',
 		'[class.hub-list--rtl]': 'isRtl()',
 		'[class.hub-list--flush]': 'flush()',
-		'[attr.data-variant]': 'options.variant ?? null',
+		'[attr.data-variant]': 'options().variant ?? null',
 		'[style.--hub-list-accent]': 'accentVar()',
 		'[attr.data-hub-drag-owner]': '_listId'
 	},
@@ -116,7 +136,7 @@ interface KeyboardDragState {
  * @class ListComponent
  * @template T The type of data for each item in the list.
  */
-export class ListComponent<T = any> {
+export class ListComponent<T = any> implements OnChanges {
 	#fb = inject(FormBuilder);
 	#cdr = inject(ChangeDetectorRef);
 	#host = inject(ElementRef);
@@ -191,7 +211,9 @@ export class ListComponent<T = any> {
 	 *
 	 * The default reads `bindLabel` and falls back to the whole item stringified, which is
 	 * right for a list of names and wrong for anything whose identity is spread across
-	 * fields. Same shape as the table's `searchFn`, so the two read alike.
+	 * fields. The term arrives trimmed and lowercased, and the table honours the same
+	 * contract — with one difference the hierarchy forces here: the predicate answers for a
+	 * single item, and a group survives whenever any of its descendants does.
 	 */
 	readonly searchFn = input<((item: T, term: string) => boolean) | null>(null);
 
@@ -282,27 +304,19 @@ export class ListComponent<T = any> {
 	 */
 	readonly radioGroupName = `hub-list-selection-${generateUniqueId(8)}`;
 
-	private _options: PaginableTableOptions = {
-		display: 'list',
-		rtl: false,
-		cursor: 'default',
-		hoverableRows: false,
-		striped: null,
-		variant: null,
-		searchable: false,
-		collapsed: true
-	};
-	get options(): PaginableTableOptions {
-		return this._options;
-	}
-	@Input()
-	set options(v: PaginableTableOptions) {
-		this._options = {
-			...this._options,
-			...(v ?? {})
-		};
-		this.buildForm(this.form, this._items);
-	}
+	/**
+	 * Visual and behavioural options.
+	 *
+	 * The transform folds the defaults back in on every write, so a consumer passing only
+	 * `{ display: 'cards' }` still gets `collapsed: true` — and, unlike the setter this
+	 * replaced, a key dropped from a later assignment stops applying instead of lingering.
+	 */
+	readonly options = input<PaginableTableOptions, PaginableTableOptions>(DEFAULT_LIST_OPTIONS, {
+		transform: (value: PaginableTableOptions): PaginableTableOptions => ({
+			...DEFAULT_LIST_OPTIONS,
+			...(value ?? {})
+		})
+	});
 
 	/**
 	 * Returns whether right-to-left mode is enabled.
@@ -310,7 +324,7 @@ export class ListComponent<T = any> {
 	 * @returns `true` when RTL mode is active for the list.
 	 */
 	isRtl(): boolean {
-		return this.options.rtl === true;
+		return this.options().rtl === true;
 	}
 
 	/**
@@ -326,7 +340,7 @@ export class ListComponent<T = any> {
 	 * @returns The `--hub-list-accent` value, or `null` when no variant is set.
 	 */
 	accentVar(): string | null {
-		return resolveHubAccent(this.options.variant);
+		return resolveHubAccent(this.options().variant);
 	}
 
 	/**
@@ -335,21 +349,124 @@ export class ListComponent<T = any> {
 	 * @returns `true` when the configured display mode is `cards`.
 	 */
 	isCardsDisplay(): boolean {
-		return this.options.display === 'cards';
+		return this.options().display === 'cards';
 	}
 
-	private _items: any = [];
-	@Input()
-	get items(): any {
-		return this._items;
+	/** Hierarchical list data. */
+	readonly items = input<any, any>([], { transform: (value: any) => value ?? [] });
+
+	/**
+	 * A signal-based resource — `resource()`, `httpResource()` or anything shaped like one —
+	 * bound whole, so the collection, the loading state and the failure arrive together
+	 * instead of as three bindings a consumer has to keep in step.
+	 *
+	 * Its value is read the way the table reads `[data]`: an array becomes the items, a
+	 * `PaginationState` becomes the items plus page, size and total. `isLoading()` feeds
+	 * {@link loading} and `error()` feeds {@link error}.
+	 *
+	 * Bound alongside `[items]`, **the resource wins**. And **paging does not reload it** — the
+	 * list never calls `reload()`, so whoever owns the request keeps owning it.
+	 *
+	 * Typed structurally rather than as `ResourceRef`, which arrived in Angular 19 while this
+	 * package supports 18: see {@link HubPaginableResource}.
+	 */
+	readonly resource = input<HubPaginableResource<T> | null>(null);
+
+	/** Items published by the bound `[resource]`, or `null` while none is bound. */
+	readonly #resourceItems = signal<Array<any> | null>(null);
+
+	/** The collection the list works from: the resource's when one is bound, `[items]` otherwise. */
+	readonly #sourceItems = computed<any>(() => this.#resourceItems() ?? this.items());
+
+	/**
+	 * Mirrors the bound resource into the list: its value becomes the items, its `isLoading()`
+	 * the loading state and its `error()` the error state.
+	 *
+	 * It rebuilds the form itself because `ngOnChanges` — which is what `[items]` rebuilds
+	 * through — never fires for a value that arrives inside a signal. The rebuild reads the
+	 * collection it just published, so it runs untracked: tracking those reads would make the
+	 * effect depend on its own writes.
+	 *
+	 * The failure is read before the value, and the value only when there is none: a failed
+	 * resource has nothing to hand over and says so by rethrowing from `value()`. Reading the
+	 * value first threw out of this effect, so the error state the input exists to drive was
+	 * never set. The items of the last good load are left alone — a refresh that fails should
+	 * not cost the reader the list they were looking at.
+	 */
+	resourceEffect = effect(() => {
+		const resource = this.resource();
+
+		if (!resource) {
+			this.#resourceItems.set(null);
+			return;
+		}
+
+		const failure = resource.error() ?? null;
+
+		if (!failure) {
+			const { items, state } = readPaginableSource<any>(resource.value());
+
+			// A slot the collection left empty is not a statement about it: the list's own page,
+			// size and total stay as they were rather than being reset to a default nobody chose.
+			if (state?.page != null) {
+				this.page.set(state.page);
+			}
+			if (state?.perPage != null) {
+				this.perPage.set(state.perPage);
+			}
+			if (state?.totalItems != null) {
+				this.totalItems.set(state.totalItems);
+			}
+
+			// Only a new collection is worth a rebuild. The effect also wakes when the resource
+			// merely starts or stops loading, and throwing the form away then would collapse the
+			// groups the reader had opened for nothing.
+			const previous = untracked(() => this.#resourceItems());
+			this.#resourceItems.set(items);
+
+			if (previous !== items) {
+				untracked(() => this.#rebuildFromItems());
+			}
+		}
+
+		this.loading.set(resource.isLoading());
+		this.error.set(failure);
+	});
+
+	/**
+	 * The collection actually rendered: the items in force, plus the reorders drag applies to
+	 * them.
+	 *
+	 * A drag moves an element inside the consumer's own array, which changes no reference and
+	 * so repaints nothing. Republishing the collection here is what makes the move visible,
+	 * and it cannot be done on the input itself — hence a linked signal rather than a field
+	 * the old setter could reassign.
+	 */
+	protected readonly renderedItems = linkedSignal<any>(() => this.#sourceItems());
+
+	/**
+	 * Rebuilds the form the moment `items` or `options` change, which is the timing the
+	 * accessor inputs used to give: the list is painted from `form.controls`, so deferring
+	 * this to an effect would leave the first frame empty.
+	 */
+	ngOnChanges(changes: SimpleChanges): void {
+		if (changes['items']) {
+			this.#rebuildFromItems();
+			return;
+		}
+		if (changes['options']) {
+			// `collapsed` is a control of every group, so a new value has to reach the form.
+			this.buildForm(this.form, this.renderedItems());
+		}
 	}
-	set items(v: any) {
+
+	/** Throws the form away, builds it from the current items and puts the selection back. */
+	#rebuildFromItems(): void {
 		// What the user had chosen, before the form that holds it is thrown away.
 		const chosen = this.value;
 
-		this._items = v ?? [];
 		this.form.clear();
-		this.buildForm(this.form, this._items);
+		this.buildForm(this.form, this.renderedItems());
 
 		if (this.isDisabled) {
 			this.form.disable({ emitEvent: false });
@@ -471,19 +588,17 @@ export class ListComponent<T = any> {
 	 * @type {PaginableTableRowAction[]}
 	 * @memberof PaginableTableComponent
 	 */
-	private _batchActions: Array<PaginableTableDropdown | PaginableActionButton> = [];
-	@Input()
-	get batchActions(): Array<PaginableTableDropdown | PaginableActionButton> {
-		return this._batchActions;
-	}
-	set batchActions(v: Array<PaginableTableDropdown | PaginableActionButton>) {
-		this._batchActions = v.map((b) => {
-			if ((b as PaginableTableDropdown).buttons) {
-				b = { fill: null, position: 'start', color: 'light', ...b };
-			}
-			return b;
-		});
-	}
+	readonly batchActions = input<
+		Array<PaginableTableDropdown | PaginableActionButton>,
+		Array<PaginableTableDropdown | PaginableActionButton>
+	>([], {
+		transform: (value: Array<PaginableTableDropdown | PaginableActionButton>) =>
+			(value ?? []).map((action) =>
+				(action as PaginableTableDropdown).buttons
+					? { fill: null, position: 'start', color: 'light', ...action }
+					: action
+			)
+	});
 
 	// NOTE: Control access value
 
@@ -554,7 +669,7 @@ export class ListComponent<T = any> {
 
 				const group = this.#fb.group({
 					selected: [false],
-					collapsed: [this.options.collapsed],
+					collapsed: [this.options().collapsed],
 					data: [item],
 					children: this.#fb.array([])
 				});
@@ -619,7 +734,7 @@ export class ListComponent<T = any> {
 	#matches(item: any): boolean {
 		const term = (this.searchTerm() ?? '').trim().toLowerCase();
 
-		if (!term || !this.options.searchable) {
+		if (!term || !this.options().searchable) {
 			return true;
 		}
 
@@ -860,7 +975,7 @@ export class ListComponent<T = any> {
 
 	/** The root items the current search leaves, which is what the paging counts. */
 	#filteredItems(): ReadonlyArray<any> {
-		return (this._items ?? []).filter((item: any) => this.#matches(item));
+		return (this.renderedItems() ?? []).filter((item: any) => this.#matches(item));
 	}
 
 	private getSliceRange(total: number): { start: number; end: number } {
@@ -877,7 +992,7 @@ export class ListComponent<T = any> {
 	 * @returns The slice start offset (0 when pagination is disabled).
 	 */
 	getRootSliceStart(): number {
-		return this.paginate() ? this.getSliceRange(this._items.length).start : 0;
+		return this.paginate() ? this.getSliceRange(this.renderedItems().length).start : 0;
 	}
 
 	/**
@@ -1581,7 +1696,7 @@ export class ListComponent<T = any> {
 	 * Re-renders this list after an in-place mutation of its data/form (drag reorder).
 	 */
 	#refreshSelf(): void {
-		this._items = Array.isArray(this._items) ? [...this._items] : this._items;
+		this.renderedItems.update((items: any) => (Array.isArray(items) ? [...items] : items));
 		this.#cdr.markForCheck();
 	}
 

@@ -18,11 +18,11 @@ import {
 /**
  * The table stops drawing its row actions and describes them instead.
  *
- * What it drew was markup in Bootstrap class names — `.btn`, `.dropdown-menu`,
- * `.dropdown-item` — which resolve to nothing in a product that does not ship Bootstrap:
- * an unstyled grey button and a transparent panel. Rather than restyle a second
- * implementation of a dropdown that the button library already has, the table now says
- * what a row offers and an adapter draws it, exactly as it already does for its inputs.
+ * What it drew was a second, poorer implementation of a dropdown the button library
+ * already has: a panel placed by hand on the body, which neither flips when it does not
+ * fit nor follows a scrolling container. Rather than keep maintaining it, the table now
+ * says what a row offers and an adapter draws it, exactly as it already does for its
+ * inputs.
  *
  * What the adapter receives is fully resolved: hidden actions are absent, predicates are
  * booleans, Observable labels are strings. An adapter that had to know a consumer may

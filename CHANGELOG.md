@@ -1,6 +1,268 @@
 # Changelog
 
-## [Unreleased]
+## [22.18.0] - 2026-09-06
+
+### Added
+
+- **A clickable row can be reached and activated from the keyboard.** A row given `clickFn` is a
+  control in every way except the one that matters to somebody not holding a mouse: it had no tab
+  stop and answered to no key, so the action simply was not there for them. The row now takes focus
+  when `clickFn` is set and runs on Enter and Space. It keeps its implicit `row` role rather than
+  taking `role="button"` — the row already contains a checkbox and action buttons, and a button
+  role would nest interactive controls and cost the table its grid semantics. The handler acts only
+  when the row itself has focus, so ticking a checkbox with the keyboard no longer opens the record.
+
+- **The table and the list accept a resource whole, with `[resource]`.** Feeding either of them
+  from a `resource()` or an `httpResource()` meant three bindings — the value, `isLoading()` and
+  `error()` — that a consumer had to keep in step by hand, and any one of them forgotten showed
+  as a table that never stops spinning or never reports a failure. One binding now carries all
+  three: the value is read exactly as `[data]` is (an array becomes rows, a `PaginationState`
+  becomes rows plus page, size and total), `isLoading()` drives the loading state and `error()`
+  the error state. Typed by shape rather than as `ResourceRef`, which landed in Angular 19 while
+  this package supports 18 — see `HubPaginableResource`. Bound alongside `[data]` / `[items]` the
+  resource wins, and paging deliberately does **not** call `reload()`: whoever owns the request
+  keeps owning it. A failure is read before the value and the value only when there is none,
+  because a resource in the error state has nothing to hand over and says so by rethrowing from
+  `value()`; the rows of the last good load stay where they are behind the error state, so a
+  refresh that fails does not cost the reader the table they were looking at.
+
+- **`selectWhileSelecting` makes a row click mark the row while a selection is under way.**
+  Picking several rows with a finger means tapping them, and on a table whose rows open a record
+  the second tap navigated away with the selection built up so far. The input is off by default —
+  on a pointer a click keeps the meaning the consumer gave it, and switching everybody over would
+  break the readers who navigate while they pick. It carries no state of its own: the mode is on
+  while at least one row is selected, so it is entered by ticking the first box and left by
+  unticking the last one. Enter and Space on a focused row follow the same rule.
+
+- **`<hub-ui-paginator>` is a name the paginator answers to.** The `hub-ui-` spelling was on the
+  table, the list and the dropdown but not on the paginator, so a template that reached for it
+  matched nothing and rendered an empty element — and this repository's own CSS reference has been
+  teaching that spelling for as long as it has been wrong. `hub-paginator` and
+  `paginable-table-paginator` are untouched. Purely additive, and it is the only alias added: the
+  alias exists to answer a spelling the documentation already teaches, and nothing teaches one for
+  the four element names left. `hub-menu-filter` is not exported at all and `hub-state-outlet` is
+  exported for its types while the README documents it as an internal outlet; `hub-table-dropdown`
+  is the legacy row-actions surface being replaced; `hub-table-range-input` is documented under
+  that one name and only inside a custom filter template. `hub-icon` is left alone for a different
+  reason — it duplicates the component of the same name in `ng-hub-ui-icons`, so a third spelling
+  would spread a collision rather than settle it.
+
+- **The list, the column filter panel and the row-actions menu publish icon variables of their
+  own.** All three drew their glyphs with the table's — `--hub-table-icon-chevron-down` on the
+  list's collapse trigger, `--trash` and `--plus` in the filter panel, `--ellipsis-v` on the menu —
+  so a product that wanted another chevron in the list had to redefine a variable named after the
+  table, and got the table changed along with it. Each component now declares its own family and
+  names its own classes: `--hub-list-icon-*` with `.hub-list__icon--*`, `--hub-filter-icon-*` with
+  `.hub-filter__icon--*` and `--hub-table-dropdown-icon-*` with `.hub-table-dropdown__icon--*`.
+  Every default is the glyph that was already there. The list's magnifier had no variable at all —
+  the SVG sat inside `mask-image` in the stylesheet — and is `--hub-list-icon-search` now.
+
+### Changed
+
+- **The filter panel, the dropdown and the legacy row-actions menu answer to names this
+  library owns.** `.filter__*` became `hub-filter__*`, `.dropdown__*` became `hub-dropdown__*`
+  and `.table-dropdown__*` became `hub-table-dropdown__*`, in line with the `hub-table__*` /
+  `hub-list__*` / `.hub-paginator` blocks migrated before them. The internal `<menu-filter>`
+  element is `<hub-menu-filter>` for the same reason: an un-prefixed element name is a global
+  name, and this one was never exported for a consumer to use. See `BREAKING_CHANGES.md`.
+
+- **Every remaining `@Input()` is a signal input, and the host bindings live in the metadata.**
+  `ListComponent.items` / `options` / `batchActions`, `MenuFilterComponent.header`,
+  `HubIconComponent.config` and `PaginableTableDropdownComponent.options` were accessor inputs
+  whose setters wrote sibling fields, so those fields were only ever right in the order the
+  setters happened to run. They are inputs with a transform now, and what used to be written by
+  hand — `matchModes`, `defaultValue`, `buttonClass`, `toggleColor`, the icon's `type` / `value` /
+  `variant` / `classlist` / `content` — is derived. Reading any of them from code means calling
+  it: see `BREAKING_CHANGES.md`. Template bindings are unchanged.
+
+- **`searchFn` and `compareFn` do what the table has been publishing them as.** Both were declared
+  inputs the component never read — binding either changed nothing, and `compareFn` carried a
+  `TODO: Implementar` in the source. `searchFn` now decides whether a row survives the global
+  search in client mode, and `compareFn` decides when two selection values are the same record.
+  **`searchFn` changes shape to do it**: `(a: T, b: T) => boolean` could not drive a search because
+  it never received a term, so it is now `(item: T, term: string) => boolean` — the same contract
+  `hub-list` already honours, term included already trimmed and lowercased. That is a break for
+  anyone who typed the old signature by hand; see `BREAKING_CHANGES.md`. Neither input changes
+  anything while unbound: without `searchFn` the search still scans every searchable column, and
+  without `compareFn` the selection is still matched exactly as before, JSON serialization in
+  `markSelected` and reference equality in the toggles.
+
+- **Every component declares `ChangeDetectionStrategy.OnPush` instead of leaving it to the
+  compiler.** This buys nothing on Angular 22, where an omitted strategy already compiles to
+  OnPush, so no consumer on the version this release targets gains any speed from it. It matters
+  one version down: this package supports Angular from 18, and a linker older than 22 reading a
+  partial declaration with no `changeDetection` falls back to the eager strategy. Declaring it puts
+  those consumers on the same strategy the components are actually written and tested for.
+
+### Removed
+
+- **The paragraph the table printed into the console when no actions adapter was registered.** It
+  was emitted in production builds and deliberately not in development ones, which put an
+  `npm i ng-hub-ui-buttons` and two lines of provider setup in front of the end user of the
+  consuming application — on a page they cannot change, about a decision they did not take, and with
+  no way to switch it off. The deprecation itself stands untouched: it is on
+  `PaginableTableDropdownComponent`'s `@deprecated` tag, in the READMEs and in the 22.16.0 entry of
+  this file, which is where a message addressed to a developer belongs.
+  `table-console-silence.spec.ts` holds both the fallback rendering and the deprecated dropdown to
+  silence.
+
+### Deprecated
+
+- **`HubUITableModule` (and its `TableModule` alias).** The module declares and exports nothing —
+  the commented-out body it still carries is from before the components went standalone — so all it
+  does today is carry providers through `forRoot()`. `providePaginable()` does that in one line and
+  works in a route's providers as well as at bootstrap. The class is marked `@deprecated` and
+  **behaves exactly as before**; it is removed in `23.0.0`, the release that moves this family to
+  Angular 23. See `BREAKING_CHANGES.md`.
+
+  The tag sits above `@NgModule(…)`, which is where it has to sit to exist at all: a decorated
+  class begins at its decorator, so a JSDoc block written between the decorator and `export class`
+  falls inside the declaration and TypeScript attaches nothing — no strike-through in the editor,
+  no warning from a build that fails on deprecations, a notice visible only to whoever opens the
+  file. `PaginableTableDropdownComponent`, deprecated back in 22.16.0, had been carrying its tag
+  in exactly that dead spot ever since; it is moved too. `library-module-deprecations.spec.ts`
+  asks the compiler rather than the text, so the placement cannot rot back.
+
+### Fixed
+
+- **The README no longer opens by teaching a module that renders nothing.** Its first snippet —
+  the one a reader copies — put `HubUITableModule` in a standalone component's `imports` and then
+  wrote `<hub-ui-table>` in the template. The module declares and exports no component, so that
+  element resolves to nothing: the very first thing the documentation asked anybody to do could
+  not work. Both READMEs import `TableComponent`, and the troubleshooting section says plainly
+  what the module does and does not do.
+
+- **Missing the row checkbox by a few pixels no longer opens the row.** Only the `<input>` stopped
+  the click from reaching the row, and a native checkbox is a fraction of the cell it sits in, so a
+  pointer landing anywhere else in that cell ran the consumer's `clickFn` instead. That commonly
+  navigates, which took the selection built up so far with it. The whole selection cell now stops
+  the click and the control fills it, so there is no near-miss left to catch.
+
+
+- **The package declares a `styles` entry point, so the theming mixins can be reached the way
+  the README says they can.** `package.json` carried no `exports` map at all, which left the
+  `styles/` folder ng-packagr copies into the distribution undeclared: the only thing a
+  consumer could import by name was the JavaScript entry. `ng-hub-ui-paginable/styles` now
+  forwards `hub-table-theme` and `hub-list-theme` from one place, and each partial keeps its
+  own subpath. Component structure still ships compiled with each component — there was never
+  a global sheet to import, which is why the old instruction could not have worked.
+- **The filter panel, the dropdown and the row menus draw themselves, in a product with
+  Bootstrap or without it.** They named their appearance after Bootstrap — `.btn`,
+  `.dropdown-menu`, `.dropdown-item`, `.dropdown-toggle`, `.form-control`, `.form-select` —
+  and so did three controls the table and the list draw themselves. That failed in both
+  directions at once: without Bootstrap the names resolved to nothing, so the column filter
+  came out as bare text on a transparent box and the row-expander caret fell back to the
+  browser's grey button; with Bootstrap the host application's stylesheet owned the appearance
+  of the library's own internals, and a theme change there reshaped them unasked. Each surface
+  now ships the rules it used to borrow, drawn from the system tokens.
+
+- **The paginator speaks the language it was configured in.** Its first, previous, next and
+  last controls are icon-only, so the `aria-label` is the entire accessible name a screen
+  reader gets — and in nine of the eleven shipped languages that name fell through to English,
+  because only `en` and `es` ever defined `PAGINATION`, `FIRST`, `PREVIOUS`, `NEXT` and `LAST`
+  and every other dictionary spreads the English one. Someone browsing in Catalan or German
+  heard "First", "Previous", "Next" announced with no marked language change. The nine
+  dictionaries (`an`, `ar`, `ast`, `ca`, `de`, `eu`, `gl`, `ru`, `zh`) now carry their own
+  wording.
+
+- **The styling section of the README no longer sends readers to a file that never existed.**
+  It told them to `@use 'ng-hub-ui-paginable/src/lib/styles/paginable.scss'` — a `paginable.scss`
+  that is nowhere in the repository, under a `src/lib/` layout the published package does not
+  have — while a later section of the same document taught the real shape. Both READMEs now
+  document the entry point the package actually declares. The CSS variables reference they link
+  to is also shipped in the distribution now, so that link resolves for anyone reading the
+  README on npm rather than on GitHub.
+
+- **`paginationInfo` actually hides the "showing X of Y" line.** The input existed, read the
+  app-wide default from `providePaginable({ defaults })` and typed itself `boolean`, but the
+  template never asked for it: the line was guarded only by whether the table knew a total.
+  Setting it to `false` — per instance or app-wide — changed nothing, and the only test on it
+  checked the signal read back rather than the rendered output. Consumers were hiding the line
+  with CSS on `.hub-table__bottom-bar-info` because the documented switch did not respond.
+
+- **`paginationPosition` puts the pagination bar where it says it does.** The input typed itself
+  `'bottom' | 'top' | 'both'` and the READMEs, the functionality table and the playground all
+  described the three values as placements, but the template drew one bar under the rows and asked
+  the input only whether to put a paginator inside it. `top` therefore deleted the paginator
+  instead of moving it, and `both` was indistinguishable from `bottom`. The bar is one template
+  now — paginator, page-size selector and row count together, since moving only the paginator
+  would leave the rest behind — drawn above the rows for `top`, under them for `bottom` and in
+  both places for `both`. Each one carries `hub-table__bottom-bar--top` or
+  `hub-table__bottom-bar--bottom` so a consumer can address one of the two. No signature changes,
+  and `bottom` renders exactly what it did before.
+
+- **Opening a `hub-dropdown` no longer writes to the browser console.** A debug
+  `console.warn` left in `openDropdown()` reported a state the component's required view query
+  cannot even reach, so the only thing it could ever do was add noise to a consumer's console.
+
+- **A `hub-dropdown` carries on the host the identifier it was given, not a stringified signal.**
+  The id reached the element through a bare `@HostBinding()` on a field holding an `input()`, and
+  nothing unwraps a signal in a host binding, so the rendered attribute read
+  `[Input Signal: …]`. The table tells one open menu from another by that id, and anybody
+  labelling a menu from outside — `aria-controls`, a test selector, a stylesheet — was pointing at
+  a name the DOM never had.
+
+- **The documentation names selectors, inputs and template contexts that exist.** Both READMEs
+  taught `<hub-ui-paginator>` and `<hub-ui-icon>`, which the library never declared, and projected
+  into `notFoundTpt`, `tableRow` and `listItem`, which no directive matches — so a reader who
+  copied any of them got the default rendering and no error. The cell examples read
+  `let-data="data"` out of a context whose keys are `header`, `item`, `row` and `property`, the
+  row example read the record straight off a `TableRow` wrapper, and the documentation page taught
+  a `*paginableTableCell="let value; let row"` microsyntax that binds neither. The input tables
+  were missing eight table inputs, sixteen list inputs and the paginator's `rtl`, and gave the
+  wrong type and default for `selectable`. `table-docs.spec.ts` now reads the library's own
+  sources and fails when any of that drifts again.
+
+- **The Spanish README documents the same API as the English one, and both testing snippets query
+  markup the components render.** `README.es.md` still described `PaginableTableDropdown` as
+  `{ title: string; buttons; fill?: string; position?: 'start' | 'end'; color? }` — `title` is
+  optional and takes an `Observable`, and `icon`, `tooltip`, `hidden` and `disabled` were missing
+  outright — and never mentioned `PaginableActionButton`, its `variant` / `color` vocabulary or
+  the reactive-translation contract, so a reader working in Spanish configured a row menu against
+  an interface the library stopped having. In `README.md` the edit action declared `tooltip` twice
+  in one object literal, which TypeScript refuses to compile; the migration guide imported
+  `provideTableConfig`, a name the package has never exported — it is `providePaginable` — and the
+  testing guide reached for `input[type="search"]` and `.pagination .page-item … button`: the
+  search field is `.hub-table__search-input` and the paginator controls are `<a role="button">`
+  inside `.hub-paginator__item`, so both queries found nothing. `ListClickEvent` was quoted
+  without `children`, the member that carries a group's items. `table-docs.spec.ts` now holds
+  every quoted interface and every `import … from 'ng-hub-ui-paginable'` against the sources.
+
+- **The documentation page's release history is complete and says only what was released.** It ran
+  from the current version down to 19.10.2 while dropping twenty-three releases on the way — the
+  whole 21.x line among them — and the 19.10.2 entry it did print announced an `added` and a
+  `changed` for a release whose only section is `Fixed`. `table-changelog.spec.ts` now holds every
+  announced version against this file: same date, no kind of change the release did not contain,
+  and no gap above the floor the page declares.
+
+- **The glyphs of the list, the filter panel and the row-actions menu are drawn at all.** They
+  asked for `hub-table__icon`, and a component stylesheet is scoped to that component's own view:
+  the class reached the table and nothing else. So the trigger that folds a group of list items was
+  an empty box, the loading, error and no-results messages had no symbol in front of them, the
+  filter panel's add and remove rules were bare words, and the row-actions menu had no three dots
+  to click — only a button-sized gap where they should have been. Each of them now uses its own
+  class, which its own stylesheet ships.
+
+- **The chevron marking a collapsed item is the mirror of the one marking an expanded item.**
+  `--hub-table-icon-chevron-down` was `-up` reflected in nine of its ten segments; in the tenth a
+  control point had lost a minus sign and sat on the wrong side of the curve, so one arm of the
+  glyph opened wider than the other. Nine of the ten had been checked by eye, which is how it
+  survived. `table-icon-symmetry.spec.ts` now walks each arrow pair into points and reflects one
+  onto the other, so the next dropped sign fails a test instead of shipping.
+
+- **The last-page button's double chevron is drawn right.** The same check found a second one:
+  `--hub-paginator-icon-angle-double-right`, and the table's unused copy of it, had every vertical
+  offset negated in the closing curve of its second chevron, which pulled that chevron's lower arm
+  upwards into a hook. It is on every paginated table and list, which is where a broken arrow is
+  least likely to be looked at twice.
+
+- **The token catalogue stops promising eight table glyph variables that theme nothing.**
+  `--hub-table-icon-chevron-up`, `-down`, `-left`, `-right`, `-angle-left`, `-angle-right`,
+  `-angle-double-left` and `-angle-double-right` are listed as themable, and each is consumed by a
+  `.hub-table__icon--*` rule — but no template in the package paints those classes, and the rules
+  are scoped to the table's own view, so a consumer cannot reach them either. Overriding any of the
+  eight changes nothing on screen, and both catalogues now say so. The variables are left in place:
+  removing published API is a decision for a release, not for a documentation pass.
 
 ## [22.17.0] - 2026-09-02
 

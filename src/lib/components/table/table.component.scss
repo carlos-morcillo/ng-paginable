@@ -1,3 +1,5 @@
+@use '../../styles/mixins/icon' as icon;
+
 // Default token catalogue on `:host`. Angular emulated encapsulation shims `:host`
 // → `[_nghost]`, which the host element carries, so every default reliably applies.
 // (`:where(:host)` is NOT used: ShadowCss shims it to `[_ngcontent]:where([_nghost])`,
@@ -70,13 +72,13 @@
 	--hub-table-icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath d='M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z'/%3E%3C/svg%3E");
 	--hub-table-icon-info: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z'/%3E%3C/svg%3E");
 	--hub-table-icon-chevron-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z'/%3E%3C/svg%3E");
-	--hub-table-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5 12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z'/%3E%3C/svg%3E");
+	--hub-table-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z'/%3E%3C/svg%3E");
 	--hub-table-icon-chevron-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z'/%3E%3C/svg%3E");
 	--hub-table-icon-chevron-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 105.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z'/%3E%3C/svg%3E");
 	--hub-table-icon-angle-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512'%3E%3Cpath d='M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z'/%3E%3C/svg%3E");
 	--hub-table-icon-angle-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512'%3E%3Cpath d='M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z'/%3E%3C/svg%3E");
 	--hub-table-icon-angle-double-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160zm352-160l-160 160c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L301.3 256 438.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0z'/%3E%3C/svg%3E");
-	--hub-table-icon-angle-double-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M470.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 256 265.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160zm-352 160l160-160c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L210.7 256 73.4 393.4c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0z'/%3E%3C/svg%3E");
+	--hub-table-icon-angle-double-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M470.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 256 265.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160zm-352 160l160-160c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L210.7 256 73.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0z'/%3E%3C/svg%3E");
 	--hub-table-icon-ellipsis-v: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 512'%3E%3Cpath d='M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z'/%3E%3C/svg%3E");
 	--hub-table-icon-trash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z'/%3E%3C/svg%3E");
 	--hub-table-icon-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z'/%3E%3C/svg%3E");
@@ -758,17 +760,7 @@
 
 	// Base icon class
 	.hub-table__icon {
-		display: inline-block;
-		width: var(--hub-table-icon-size);
-		height: var(--hub-table-icon-size);
-		background-color: var(--hub-table-icon-color);
-		-webkit-mask-size: contain;
-		mask-size: contain;
-		-webkit-mask-repeat: no-repeat;
-		mask-repeat: no-repeat;
-		-webkit-mask-position: center;
-		mask-position: center;
-		vertical-align: middle;
+		@include icon.hub-icon-box(var(--hub-table-icon-color), var(--hub-table-icon-size));
 
 		// Size modifiers
 		&--xs {
@@ -801,121 +793,100 @@
 
 		// Search icon
 		&--search {
-			-webkit-mask-image: var(--hub-table-icon-search);
-			mask-image: var(--hub-table-icon-search);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-search));
 		}
 
 		// Filter icon
 		&--filter {
-			-webkit-mask-image: var(--hub-table-icon-filter);
-			mask-image: var(--hub-table-icon-filter);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-filter));
 		}
 
 		// Eraser/Clear icon
 		&--eraser {
-			-webkit-mask-image: var(--hub-table-icon-eraser);
-			mask-image: var(--hub-table-icon-eraser);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-eraser));
 		}
 
 		// Close/Dismiss icon
 		&--close {
-			-webkit-mask-image: var(--hub-table-icon-close);
-			mask-image: var(--hub-table-icon-close);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-close));
 		}
 
 		// Info icon
 		&--info {
-			-webkit-mask-image: var(--hub-table-icon-info);
-			mask-image: var(--hub-table-icon-info);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-info));
 			margin-right: var(--hub-ref-space-4, 1.5rem);
 		}
 
 		// Sort icons
 		&--sort {
-			-webkit-mask-image: var(--hub-table-icon-sort);
-			mask-image: var(--hub-table-icon-sort);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-sort));
 		}
 
 		&--sort-up {
-			-webkit-mask-image: var(--hub-table-icon-sort-up);
-			mask-image: var(--hub-table-icon-sort-up);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-sort-up));
 		}
 
 		&--sort-down {
-			-webkit-mask-image: var(--hub-table-icon-sort-down);
-			mask-image: var(--hub-table-icon-sort-down);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-sort-down));
 		}
 
 		// Caret icons (row-expander disclosure) — consume the overridable vars.
 		&--caret-up {
-			-webkit-mask-image: var(--hub-table-icon-caret-up);
-			mask-image: var(--hub-table-icon-caret-up);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-caret-up));
 		}
 
 		&--caret-down {
-			-webkit-mask-image: var(--hub-table-icon-caret-down);
-			mask-image: var(--hub-table-icon-caret-down);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-caret-down));
 		}
 
 		// Chevron icons (for expand/collapse)
 		&--chevron-up {
-			-webkit-mask-image: var(--hub-table-icon-chevron-up);
-			mask-image: var(--hub-table-icon-chevron-up);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-chevron-up));
 		}
 
 		&--chevron-down {
-			-webkit-mask-image: var(--hub-table-icon-chevron-down);
-			mask-image: var(--hub-table-icon-chevron-down);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-chevron-down));
 		}
 
 		&--chevron-left {
-			-webkit-mask-image: var(--hub-table-icon-chevron-left);
-			mask-image: var(--hub-table-icon-chevron-left);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-chevron-left));
 		}
 
 		&--chevron-right {
-			-webkit-mask-image: var(--hub-table-icon-chevron-right);
-			mask-image: var(--hub-table-icon-chevron-right);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-chevron-right));
 		}
 
 		// Angle icons (for pagination)
 		&--angle-left {
-			-webkit-mask-image: var(--hub-table-icon-angle-left);
-			mask-image: var(--hub-table-icon-angle-left);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-angle-left));
 		}
 
 		&--angle-right {
-			-webkit-mask-image: var(--hub-table-icon-angle-right);
-			mask-image: var(--hub-table-icon-angle-right);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-angle-right));
 		}
 
 		&--angle-double-left {
-			-webkit-mask-image: var(--hub-table-icon-angle-double-left);
-			mask-image: var(--hub-table-icon-angle-double-left);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-angle-double-left));
 		}
 
 		&--angle-double-right {
-			-webkit-mask-image: var(--hub-table-icon-angle-double-right);
-			mask-image: var(--hub-table-icon-angle-double-right);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-angle-double-right));
 		}
 
 		// Ellipsis icon (for menu)
 		&--ellipsis-v {
-			-webkit-mask-image: var(--hub-table-icon-ellipsis-v);
-			mask-image: var(--hub-table-icon-ellipsis-v);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-ellipsis-v));
 		}
 
 		// Trash icon (for delete/remove)
 		&--trash {
-			-webkit-mask-image: var(--hub-table-icon-trash);
-			mask-image: var(--hub-table-icon-trash);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-trash));
 			margin-right: var(--hub-ref-space-2, 0.5rem);
 		}
 
 		// Plus icon (for add)
 		&--plus {
-			-webkit-mask-image: var(--hub-table-icon-plus);
-			mask-image: var(--hub-table-icon-plus);
+			@include icon.hub-icon-glyph(var(--hub-table-icon-plus));
 			margin-right: var(--hub-ref-space-2, 0.5rem);
 		}
 	}
@@ -1303,4 +1274,46 @@ $hub-table-variants: primary, secondary, success, danger, warning, info, neutral
 		opacity: 1;
 		transform: scale(1);
 	}
+}
+
+/*
+ * Row-expander trigger.
+ *
+ * Same story as the sort trigger and the search button before it: the caret was the only
+ * thing ever styled, and the `.btn.btn-link` around it named Bootstrap's stylesheet, which
+ * this family does not ship. Without it the disclosure control fell back to the browser's
+ * native grey button in every expandable row; with it, the host application decided how the
+ * table's own caret looked. The glyph is the whole affordance, so the button is nothing.
+ *
+ * Declared at the end of the sheet rather than beside `.hub-table__sort-btn`: the token
+ * catalogue above is indexed by line number in the design-system reference, and inserting
+ * rules in the middle would leave that index pointing at the wrong lines.
+ */
+.hub-table__expander-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 var(--hub-ref-space-2, 0.5rem);
+	color: inherit;
+	background: transparent;
+	border: 0;
+	line-height: 1;
+	cursor: pointer;
+}
+
+/*
+ * The selection cell is the checkbox's hit area, all of it. A native checkbox is about
+ * 13px wide inside a cell several times that, and everything around it used to fall
+ * through to the row: on a clickable table that meant a near-miss ran the consumer's
+ * click handler, which commonly navigates away and takes the selection with it.
+ */
+.hub-table__select-hit {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: 100%;
+	block-size: 100%;
+	min-block-size: var(--hub-table-select-hit-min-size, 1.75rem);
+	margin: 0;
+	cursor: pointer;
 }

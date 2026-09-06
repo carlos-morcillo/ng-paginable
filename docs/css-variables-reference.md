@@ -12,6 +12,7 @@ Complete reference of all CSS custom properties (CSS variables) exposed by the `
 - [Paginator Variables](#paginator-variables)
 - [List Variables](#list-variables)
 - [Table Variables](#table-variables)
+- [Internal Panels](#internal-panels)
 - [Customization Examples](#customization-examples)
   - [Override a Single Component](#override-a-single-component)
   - [Dark Theme](#dark-theme)
@@ -43,10 +44,12 @@ ref (primitives)  →  sys (semantic)  →  component
 
 ## Importing Styles
 
-Add the following import to your global `styles.scss`:
+Component structure ships compiled with each component, so nothing has to be imported for the
+table, the list or the paginator to render. The package's `styles` entry point carries the
+opt-in theming mixins:
 
 ```scss
-@use 'ng-hub-ui-paginable/src/lib/styles/paginable.scss';
+@use 'ng-hub-ui-paginable/styles' as *;
 ```
 
 > **Tip**: Use `@use` instead of `@import` for proper SCSS scoping.
@@ -325,6 +328,19 @@ Opt-in via the `connected` input — draws a vertical line between consecutive i
 | `--hub-list-connector-offset` | `var(--hub-list-item-padding-x, var(--hub-ref-space-3, 1rem))` | Inline offset from the item's leading edge |
 
 
+### Icons (List)
+
+The list draws its own glyphs and owns the variables behind them, so changing the chevron here leaves the table's alone.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hub-list-icon-color` | `currentColor` | Fill colour of the list's glyphs |
+| `--hub-list-icon-size` | `var(--hub-ref-icon-size, 1em)` | Size of the list's glyphs |
+| `--hub-list-icon-chevron-up` | `url("…")` (SVG) | Glyph on the trigger of an expanded parent item |
+| `--hub-list-icon-chevron-down` | `url("…")` (SVG) | Glyph on the trigger of a collapsed parent item |
+| `--hub-list-icon-info` | `url("…")` (SVG) | Glyph in front of the loading, error and no-results messages |
+| `--hub-list-icon-search` | `url("…")` (SVG) | Glyph on the search button |
+
 ### Misc
 
 | Variable | Default | Description |
@@ -552,21 +568,44 @@ including the two-ended range field. A cell whose filter currently holds a value
 | `--hub-table-icon-eraser` | `url("…")` (SVG) | Table eraser icon (SVG, overridable via mask-image) |
 | `--hub-table-icon-close` | `url("…")` (SVG) | Close/dismiss glyph used by the search box's clear affordance |
 | `--hub-table-icon-info` | `url("…")` (SVG) | Table info icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-chevron-up` | `url("…")` (SVG) | Table chevron-up icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-chevron-down` | `url("…")` (SVG) | Table chevron-down icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-chevron-left` | `url("…")` (SVG) | Table chevron-left icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-chevron-right` | `url("…")` (SVG) | Table chevron-right icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-angle-left` | `url("…")` (SVG) | Table angle-left icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-angle-right` | `url("…")` (SVG) | Table angle-right icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-angle-double-left` | `url("…")` (SVG) | Table angle-double-left icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-angle-double-right` | `url("…")` (SVG) | Table angle-double-right icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-ellipsis-v` | `url("…")` (SVG) | Table ellipsis-v icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-trash` | `url("…")` (SVG) | Table trash icon (SVG, overridable via mask-image) |
-| `--hub-table-icon-plus` | `url("…")` (SVG) | Table plus icon (SVG, overridable via mask-image) |
+| `--hub-table-icon-chevron-up` | `url("…")` (SVG) | Declared for `.hub-table__icon--chevron-up`. Nothing in this package paints that class, and the rule is scoped to the table's own view, so overriding this variable changes nothing on screen |
+| `--hub-table-icon-chevron-down` | `url("…")` (SVG) | Declared for `.hub-table__icon--chevron-down`. Nothing in this package paints that class, and the rule is scoped to the table's own view, so overriding this variable changes nothing on screen |
+| `--hub-table-icon-chevron-left` | `url("…")` (SVG) | Declared for `.hub-table__icon--chevron-left`. Nothing in this package paints that class, and the rule is scoped to the table's own view, so overriding this variable changes nothing on screen |
+| `--hub-table-icon-chevron-right` | `url("…")` (SVG) | Declared for `.hub-table__icon--chevron-right`. Nothing in this package paints that class, and the rule is scoped to the table's own view, so overriding this variable changes nothing on screen |
+| `--hub-table-icon-angle-left` | `url("…")` (SVG) | Declared for `.hub-table__icon--angle-left`. Nothing in this package paints that class, and the rule is scoped to the table's own view, so overriding this variable changes nothing on screen |
+| `--hub-table-icon-angle-right` | `url("…")` (SVG) | Declared for `.hub-table__icon--angle-right`. Nothing in this package paints that class, and the rule is scoped to the table's own view, so overriding this variable changes nothing on screen |
+| `--hub-table-icon-angle-double-left` | `url("…")` (SVG) | Declared for `.hub-table__icon--angle-double-left`. Nothing in this package paints that class, and the rule is scoped to the table's own view, so overriding this variable changes nothing on screen |
+| `--hub-table-icon-angle-double-right` | `url("…")` (SVG) | Declared for `.hub-table__icon--angle-double-right`. Nothing in this package paints that class, and the rule is scoped to the table's own view, so overriding this variable changes nothing on screen |
+| `--hub-table-icon-ellipsis-v` | `url("…")` (SVG) | Declared for `.hub-table__icon--ellipsis-v`; nothing paints that class since 22.18.0 — theme `--hub-table-dropdown-icon-ellipsis-v` instead |
+| `--hub-table-icon-trash` | `url("…")` (SVG) | Declared for `.hub-table__icon--trash`; nothing paints that class since 22.18.0 — theme `--hub-filter-icon-trash` instead |
+| `--hub-table-icon-plus` | `url("…")` (SVG) | Declared for `.hub-table__icon--plus`; nothing paints that class since 22.18.0 — theme `--hub-filter-icon-plus` instead |
 
 ### Responsive Breakpoints
 
 The responsive table variants (`.hub-table__responsive-sm|md|lg|xl|xxl`) trigger at **fixed** breakpoints — `576px`, `768px`, `992px`, `1200px`, `1400px` — defined directly in the component's `@media` queries. These are **not** overridable via CSS variables, because CSS custom properties cannot be read inside `@media` conditions.
+
+---
+
+## Internal Panels
+
+The column filter panel and the legacy row-actions menu take their surface from the system tokens rather than publishing one of their own. Their glyphs are the exception: a glyph can be replaced no other way.
+
+### Column Filter Panel
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hub-filter-icon-color` | `currentColor` | Fill colour of the filter panel glyphs |
+| `--hub-filter-icon-size` | `1em` | Size of the filter panel glyphs |
+| `--hub-filter-icon-trash` | `url("…")` (SVG) | Glyph on the remove-rule trigger |
+| `--hub-filter-icon-plus` | `url("…")` (SVG) | Glyph on the add-rule trigger |
+
+### Row Actions Menu (deprecated)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `--hub-table-dropdown-icon-color` | `currentColor` | Fill colour of the trigger glyph |
+| `--hub-table-dropdown-icon-size` | `1em` | Size of the trigger glyph |
+| `--hub-table-dropdown-icon-ellipsis-v` | `url("…")` (SVG) | Default glyph on the menu trigger, replaced whole by `options.icon` |
 
 ---
 

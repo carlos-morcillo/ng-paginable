@@ -3,7 +3,6 @@ import {
 	ChangeDetectorRef,
 	Component,
 	ElementRef,
-	HostBinding,
 	inject,
 	input,
 	OnDestroy,
@@ -68,13 +67,11 @@ const DROPDOWN_POSITIONS: ReadonlyArray<ConnectionPosition> = [
  * @example
  * ```html
  * <hub-dropdown>
- *   <button>Open Menu</button>
- *   <ng-template #dropdownContent>
- *     <div class="dropdown-menu">
- *       <button>Option 1</button>
- *       <button>Option 2</button>
- *     </div>
- *   </ng-template>
+ *   <div class="button">Open Menu</div>
+ *   <div class="content">
+ *     <button>Option 1</button>
+ *     <button>Option 2</button>
+ *   </div>
  * </hub-dropdown>
  * ```
  */
@@ -86,7 +83,8 @@ const DROPDOWN_POSITIONS: ReadonlyArray<ConnectionPosition> = [
 	styleUrls: ['./dropdown.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	host: {
-		class: 'dropdown'
+		class: 'hub-dropdown',
+		'[id]': 'id()'
 	}
 })
 export class DropdownComponent implements OnDestroy {
@@ -112,7 +110,6 @@ export class DropdownComponent implements OnDestroy {
 	 * Unique identifier for the dropdown instance.
 	 * Automatically generated if not provided.
 	 */
-	@HostBinding()
 	readonly id = input(generateUniqueId(16));
 
 	/**
@@ -183,7 +180,6 @@ export class DropdownComponent implements OnDestroy {
 		setTimeout(() => {
 			const dropdownContent = this.dropdownContent();
 			if (!dropdownContent) {
-				console.warn('Dropdown content template not available');
 				return;
 			}
 

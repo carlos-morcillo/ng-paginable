@@ -1,42 +1,43 @@
-<div class="table-dropdown" [class.table-dropdown--open]="shown">
+<div class="hub-table-dropdown" [class.hub-table-dropdown--open]="shown">
 	<button
-		class="table-dropdown__toggle px-2 dropdown-toggle"
+		class="hub-table-dropdown__toggle"
 		type="button"
-		[ngClass]="buttonClass"
-		[hubTableTooltip]="options.tooltip | unwrapAsync"
+		[ngClass]="buttonClass()"
+		[style.color]="toggleColor()"
+		[hubTableTooltip]="options().tooltip | unwrapAsync"
 		[attr.aria-expanded]="shown"
 		(click)="toggle(); $event.stopPropagation()"
 		[disabled]="disabled()"
 	>
-		<div class="table-dropdown__toggle-content d-flex flex-nowrap align-items-center gap-1">
-			<i class="table-dropdown__icon hub-table__icon" [ngClass]="options.icon || 'hub-table__icon--ellipsis-v'"></i>
-			@if (options.title) {
-				<span class="table-dropdown__title">{{ options.title | unwrapAsync }}</span>
+		<div class="hub-table-dropdown__toggle-content">
+			<i class="hub-table-dropdown__icon" [ngClass]="options().icon || 'hub-table-dropdown__icon--ellipsis-v'"></i>
+			@if (options().title) {
+				<span class="hub-table-dropdown__title">{{ options().title | unwrapAsync }}</span>
 			}
 		</div>
 	</button>
 	<ng-template #dropdownTpt>
 		<div
-			class="table-dropdown__menu dropdown-menu dropdown-menu-{{ options.position }}"
-			[class.show]="shown"
+			class="hub-table-dropdown__menu hub-table-dropdown__menu--{{ options().position }}"
+			[class.hub-table-dropdown__menu--open]="shown"
 			[style]="{
-				right: options.position == 'end' || options.position === 'right' ? 0 : 'initial'
+				right: options().position == 'end' || options().position === 'right' ? 0 : 'initial'
 			}"
 		>
-			@for (dropdownItem of options.buttons; track dropdownItem) {
+			@for (dropdownItem of options().buttons; track dropdownItem) {
 				@if (!(isItemHidden(dropdownItem, row()) | async)) {
 					<button
-						class="table-dropdown__item dropdown-item"
+						class="hub-table-dropdown__item"
 						type="button"
 						[disabled]="(isItemDisabled(dropdownItem, row()) | async) ?? false"
 						[hubTableTooltip]="dropdownItem.title | unwrapAsync"
 						[ngClass]="getDropdownItemClassList(dropdownItem)"
 						(click)="executeDropdownAction(dropdownItem)"
 					>
-						<div class="table-dropdown__item-content d-flex align-items-center gap-2">
-							<ng-hub-ui-icon class="table-dropdown__item-icon" [config]="dropdownItem.icon"></ng-hub-ui-icon>
+						<div class="hub-table-dropdown__item-content">
+							<ng-hub-ui-icon class="hub-table-dropdown__item-icon" [config]="dropdownItem.icon"></ng-hub-ui-icon>
 							@if (dropdownItem.label) {
-								<span class="table-dropdown__item-label">{{ dropdownItem.label | unwrapAsync }}</span>
+								<span class="hub-table-dropdown__item-label">{{ dropdownItem.label | unwrapAsync }}</span>
 							}
 						</div>
 					</button>

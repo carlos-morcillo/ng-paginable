@@ -44,8 +44,8 @@ export class TableClientDataService {
 	 *
 	 * @template T The row data type.
 	 * @param rows The full set of wrapped rows to process.
-	 * @param params Search term, searchable keys, header definitions, active filter
-	 * values and the current ordination.
+	 * @param params Search term, searchable keys, an optional custom search predicate,
+	 * header definitions, active filter values and the current ordination.
 	 * @returns A new array of matching rows, sorted; the original array is not mutated.
 	 */
 	process<T>(
@@ -53,12 +53,13 @@ export class TableClientDataService {
 		params: {
 			searchTerm?: string | null;
 			searchKeys?: ReadonlyArray<string>;
+			searchFn?: ((item: T, term: string) => boolean) | null;
 			headers?: ReadonlyArray<PaginableTableHeader>;
 			filters?: Record<string, unknown> | null;
 			ordination?: PaginableTableOrdination | null;
 		}
 	): Array<TableRow<T>> {
-		let result = this.search(rows, params.searchTerm, params.searchKeys ?? []);
+		let result = this.search(rows, params.searchTerm, params.searchKeys ?? [], params.searchFn ?? null);
 		result = this.applyColumnFilters(result, params.headers ?? [], params.filters ?? null);
 		result = this.sort(result, params.ordination ?? null);
 		return result;
@@ -66,21 +67,33 @@ export class TableClientDataService {
 
 	/**
 	 * Filters rows by a global, case-insensitive substring match against the value
-	 * of every searchable key.
+	 * of every searchable key, or by the caller's own predicate when one is given.
+	 *
+	 * A predicate answers for the whole row, so `keys` stops applying: a consumer who
+	 * matches on something no column shows — a code beside a name, a nested field — is
+	 * saying the columns are not where the answer lives.
 	 *
 	 * @template T The row data type.
 	 * @param rows The rows to search.
 	 * @param term The search term; falsy/blank terms return the input untouched.
 	 * @param keys The data properties to inspect for each row.
+	 * @param match Custom predicate receiving the row data and the trimmed, lowercased term.
 	 * @returns The matching rows.
 	 */
 	search<T>(
 		rows: ReadonlyArray<TableRow<T>>,
 		term: string | null | undefined,
-		keys: ReadonlyArray<string>
+		keys: ReadonlyArray<string>,
+		match?: ((item: T, term: string) => boolean) | null
 	): Array<TableRow<T>> {
 		const needle = (term ?? '').trim().toLowerCase();
-		if (!needle || !keys.length) {
+		if (!needle) {
+			return rows.concat();
+		}
+		if (match) {
+			return rows.filter((row) => match(row.data, needle));
+		}
+		if (!keys.length) {
 			return rows.concat();
 		}
 		return rows.filter((row) =>

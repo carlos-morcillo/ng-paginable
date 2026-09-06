@@ -1,10 +1,107 @@
-.table-dropdown {
-	&__toggle::after {
-		all: initial;
+/*
+ * The legacy row-actions menu draws itself.
+ *
+ * Trigger and panel were named after Bootstrap — `.btn`, `.dropdown-toggle`,
+ * `.dropdown-menu`, `.dropdown-item` — which resolve to nothing in a product that does not
+ * ship Bootstrap, and which hand the appearance of the table's own menu to the host
+ * application's stylesheet in a product that does. The rules below are the same shape,
+ * under names this library owns.
+ *
+ * Drawn from the system tokens rather than from component ones: the component is
+ * deprecated, and publishing a theming API for it would ask consumers to invest in the
+ * thing they are being told to migrate away from. The trigger's glyph is the exception —
+ * in this package a glyph is always a variable, and this one was the table's, which never
+ * reached here anyway: the table's stylesheet is scoped to the table's own view, so the
+ * three dots simply were not drawn.
+ */
+@use '../../styles/mixins/icon' as icon;
+
+:root,
+:host {
+	--hub-table-dropdown-icon-color: currentColor;
+	--hub-table-dropdown-icon-size: 1em;
+	--hub-table-dropdown-icon-ellipsis-v: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 512'%3E%3Cpath d='M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z'/%3E%3C/svg%3E");
+}
+
+.hub-table-dropdown {
+	// The trigger's glyph. A consumer who passes `options.icon` replaces the modifier with
+	// their own class, so the box stays and the glyph becomes theirs.
+	&__icon {
+		@include icon.hub-icon-box(var(--hub-table-dropdown-icon-color), var(--hub-table-dropdown-icon-size));
+
+		&--ellipsis-v {
+			@include icon.hub-icon-glyph(var(--hub-table-dropdown-icon-ellipsis-v));
+		}
 	}
 
+	&__toggle {
+		display: inline-flex;
+		align-items: center;
+		padding: var(--hub-ref-space-1, 0.25rem) var(--hub-ref-space-2, 0.5rem);
+		font: inherit;
+		color: inherit;
+		background-color: transparent;
+		border: var(--hub-ref-border-width, 1px) solid transparent;
+		border-radius: var(--hub-sys-radius-md, 0.375rem);
+		cursor: pointer;
+
+		// `fill: 'outline'` is the only shape besides the bare trigger, and it borrows the
+		// colour already resolved onto the element so the two never disagree.
+		&--outline {
+			border-color: currentColor;
+		}
+
+		&:disabled {
+			opacity: var(--hub-table-action-disabled-opacity, 0.5);
+			cursor: not-allowed;
+		}
+	}
+
+	&__toggle-content {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		gap: var(--hub-ref-space-1, 0.25rem);
+	}
+
+	// The panel is appended to the body, so it is positioned by the component and only has
+	// to be a surface here.
 	&__menu {
+		display: none;
+		min-width: 10rem;
 		max-width: 10rem;
+		padding: var(--hub-ref-space-1, 0.25rem) 0;
+		color: var(--hub-sys-text-primary, #212529);
+		background-color: var(--hub-sys-color-surface-default, #fff);
+		border: var(--hub-ref-border-width, 1px) solid var(--hub-sys-color-border-subtle, #dee2e6);
+		border-radius: var(--hub-sys-radius-md, 0.375rem);
+		box-shadow: var(--hub-sys-shadow-lg, 0 1rem 3rem rgba(0, 0, 0, 0.175));
+
+		&--open {
+			display: block;
+		}
+	}
+
+	&__item {
+		display: block;
+		width: 100%;
+		padding: var(--hub-ref-space-2, 0.5rem) var(--hub-ref-space-3, 1rem);
+		font: inherit;
+		color: inherit;
+		text-align: inherit;
+		background-color: transparent;
+		border: 0;
+		cursor: pointer;
+
+		&:hover:not(:disabled) {
+			background-color: var(--hub-sys-color-surface-subtle, #f8f9fa);
+		}
+	}
+
+	&__item-content {
+		display: flex;
+		align-items: center;
+		gap: var(--hub-ref-space-2, 0.5rem);
 	}
 
 	// Default visual treatment for dropdown action items when consumer does not provide custom dropdown BEM classes.
@@ -23,13 +120,4 @@
 			background-color: inherit;
 		}
 	}
-}
-
-// Legacy support for dropdown-toggle class
-.dropdown-toggle::after {
-	all: initial;
-}
-
-.dropdown-menu {
-	max-width: 10rem;
 }

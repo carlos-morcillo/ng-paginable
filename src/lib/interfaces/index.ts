@@ -5,6 +5,7 @@ export * from './list-sort-event';
 export * from './paginable-state';
 export * from './paginable-action-button';
 export * from './paginable-defaults';
+export * from './paginable-resource';
 export * from './paginable-table-config';
 export * from './paginable-table-dropdown';
 export * from './paginable-table-header';

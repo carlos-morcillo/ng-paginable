@@ -1,0 +1,13 @@
+// ─────────────────────────────────────────────────────────────────────────
+// ng-hub-ui-paginable — theming entry
+// ─────────────────────────────────────────────────────────────────────────
+// Component structure ships compiled with each component: nothing here has to
+// be imported for the table, the list or the paginator to render. What this
+// entry forwards are the opt-in one-call theming mixins, so consumers can
+// `@use` them from the package root instead of reaching for each partial:
+//
+//   @use 'ng-hub-ui-paginable/styles' as *;
+// ─────────────────────────────────────────────────────────────────────────
+
+@forward 'mixins/table-theme';
+@forward 'mixins/list-theme';

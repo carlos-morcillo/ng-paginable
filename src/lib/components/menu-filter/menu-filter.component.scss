@@ -1,50 +1,154 @@
-.filter {
-	/* Filter Operator */
-	&__operator {
-		&__control {
-			// Operator select control styles
-		}
-	}
+/*
+ * The menu filter draws its own panel.
+ *
+ * Its rows were `.dropdown-item` and its fields `.form-control` / `.form-select` —
+ * Bootstrap's names, which this family neither ships nor depends on. Without Bootstrap the
+ * whole panel came out as bare text on a transparent box; with it, the host application's
+ * stylesheet owned the appearance of the table's own filter and any theme change there
+ * silently reshaped it. Same story, and the same answer, as the column-filter row.
+ *
+ * Drawn from the system tokens rather than from component ones: this panel is internal
+ * chrome, and giving it a theming API of its own would publish variables nobody asked for.
+ * The glyphs are the exception, because in this package a glyph is always a variable —
+ * there is no other way to hand a consumer a different one. They used to be the table's,
+ * which cost the panel both its independence and the glyphs themselves: the table's
+ * stylesheet is scoped to the table's own view, so `hub-table__icon--trash` arrived here
+ * as an empty box in front of the word.
+ */
+@use '../../styles/mixins/icon' as icon;
 
-	/* Filter Rules */
-	&__rule {
-		&__mode {
-			// Rule mode select styles
-		}
-
-		&__value {
-			// Rule value input styles
-		}
-
-		&__divider {
-			.dropdown-divider {
-				// Divider styles
-			}
-		}
-	}
-
-	/* Add Rule Button */
-	&__add-rule {
-		.btn-link {
-			// Add rule button styles
-		}
-	}
-
-	/* Action Buttons */
-	&__actions {
-		&__clear {
-			// Clear button styles
-		}
-
-		&__apply {
-			// Apply button styles
-		}
-	}
+:root,
+:host {
+	--hub-filter-icon-color: currentColor;
+	--hub-filter-icon-size: 1em;
+	--hub-filter-icon-trash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z'/%3E%3C/svg%3E");
+	--hub-filter-icon-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z'/%3E%3C/svg%3E");
 }
 
-.dropdown-item.active,
-.dropdown-item:active {
-	color: initial;
-	text-decoration: none;
-	background-color: initial;
+.hub-filter {
+	&__icon {
+		@include icon.hub-icon-box(var(--hub-filter-icon-color), var(--hub-filter-icon-size));
+		// The glyph leads the word inside the trigger, and the trigger is not a flex box.
+		margin-inline-end: var(--hub-ref-space-2, 0.5rem);
+
+		&--trash {
+			@include icon.hub-icon-glyph(var(--hub-filter-icon-trash));
+		}
+
+		&--plus {
+			@include icon.hub-icon-glyph(var(--hub-filter-icon-plus));
+		}
+	}
+
+	&__item {
+		display: block;
+		width: 100%;
+		padding: var(--hub-ref-space-2, 0.5rem) var(--hub-ref-space-3, 1rem);
+		color: inherit;
+		text-align: inherit;
+		background-color: transparent;
+	}
+
+	&__control {
+		display: block;
+		inline-size: 100%;
+		min-inline-size: 0;
+		padding: 0.375rem 0.75rem;
+		font: inherit;
+		line-height: var(--hub-ref-line-height-base, 1.5);
+		color: var(--hub-sys-text-primary, #212529);
+		background-color: var(--hub-sys-color-surface-default, #fff);
+		background-clip: padding-box;
+		border: var(--hub-ref-border-width, 1px) solid var(--hub-sys-color-border-subtle, #dee2e6);
+		border-radius: var(--hub-sys-radius-sm, 0.25rem);
+
+		&:focus {
+			outline: 0;
+			border-color: var(--hub-sys-color-primary, #0d6efd);
+		}
+
+		// The platform's own disclosure arrow is kept, for the same reason the filter row
+		// keeps it: a chevron drawn here would be one the consumer cannot replace.
+		&--select {
+			appearance: auto;
+		}
+	}
+
+	&__rule-body {
+		display: flex;
+		flex-direction: column;
+		gap: var(--hub-ref-space-2, 0.5rem);
+		margin-block-end: var(--hub-ref-space-2, 0.5rem);
+	}
+
+	&__rule-actions {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	&__divider {
+		padding: 0;
+	}
+
+	&__divider-line {
+		margin: var(--hub-ref-space-2, 0.5rem) 0;
+		border: 0;
+		border-top: var(--hub-ref-border-width, 1px) solid var(--hub-sys-color-border-subtle, #dee2e6);
+		opacity: 1;
+	}
+
+	// Add and remove are text triggers spanning the row: the word is the whole affordance,
+	// so the button around it carries no box, only the role colour.
+	&__remove-rule,
+	&__add-rule-btn {
+		display: block;
+		width: 100%;
+		padding: var(--hub-ref-space-1, 0.25rem) var(--hub-ref-space-2, 0.5rem);
+		font: inherit;
+		font-size: var(--hub-ref-font-size-sm, 0.875rem);
+		text-align: center;
+		background-color: transparent;
+		border: 0;
+		border-radius: var(--hub-sys-radius-sm, 0.25rem);
+		cursor: pointer;
+	}
+
+	&__remove-rule {
+		color: var(--hub-sys-color-danger, #dc3545);
+	}
+
+	&__add-rule-btn {
+		color: var(--hub-sys-color-primary, #0d6efd);
+	}
+
+	&__actions-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--hub-ref-space-3, 1rem);
+	}
+
+	// Clear is destructive and reversible, apply is the commitment: outline against solid,
+	// which is the same weighting the rest of the family gives the pair.
+	&__clear,
+	&__apply {
+		padding: 0.375rem 0.75rem;
+		font: inherit;
+		font-size: var(--hub-ref-font-size-sm, 0.875rem);
+		line-height: var(--hub-ref-line-height-base, 1.5);
+		border: var(--hub-ref-border-width, 1px) solid transparent;
+		border-radius: var(--hub-sys-radius-sm, 0.25rem);
+		cursor: pointer;
+	}
+
+	&__clear {
+		color: var(--hub-sys-color-danger, #dc3545);
+		background-color: transparent;
+		border-color: var(--hub-sys-color-danger, #dc3545);
+	}
+
+	&__apply {
+		color: var(--hub-sys-color-primary-on, #fff);
+		background-color: var(--hub-sys-color-primary, #0d6efd);
+	}
 }

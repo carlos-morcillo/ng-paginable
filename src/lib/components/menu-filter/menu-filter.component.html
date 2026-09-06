@@ -1,7 +1,11 @@
 <ng-container [formGroup]="form">
-	@if (header.filter?.type !== 'boolean') {
-		<li class="dropdown-item filter__operator">
-			<select class="form-select filter__operator__control" formControlName="operator" (click)="$event.stopPropagation()">
+	@if (header()?.filter?.type !== 'boolean') {
+		<li class="hub-filter__item hub-filter__operator">
+			<select
+				class="hub-filter__control hub-filter__control--select hub-filter__operator-control"
+				formControlName="operator"
+				(click)="$event.stopPropagation()"
+			>
 				<option value="and">
 					{{ 'MATCH_ALL' | translate | ucfirst }}
 				</option>
@@ -14,14 +18,14 @@
 	<ng-container formArrayName="rules">
 		@for (group of rulesFA.controls; track group; let index = $index; let last = $last) {
 			<ng-container [formGroupName]="index">
-				<li class="dropdown-item filter__rule">
-					<div class="d-flex flex-column gap-2 mb-2">
+				<li class="hub-filter__item hub-filter__rule">
+					<div class="hub-filter__rule-body">
 						<select
-							class="form-select filter__rule__mode"
+							class="hub-filter__control hub-filter__control--select hub-filter__rule-mode"
 							formControlName="matchMode"
 							(change)="enableOrDisableValueControl($any(group))"
 						>
-							@for (mode of matchModes; track mode) {
+							@for (mode of matchModes(); track mode) {
 								<option [value]="mode">
 									{{ 'MATCH_MODES.' + (mode | uppercase) | translate | ucfirst }}
 								</option>
@@ -29,12 +33,12 @@
 						</select>
 						@if (![nullMatchModes.IsNull, nullMatchModes.IsNotNull].includes(group.get('matchMode')?.value)) {
 							<div>
-								@switch (header.filter?.type) {
+								@switch (header()?.filter?.type) {
 									@case ('number') {
 										<div>
 											<input
 												type="number"
-												class="form-control filter__rule__value"
+												class="hub-filter__control hub-filter__rule-value"
 												formControlName="value"
 											/>
 										</div>
@@ -43,7 +47,7 @@
 										<div>
 											<input
 												type="number"
-												class="form-control filter__rule__value"
+												class="hub-filter__control hub-filter__rule-value"
 												formControlName="value"
 											/>
 										</div>
@@ -52,7 +56,7 @@
 										<div>
 											<input
 												type="date"
-												class="form-control filter__rule__value"
+												class="hub-filter__control hub-filter__rule-value"
 												formControlName="value"
 											/>
 										</div>
@@ -61,21 +65,24 @@
 										<div>
 											<input
 												type="date"
-												class="form-control filter__rule__value"
+												class="hub-filter__control hub-filter__rule-value"
 												formControlName="value"
 											/>
 										</div>
 									}
 									@case ('boolean') {
-										<select class="form-select form-control filter__rule__value" formControlName="value">
+										<select
+											class="hub-filter__control hub-filter__control--select hub-filter__rule-value"
+											formControlName="value"
+										>
 											<option [ngValue]="null">
-												{{ header.filter?.placeholder ?? 'SELECT_ONE' | translate | ucfirst }}
+												{{ header()?.filter?.placeholder ?? 'SELECT_ONE' | translate | ucfirst }}
 											</option>
 											<option [ngValue]="true">
-												{{ $any(header.filter).trueLabel ?? ('TRUE' | translate | ucfirst) }}
+												{{ $any(header()?.filter).trueLabel ?? ('TRUE' | translate | ucfirst) }}
 											</option>
 											<option [ngValue]="false">
-												{{ $any(header.filter).falseLabel ?? ('FALSE' | translate | ucfirst) }}
+												{{ $any(header()?.filter).falseLabel ?? ('FALSE' | translate | ucfirst) }}
 											</option>
 										</select>
 									}
@@ -83,7 +90,7 @@
 										<div>
 											<input
 												type="text"
-												class="form-control filter__rule__value"
+												class="hub-filter__control hub-filter__rule-value"
 												formControlName="value"
 											/>
 										</div>
@@ -93,34 +100,35 @@
 						}
 					</div>
 					@if (rulesFA.controls.length > 1) {
-						<div class="d-flex justify-content-end">
-							<button class="btn btn-sm text-danger text-center w-100" (click)="rulesFA.removeAt(index)">
-								<i class="hub-table__icon hub-table__icon--trash"></i>{{ 'REMOVE_RULE' | translate | ucfirst }}
+						<div class="hub-filter__rule-actions">
+							<button class="hub-filter__remove-rule" (click)="rulesFA.removeAt(index)">
+								<i class="hub-filter__icon hub-filter__icon--trash"></i
+								>{{ 'REMOVE_RULE' | translate | ucfirst }}
 							</button>
 						</div>
 					}
 				</li>
 				@if (rulesFA.controls.length > 1) {
-					<li class="filter__rule__divider">
-						<hr class="dropdown-divider" />
+					<li class="hub-filter__divider">
+						<hr class="hub-filter__divider-line" />
 					</li>
 				}
 			</ng-container>
 		}
 	</ng-container>
-	@if (header.filter?.type !== 'boolean') {
-		<li class="dropdown-item filter__add-rule">
-			<button class="btn btn-sm text-primary text-center w-100" (click)="add(); $event.stopPropagation()">
-				<i class="hub-table__icon hub-table__icon--plus"></i>{{ 'ADD_RULE' | translate | ucfirst }}
+	@if (header()?.filter?.type !== 'boolean') {
+		<li class="hub-filter__item hub-filter__add-rule">
+			<button class="hub-filter__add-rule-btn" (click)="add(); $event.stopPropagation()">
+				<i class="hub-filter__icon hub-filter__icon--plus"></i>{{ 'ADD_RULE' | translate | ucfirst }}
 			</button>
 		</li>
 	}
-	<li class="dropdown-item filter__actions">
-		<div class="d-flex justify-content-between align-items-center gap-3">
-			<button class="btn btn-outline-danger filter__actions__clear" (click)="clear()">
+	<li class="hub-filter__item hub-filter__actions">
+		<div class="hub-filter__actions-content">
+			<button class="hub-filter__clear" (click)="clear()">
 				{{ 'CLEAR' | translate | ucfirst }}
 			</button>
-			<button class="btn btn-primary filter__actions__apply" (click)="apply()">
+			<button class="hub-filter__apply" (click)="apply()">
 				{{ 'APPLY' | translate | ucfirst }}
 			</button>
 		</div>

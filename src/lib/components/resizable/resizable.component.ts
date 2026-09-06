@@ -1,9 +1,13 @@
-import { Component, HostBinding } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
 	selector: 'th[resizable]',
 	templateUrl: './resizable.component.html',
-	styleUrls: ['./resizable.component.scss']
+	styleUrls: ['./resizable.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	host: {
+		'[style.width.px]': 'width'
+	}
 })
 /**
  * Component for creating resizable table headers.
@@ -19,7 +23,6 @@ export class ResizableComponent {
 	 * @type {(number | null)}
 	 * @memberof ResizableComponent
 	 */
-	@HostBinding('style.width.px')
 	width: number | null = null;
 
 	onResize(width: any) {

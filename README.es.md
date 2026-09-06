@@ -143,11 +143,10 @@ Para limitarlo a una sola tabla, registra el token `HUB_PAGINABLE_FORM_CONTROLS`
 
 ## Sinergia con las acciones de fila (opcional, agnóstica)
 
-Por defecto la tabla dibuja ella misma los botones y menús de cada fila, con nombres de clase
-de Bootstrap: `.btn`, `.dropdown-menu`, `.dropdown-item`. En un producto que no sirve
-Bootstrap, esos nombres no resuelven a nada: el disparador del menú cae al botón gris por
-defecto del navegador y el panel queda como una caja transparente, sin borde, sin sombra y sin
-relleno.
+Por defecto la tabla dibuja ella misma los botones y menús de cada fila. Ese marcado es una
+segunda implementación, y peor, de un menú que la biblioteca de botones ya publica: coloca su
+panel a mano sobre el `body`, así que ni gira cuando no cabe ni acompaña a un contenedor que
+se desplaza, y se dibuja con el aspecto de la propia tabla en lugar de con el de la aplicación.
 
 Registra el adaptador que publica `ng-hub-ui-buttons` y la tabla deja de dibujarlos: pasa a
 _describir_ lo que ofrece cada fila y el adaptador lo dibuja con los componentes reales —con la
@@ -185,7 +184,7 @@ Esta biblioteca nace de la necesidad de ofrecer componentes de visualización de
 
 - **Componente Tabla** (`<hub-ui-table>` o `<hub-table>`): Tabla de datos avanzada con paginación, filtros, ordenación y selección
 - **Componente Lista** (`<hub-ui-list>` o `<hub-list>`): Lista jerárquica con elementos expandibles, selección y plantillas personalizadas
-- **Componente Paginador** (`<hub-ui-paginator>` o `<hub-paginator>`): Controles de paginación independientes
+- **Componente Paginador** (`<hub-paginator>`, `<hub-ui-paginator>` o `<paginable-table-paginator>`): Controles de paginación independientes
 - **Componentes Adicionales**: Iconos, dropdowns, columnas redimensionables, inputs de rango y menús de filtro
 
 Todos los componentes están construidos como componentes standalone de Angular con soporte completo para Angular Signals.
@@ -227,24 +226,6 @@ Todos los componentes están construidos como componentes standalone de Angular 
 - **🃏 Modo cards para listas**: El componente de lista puede renderizar el nivel raíz como una rejilla de tarjetas mediante `options.display = 'cards'`
 - **🎛 Tematización contextual de paginación**: El paginador hereda tokens de Table/List sin duplicar variables de paginador
 - **↔️ Tokens de layout de barra inferior**: Permite reordenar y alinear paginador/settings/info en Table y List mediante variables CSS
-
-### Uso del componente lista como cards
-
-```html
-<hub-ui-list
-	[items]="products()"
-	[bindLabel]="'name'"
-	[bindChildren]="'children'"
-	[options]="{
-		display: 'cards',
-		searchable: true,
-		collapsed: true
-	}"
->
-</hub-ui-list>
-```
-
-`options.display` acepta `'list' | 'cards'`. El modo `cards` solo afecta al nivel raíz del componente de lista.
 
 ## 🏗️ Arquitectura de componentes
 
@@ -400,12 +381,12 @@ npm install ng-hub-ui-paginable
 
 ```typescript
 import { Component, signal } from '@angular/core';
-import { HubUITableModule } from 'ng-hub-ui-paginable';
+import { TableComponent } from 'ng-hub-ui-paginable';
 
 @Component({
 	selector: 'app-example',
 	standalone: true,
-	imports: [HubUITableModule],
+	imports: [TableComponent],
 	template: `
 		<hub-ui-table
 			[headers]="headers()"
@@ -476,7 +457,7 @@ export class ExampleComponent {
 	[clickFn]="onItemClick"
 >
 	<!-- Custom item template -->
-	<ng-template listItem let-data="data" let-depth="depth">
+	<ng-template listItemTpt let-data="data" let-depth="depth">
 		<div class="d-flex align-items-center">
 			<span [style.margin-left.px]="depth * 20"> {{ data.name }} </span>
 			<span class="badge bg-secondary ms-auto"> {{ data.type }} </span>
@@ -485,10 +466,31 @@ export class ExampleComponent {
 </hub-ui-list>
 ```
 
+### Uso del componente lista como cards
+
+Usa el mismo componente con `options.display = 'cards'` cuando quieras un layout de tarjetas en la
+raíz manteniendo los hijos anidados como lista jerárquica normal.
+
+```html
+<hub-ui-list
+	[items]="products()"
+	[bindLabel]="'name'"
+	[bindChildren]="'children'"
+	[options]="{
+		display: 'cards',
+		searchable: true,
+		collapsed: true
+	}"
+>
+</hub-ui-list>
+```
+
+`options.display` acepta `'list' | 'cards'`. El modo `cards` solo afecta al nivel raíz del componente de lista.
+
 ### Paginador independiente
 
 ```html
-<hub-ui-paginator [(page)]="currentPage" [numberOfPages]="totalPages()"> </hub-ui-paginator>
+<hub-paginator [(page)]="currentPage" [numberOfPages]="totalPages()"> </hub-paginator>
 ```
 
 ## 🏗️ Configuración de cabeceras de tabla (`PaginableTableHeader`)
@@ -690,43 +692,102 @@ export class DynamicColumnsComponent {
 
 ## 🔧 Columnas redimensionables
 
-### Funcionalidades de redimensionado
+La tabla escribe ella misma el atributo `resizable` en cada celda de cabecera, así que no hay que
+añadir nada en una plantilla — y una plantilla de cabecera tampoco podría, porque su contenido se
+renderiza *dentro* del `<th>` que la tabla ya dibujó.
 
-- **Redimensionado interactivo**: Arrastra los bordes para ajustar el ancho
-- **Ancho mínimo**: Evita que las columnas queden demasiado estrechas
-- **Persistencia**: Los anchos se pueden guardar y restaurar
-- **Responsive**: Funciona con layouts responsive
+Las dos piezas que hay detrás se exportan para quien construya su propia tabla:
+
+```typescript
+import { ResizableComponent, ResizableDirective } from 'ng-hub-ui-paginable';
+
+// ResizableComponent casa con `th[resizable]` y es dueño del ancho de la columna;
+// ResizableDirective casa con `[resizable]` y emite el ancho mientras se arrastra el asa.
+@Component({
+	imports: [ResizableComponent, ResizableDirective]
+})
+export class MyGrid {}
+```
 
 ## 🎪 Componentes adicionales
 
-### Componente de iconos (`<hub-ui-icon>`)
+### Componente de iconos (`<hub-icon>`)
 
 Soporta múltiples librerías de iconos con una interfaz unificada:
 
 ```html
 <!-- FontAwesome icon -->
-<hub-ui-icon [config]="{ type: 'font-awesome', value: 'user' }"></hub-ui-icon>
+<hub-icon [config]="{ type: 'font-awesome', value: 'user' }"></hub-icon>
 
 <!-- Material icon -->
-<hub-ui-icon [config]="{ type: 'material', value: 'person', variant: 'outlined' }"></hub-ui-icon>
+<hub-icon [config]="{ type: 'material', value: 'person', variant: 'outlined' }"></hub-icon>
 
 <!-- Bootstrap icon -->
-<hub-ui-icon [config]="{ type: 'bootstrap', value: 'person-fill' }"></hub-ui-icon>
+<hub-icon [config]="{ type: 'bootstrap', value: 'person-fill' }"></hub-icon>
 ```
 
-### Componente de dropdown (`<hub-ui-dropdown>`)
+### Menús de fila (`PaginableTableDropdown`)
 
-Usado internamente para acciones y filtros:
+Un menú de fila es configuración, no marcado: se declara en `header.buttons` o en `batchActions`
+y lo dibuja la tabla. Esta es la forma que toma.
+
+> El panel en sí es `DropdownComponent` (`<hub-dropdown>` o `<hub-ui-dropdown>`), que la tabla usa
+> internamente; el antiguo `PaginableTableDropdownComponent` (`<hub-table-dropdown>`) está
+> **obsoleto desde 22.16.0**. Registra un adaptador de acciones con
+> `provideHubPaginableActions(hubActionsAdapter)` de `ng-hub-ui-buttons` y la tabla dibujará sus
+> menús con el dropdown del sistema de diseño. El componente obsoleto se sigue exportando para no
+> romper a nadie al actualizar, pero coloca su panel a mano sobre `document.body`, así que ni se
+> voltea cuando no cabe ni se cierra con `Escape`.
 
 ```typescript
 interface PaginableTableDropdown {
-	title: string;
-	buttons: PaginableActionButton[];
-	fill?: string;
-	position?: 'start' | 'end';
+	title?: string | Observable<string>; // Admite traducciones reactivas
+	tooltip?: string | Observable<string>; // Admite traducciones reactivas
+	icon?: string;
 	color?: string;
+	buttons: PaginableActionButton[];
+	position?: 'left' | 'right' | 'start' | 'end';
+	fill?: 'clear' | 'outline';
+	hidden?: boolean | ((row: TableRow) => boolean); // El menú no existe para esta fila
+	disabled?: boolean | ((row: TableRow) => boolean); // Existe y ahora mismo no se puede abrir
+}
+
+interface PaginableActionButton<T = any> {
+	title?: string | Observable<string>; // Texto del botón (admite Observable)
+	label?: string | Observable<string>; // Etiqueta visible (tiene prioridad sobre title)
+	tooltip?: string | Observable<string>; // Tooltip al pasar por encima (admite Observable)
+	icon?: string | Icon;
+	handler?: (event: TableRowEvent<T>) => void;
+	hidden?: boolean | ((row: TableRow<T>) => boolean); // La acción no existe para esta fila
+	disabled?: boolean | ((row: TableRow<T>) => boolean); // Existe y ahora mismo no se puede ejecutar
+	variant?: 'default' | 'solid' | 'soft' | 'outline' | 'ghost'; // por defecto: 'default'
+	color?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | (string & {});
+	classlist?: string[] | string;
 }
 ```
+
+> **Consejo**: usa `Observable<string>` para traducciones reactivas con `HubTranslationService` o con cualquier librería de i18n.
+
+#### Aspecto (`variant` / `color`)
+
+La tabla dibuja estos botones ella misma, así que `hubButton` no puede vestirlos: sus reglas
+de aspecto están acotadas con `:host(...)` y no casan con un elemento que la primitiva no ha
+creado. `variant` y `color` usan el mismo vocabulario, y los tintes vienen con la tabla,
+construidos con la aritmética de la propia primitiva, de modo que ambos se leen igual uno al
+lado del otro:
+
+```typescript
+buttons: [
+	{ icon: 'icon--ph--eye', tooltip: 'Ver', handler: view }, // botón con borde, sin tinte
+	{ icon: 'icon--ph--pencil', variant: 'soft', color: 'primary', handler: edit },
+	{ icon: 'icon--ph--trash', variant: 'soft', color: 'danger', handler: remove },
+	{ icon: 'icon--ph--dots-three-vertical', variant: 'ghost', handler: more } // neutral
+];
+```
+
+`default` es el valor por defecto y **no** admite color: es el botón con borde que esta tabla
+ha dibujado siempre, y colorearlo sería darle una variante por la puerta de atrás. Una
+variante que no nombra color es `neutral`, no incolora.
 
 ### Componente de rango (`<hub-table-range-input>`)
 
@@ -764,6 +825,8 @@ Nota: Las comprobaciones nulas usan `NullMatchModes.IsNull` / `NullMatchModes.Is
 
 ### Botones de acción
 
+Configura botones de acción en las columnas de la tabla para operaciones a nivel de fila:
+
 ```typescript
 const headers: PaginableTableHeader[] = [
 	{
@@ -783,14 +846,51 @@ const headers: PaginableTableHeader[] = [
 			},
 			{
 				title: 'More Actions',
+				tooltip: 'Más opciones',
 				buttons: [
-					{ title: 'Archive', handler: (row) => this.archiveUser(row.data) },
-					{ title: 'Delete', handler: (row) => this.deleteUser(row.data) }
+					{ label: 'Archive', tooltip: 'Archivar elemento', handler: (row) => this.archiveUser(row.data) },
+					{ label: 'Delete', tooltip: 'Eliminar elemento', handler: (row) => this.deleteUser(row.data) }
 				]
 			}
 		]
 	}
 ];
+```
+
+#### Botones de acción con traducciones reactivas
+
+Todas las propiedades de texto (`title`, `label`, `tooltip`) aceptan `Observable<string>` para internacionalización reactiva:
+
+```typescript
+import { HubTranslationService } from 'ng-hub-ui-utils';
+
+@Component({...})
+export class MyComponent {
+  constructor(private translate: HubTranslationService) {}
+
+  headers: PaginableTableHeader[] = [
+    {
+      property: 'actions',
+      title: this.translate.get('TABLE.ACTIONS'),  // Observable<string>
+      onlyButtons: true,
+      buttons: [
+        {
+          icon: 'fa-edit',
+          label: this.translate.get('BUTTONS.EDIT'),      // Cambia al cambiar de idioma
+          tooltip: this.translate.get('TOOLTIPS.EDIT'),   // Cambia al cambiar de idioma
+          handler: (row) => this.edit(row.data)
+        },
+        {
+          title: this.translate.get('BUTTONS.MORE'),
+          tooltip: this.translate.get('TOOLTIPS.MORE_OPTIONS'),
+          buttons: [
+            { label: this.translate.get('BUTTONS.DELETE'), handler: (row) => this.delete(row.data) }
+          ]
+        }
+      ]
+    }
+  ];
+}
 ```
 
 ### Filtros de columna
@@ -907,32 +1007,44 @@ filters = signal({
 
 #### Inputs
 
-| Nombre               | Tipo                                                     | Por defecto         | Descripción                                                                                                                              |
-| -------------------- | -------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `headers`            | `PaginableTableHeader[]`                                 | `[]`                | Definición de columnas con títulos, ordenación, filtros y acciones.                                                                      |
-| `data` / `rows`      | `T[]` o `PaginationState<T>`                             | `[]`                | Datos de tabla. Array plano → modo cliente (paginación en memoria); `PaginationState` → modo servidor.                                   |
-| `page`               | `number`                                                 | `null`              | Número de página actual (1-based, señal model). En modo cliente se pone a `1` automáticamente.                                           |
-| `perPage`            | `number`                                                 | `10`                | Número de elementos por página (señal model).                                                                                            |
-| `perPageOptions`     | `number[]`                                               | `[10, 20, 50, 100]` | Opciones disponibles de elementos por página.                                                                                            |
-| `totalItems`         | `number`                                                 | `null`              | Total de elementos en todas las páginas. Indicarlo selecciona **modo servidor** (renderiza `data` tal cual).                             |
-| `searchable`         | `boolean`                                                | `true`              | Si se muestra el input de búsqueda global.                                                                                               |
-| `searchTerm`         | `string`                                                 | `''`                | Término de búsqueda actual (señal model).                                                                                                |
-| `searchFn`           | `(a: T, b: T) => boolean`                                | `null`              | Función de búsqueda personalizada para filtrar.                                                                                          |
-| `selectable`         | `boolean`                                                | `false`             | Si las filas son seleccionables.                                                                                                         |
-| `multiple`           | `boolean`                                                | `false`             | Si se permite la selección múltiple.                                                                                                     |
-| `bindValue`          | `string`                                                 | `null`              | Propiedad para identificar de forma única los elementos seleccionados.                                                                   |
-| `ordination`         | `PaginableTableOrdination`                               | `null`              | Configuración actual de ordenación (señal model).                                                                                        |
-| `filters`            | `Record<string, any>`                                    | `{}`                | Filtros de columna activos (señal model).                                                                                                |
-| `debounce`           | `number`                                                 | `0`                 | Tiempo de debounce en ms para inputs de búsqueda y filtros.                                                                              |
-| `loading`            | `boolean`                                                | `false`             | Indicador de estado de carga (señal model).                                                                                              |
-| `paginate`           | `boolean`                                                | `true`              | Habilita la paginación. Con un array y sin `totalItems`, activa el modo cliente automático. `false` renderiza todo el array sin paginar. |
-| `paginationPosition` | `'top' \| 'bottom' \| 'both'`                            | `'bottom'`          | Dónde mostrar los controles de paginación.                                                                                               |
-| `paginationInfo`     | `boolean`                                                | `true`              | Si se muestra info de paginación (p. ej. "Mostrando 1 a 10 de 100").                                                                     |
-| `stickyActions`      | `boolean`                                                | `false`             | Si los botones de acción quedan fijos durante el scroll.                                                                                 |
-| `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`                | Acciones disponibles para filas seleccionadas.                                                                                           |
-| `responsive`         | `TableBreakpoint`                                        | `null`              | Breakpoint responsive para el layout de la tabla.                                                                                        |
-| `options`            | `PaginableTableOptions`                                  | `{}`                | Configuración visual (cursor, hover, striped, variant).                                                                                  |
-| `clickFn`            | `(event: TableRowEvent<T>) => void`                      | `null`              | Manejador para eventos de click en fila.                                                                                                 |
+| Nombre               | Tipo                                                     | Por defecto         | Descripción                                                                                                                                                                                               |
+| -------------------- | -------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `headers`            | `PaginableTableHeader[]`                                 | `[]`                | Definición de columnas con títulos, ordenación, filtros y acciones.                                                                                                                                       |
+| `data`               | `T[]` o `PaginationState<T>`                             | `[]`                | Datos de tabla. Array plano → modo cliente (paginación en memoria); `PaginationState` → modo servidor.                                                                                                    |
+| `resource`           | `HubPaginableResource<T>`                                | `null`              | Un `resource()` / `httpResource()` enlazado entero: su valor alimenta las filas igual que `data`, `isLoading()` el estado de carga y `error()` el de error. Manda sobre `data`; cambiar de página nunca llama a `reload()`. |
+| `id`                 | `string`                                                 | generado            | Identificador de esta instancia. Por defecto un id único generado, para que dos tablas de la misma página nunca lo compartan.                                                                             |
+| `page`               | `number`                                                 | `null`              | Número de página actual (1-based, señal model). En modo cliente se pone a `1` automáticamente.                                                                                                            |
+| `perPage`            | `number`                                                 | `10`                | Número de elementos por página (señal model).                                                                                                                                                             |
+| `perPageOptions`     | `number[]`                                               | `[10, 20, 50, 100]` | Opciones disponibles de elementos por página.                                                                                                                                                             |
+| `totalItems`         | `number`                                                 | `null`              | Total de elementos en todas las páginas. Indicarlo selecciona **modo servidor** (renderiza `data` tal cual).                                                                                              |
+| `searchable`         | `boolean`                                                | `true`              | Si se muestra el input de búsqueda global.                                                                                                                                                                |
+| `searchTerm`         | `string`                                                 | `''`                | Término de búsqueda actual (señal model).                                                                                                                                                                 |
+| `searchFn`           | `(item: T, term: string) => boolean`                     | `null`              | Decide si una fila sobrevive a la búsqueda global, en lugar del barrido de las columnas buscables. Solo en modo cliente; el término llega recortado y en minúsculas. Mismo contrato que `hub-list`.        |
+| `compareFn`          | `(a: T, b: T) => boolean`                                | `null`              | Decide cuándo dos valores de la selección son el mismo registro, en `markSelected` y en los dos toggles. Recibe lo que guarda la selección: el dato de la fila, o la propiedad `bindValue` si la hay.      |
+| `selectable`         | `SelectionTypes \| boolean \| null`                      | `null`              | Modo de selección. `'single'` / `true` elige una fila, `'multiple'` varias, `false` / `null` la desactiva.                                                                                                |
+| `multiple`           | `boolean`                                                | `false`             | Si se permite la selección múltiple.                                                                                                                                                                      |
+| `selectWhileSelecting` | `boolean`                                              | `false`             | Con al menos una fila marcada, el clic en una fila la marca en vez de ejecutar `clickFn`. Apagado por defecto; es el patrón táctil para marcar varias filas sin perderlas al navegar. |
+| `flush`              | `boolean`                                                | `false`             | Quita el borde exterior, el radio, la regla de cabecera y el padding de celda, y deja la separación entre filas. Para una tabla de opciones dentro de un diálogo, donde la superficie ya dibujó el marco. |
+| `bindValue`          | `string`                                                 | `null`              | Propiedad para identificar de forma única los elementos seleccionados.                                                                                                                                    |
+| `ordination`         | `PaginableTableOrdination`                               | `null`              | Configuración actual de ordenación (señal model).                                                                                                                                                         |
+| `filters`            | `Record<string, any>`                                    | `{}`                | Filtros de columna activos (señal model).                                                                                                                                                                 |
+| `debounce`           | `number`                                                 | `0`                 | Tiempo de debounce en ms para inputs de búsqueda y filtros.                                                                                                                                               |
+| `loading`            | `boolean`                                                | `false`             | Indicador de estado de carga (señal model).                                                                                                                                                               |
+| `error`              | `unknown`                                                | `null`              | Portador del estado de error (señal model). Cualquier valor truthy renderiza el estado de error.                                                                                                          |
+| `loadingComponent`   | `PaginableStateDefault`                                  | `null`              | Componente del estado de carga de esta tabla, por delante del valor por defecto de la aplicación.                                                                                                         |
+| `errorComponent`     | `PaginableStateDefault`                                  | `null`              | Componente del estado de error de esta tabla, por delante del valor por defecto de la aplicación.                                                                                                         |
+| `noResultsComponent` | `PaginableStateDefault`                                  | `null`              | Componente del estado vacío de esta tabla, por delante del valor por defecto de la aplicación.                                                                                                            |
+| `paginate`           | `boolean`                                                | `true`              | Habilita la paginación. Con un array y sin `totalItems`, activa el modo cliente automático. `false` renderiza todo el array sin paginar.                                                                  |
+| `paginationPosition` | `'top' \| 'bottom' \| 'both'`                            | `'bottom'`          | Dónde mostrar los controles de paginación.                                                                                                                                                                |
+| `paginationInfo`     | `boolean`                                                | `true`              | Si se muestra info de paginación (p. ej. "Mostrando 1 a 10 de 100").                                                                                                                                      |
+| `stickyActions`      | `boolean`                                                | `false`             | Si los botones de acción quedan fijos durante el scroll.                                                                                                                                                  |
+| `stickyHeader`       | `boolean`                                                | `false`             | Fija el `<thead>` arriba mientras el cuerpo hace scroll, dentro de cualquier contenedor con scroll. El desplazamiento se ajusta con `--hub-table-head-sticky-top`.                                        |
+| `flushFields`        | `boolean`                                                | `false`             | Quita el marco a los controles de formulario dibujados dentro de las celdas, para que una tabla editable siga leyéndose como tabla y no como una rejilla de inputs.                                       |
+| `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`                | Acciones disponibles para filas seleccionadas.                                                                                                                                                            |
+| `responsive`         | `TableBreakpoint`                                        | `null`              | Breakpoint responsive para el layout de la tabla.                                                                                                                                                         |
+| `options`            | `PaginableTableOptions`                                  | `{}`                | Configuración visual (cursor, hover, striped, variant).                                                                                                                                                   |
+| `clickFn`            | `(event: TableRowEvent<T>) => void`                      | `null`              | Manejador para eventos de click en fila.                                                                                                                                                                  |
+| `rowClass`           | `string \| ((item: T) => string)`                        | `null`              | Clase CSS de la fila. Una cadena fija, o una función que la calcula a partir del dato.                                                                                                                    |
 
 #### Outputs y eventos
 
@@ -964,16 +1076,45 @@ interface TableRowEvent<T> {
 
 #### Inputs
 
-| Nombre         | Tipo                                                     | Por defecto  | Descripción                                   |
-| -------------- | -------------------------------------------------------- | ------------ | --------------------------------------------- |
-| `items`        | `T[]`                                                    | `[]`         | Datos de lista jerárquica.                    |
-| `bindValue`    | `string`                                                 | `null`       | Propiedad para identificación única de ítems. |
-| `bindLabel`    | `string`                                                 | `'label'`    | Propiedad a mostrar como etiqueta del ítem.   |
-| `bindChildren` | `string`                                                 | `'children'` | Propiedad que contiene los hijos.             |
-| `selectable`   | `string`                                                 | `null`       | Configuración del modo de selección.          |
-| `options`      | `PaginableTableOptions`                                  | `{}`         | Opciones visuales y de comportamiento.        |
-| `batchActions` | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`         | Acciones para ítems seleccionados.            |
-| `clickFn`      | `(event: ListClickEvent<T>) => void`                     | `null`       | Manejador para eventos de click en ítems.     |
+| Nombre               | Tipo                                                     | Por defecto    | Descripción                                                                                                                                                                             |
+| -------------------- | -------------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`              | `T[]`                                                    | `[]`           | Datos de lista jerárquica.                                                                                                                                                              |
+| `resource`           | `HubPaginableResource<T>`                                | `null`         | Un `resource()` / `httpResource()` enlazado entero: su valor alimenta los ítems (un array, o un `PaginationState` que además fija página, tamaño y total), `isLoading()` el estado de carga y `error()` el de error. Manda sobre `items`; cambiar de página nunca llama a `reload()`. |
+| `bindValue`          | `string`                                                 | `null`         | Propiedad para identificación única de ítems.                                                                                                                                           |
+| `bindLabel`          | `string`                                                 | `'label'`      | Propiedad a mostrar como etiqueta del ítem.                                                                                                                                             |
+| `bindChildren`       | `string`                                                 | `'children'`   | Propiedad que contiene los hijos.                                                                                                                                                       |
+| `selectable`         | `SelectionTypes \| boolean \| null`                      | `null`         | Modo de selección. `'single'` / `true` elige un ítem (radio), `'multiple'` varios (checkbox), `false` / `null` la desactiva.                                                            |
+| `options`            | `PaginableTableOptions`                                  | `{}`           | Opciones visuales y de comportamiento.                                                                                                                                                  |
+| `paginate`           | `boolean`                                                | `false`        | Activa el paginador propio bajo la lista.                                                                                                                                               |
+| `page`               | `number`                                                 | `1`            | Página actual (señal model).                                                                                                                                                            |
+| `perPage`            | `number`                                                 | `10`           | Elementos por página (señal model).                                                                                                                                                     |
+| `perPageOptions`     | `number[]`                                               | `[10, 20, 50]` | Opciones del selector de elementos por página.                                                                                                                                          |
+| `totalItems`         | `number`                                                 | `0`            | Total de elementos en todas las páginas (señal model). Déjalo en `0` para que la lista cuente lo que tiene.                                                                             |
+| `loading`            | `boolean`                                                | `false`        | Indicador de estado de carga (señal model).                                                                                                                                             |
+| `error`              | `unknown`                                                | `null`         | Portador del estado de error (señal model). Cualquier valor truthy renderiza el estado de error.                                                                                        |
+| `loadingComponent`   | `PaginableStateDefault`                                  | `null`         | Componente del estado de carga de esta lista, por delante del valor por defecto de la aplicación.                                                                                       |
+| `errorComponent`     | `PaginableStateDefault`                                  | `null`         | Componente del estado de error de esta lista, por delante del valor por defecto de la aplicación.                                                                                       |
+| `noResultsComponent` | `PaginableStateDefault`                                  | `null`         | Componente del estado vacío de esta lista, por delante del valor por defecto de la aplicación.                                                                                          |
+| `sortable`           | `boolean`                                                | `false`        | Activa la reordenación por arrastre (drag nativo HTML5, con respaldo de Pointer Events para táctil).                                                                                    |
+| `dragGroup`          | `string`                                                 | `null`         | Grupo de arrastre compartido. Las listas con el mismo grupo no nulo pueden intercambiar ítems; con `null` solo se reordena dentro de la lista.                                          |
+| `sortDisabled`       | `(item: T) => boolean`                                   | `() => false`  | Predicado que marca un ítem como no arrastrable.                                                                                                                                        |
+| `keyboardSortable`   | `boolean`                                                | `false`        | Reordenación por teclado en la fila enfocable: `Espacio`/`Enter` para coger y soltar, flechas para mover, `Escape` para cancelar.                                                       |
+| `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`           | Acciones para ítems seleccionados.                                                                                                                                                      |
+| `clickFn`            | `(event: ListClickEvent<T>) => void`                     | `null`         | Manejador para eventos de click en ítems.                                                                                                                                               |
+| `searchTerm`         | `string`                                                 | `''`           | Término por el que se filtra la lista mientras `options.searchable` está activo. Es un model: se puede leer y escribir desde fuera.                                                     |
+| `searchFn`           | `(item: T, term: string) => boolean`                     | `null`         | Cómo se decide que un ítem coincide. Por defecto lee `bindLabel`; un grupo sobrevive mientras coincida algún descendiente.                                                              |
+| `rowClass`           | `string \| ((item: T) => string)`                        | `null`         | Clase CSS del ítem. Una cadena fija, o una función que la calcula a partir del dato.                                                                                                    |
+| `connected`          | `boolean`                                                | `false`        | Dibuja un conector vertical entre ítems consecutivos (aspecto timeline / pipeline; solo en modo lista). Se tematiza con `--hub-list-connector-color` / `-width` / `-style` / `-offset`. |
+| `flush`              | `boolean`                                                | `false`        | Dibuja la lista como lista y no como pila de tarjetas: sin borde, radio ni superficie por fila, y una regla entre ellas. Se tematiza con `--hub-list-divider-width` / `-color`.         |
+
+#### Outputs
+
+| Nombre   | Payload            | Descripción                                                                                                                                |
+| -------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `sorted` | `ListSortEvent<T>` | Lo emite la lista **de destino** tras una reordenación por arrastre o una transferencia entre listas, para poder persistir el nuevo orden. |
+
+Igual que la tabla, la lista es un `ControlValueAccessor`: la selección viaja por `[(ngModel)]` o
+por un control de formulario reactivo, no por un output.
 
 **Evento de click en lista (`ListClickEvent<T>`):**
 
@@ -985,18 +1126,20 @@ interface ListClickEvent<T> {
 	collapsed: boolean; // Estado de expansión
 	value: any; // Valor del ítem (según bindLabel)
 	item: T; // Datos completos del ítem
+	children: T[]; // Los hijos de un grupo, como ítems
 	mouseEvent: MouseEvent; // Evento original del ratón
 }
 ```
 
-### Componente paginador (`<hub-ui-paginator>`)
+### Componente paginador (`<hub-paginator>`)
 
 #### Inputs
 
-| Nombre          | Tipo     | Por defecto | Descripción                  |
-| --------------- | -------- | ----------- | ---------------------------- |
-| `page`          | `number` | `1`         | Página actual (señal model). |
-| `numberOfPages` | `number` | `null`      | Número total de páginas.     |
+| Nombre          | Tipo      | Por defecto | Descripción                                                                                             |
+| --------------- | --------- | ----------- | ------------------------------------------------------------------------------------------------------- |
+| `page`          | `number`  | `1`         | Página actual (señal model).                                                                            |
+| `numberOfPages` | `number`  | `null`      | Número total de páginas. Sin él, el paginador retira el control de «última página» y sigue avanzando.   |
+| `rtl`           | `boolean` | `false`     | Refleja las acciones para una lectura de derecha a izquierda; los iconos conservan su dirección visual. |
 
 ---
 
@@ -1018,26 +1161,29 @@ El componente `hub-ui-table` permite sobrescribir prácticamente cualquier secci
 
 ### 📄 cellTpt (celda de columna)
 
+El contexto lleva `item` (el registro), `row` (el `TableRow` completo), `header` (la definición
+de la columna) y `property` (el valor ya resuelto a partir de `header.property`).
+
 ```html
-<ng-template cellTpt header="name" let-data="data"> {{ data.name.toUpperCase() }} </ng-template>
+<ng-template cellTpt header="name" let-item="item"> {{ item.name.toUpperCase() }} </ng-template>
 ```
 
 ```html
-<ng-template cellTpt header="age" let-data="data">
-	<span [class.text-success]="data.age >= 18"> {{ data.age }} años </span>
+<ng-template cellTpt header="age" let-item="item">
+	<span [class.text-success]="item.age >= 18"> {{ item.age }} años </span>
 </ng-template>
 ```
 
 ```html
-<ng-template cellTpt header="adult" let-data="data">
-	<hub-ui-icon [config]="{ type: 'material', value: data.adult ? 'check' : 'close' }"></hub-ui-icon>
+<ng-template cellTpt header="adult" let-item="item">
+	<hub-icon [config]="{ type: 'material', value: item.adult ? 'check' : 'close' }"></hub-icon>
 </ng-template>
 ```
 
-### 🚫 notFoundTpt (estado vacío)
+### 🚫 noResultsTpt (estado vacío)
 
 ```html
-<ng-template notFoundTpt>
+<ng-template noResultsTpt>
 	<div class="alert alert-info text-center">
 		<i class="fa-solid fa-circle-info me-2"></i>
 		No se encontraron resultados para tu búsqueda.
@@ -1069,17 +1215,23 @@ El componente `hub-ui-table` permite sobrescribir prácticamente cualquier secci
 
 ### 📂 rowTpt (fila personalizada)
 
+La variable implícita del contexto es el `TableRow<T>` completo — `selected`, `collapsed` y el
+registro en `data` — no el registro suelto.
+
 ```html
-<ng-template tableRow let-item>
+<ng-template rowTpt let-row>
 	<tr>
-		<td>{{ item.name }}</td>
-		<td>{{ item.lastname }}</td>
-		<td>{{ item.age }} años</td>
+		<td>{{ row.data.name }}</td>
+		<td>{{ row.data.lastname }}</td>
+		<td>{{ row.data.age }} años</td>
 	</tr>
 </ng-template>
 ```
 
-También puedes usar `tableRowTpt` con componentes expandibles.
+`paginableTableRow` es la forma larga de la misma directiva.
+
+Una plantilla de fila propia **sustituye** a la interna, y es la interna la que dibuja las filas
+expandibles: una tabla que necesite ambas cosas tiene que renderizar `expandingRowTpt` ella misma.
 
 ---
 
@@ -1092,9 +1244,12 @@ El paginador embebido en Table y List se tematiza mediante los tokens compartido
 
 ### 🔗 Cómo incluir los estilos en tu aplicación
 
+La estructura de cada componente viaja compilada con él, así que no hay que importar nada para
+que la tabla, la lista o el paginador se dibujen. Lo que ofrece el punto de entrada `styles` del
+paquete son los mixins de theming opcionales que se describen más abajo:
+
 ```scss
-@use 'bootstrap'; // Opcional pero recomendado
-@use 'ng-hub-ui-paginable/src/lib/styles/paginable.scss';
+@use 'ng-hub-ui-paginable/styles' as *;
 ```
 
 ### 🎛 Ejemplo rápido de personalización
@@ -1117,6 +1272,26 @@ El paginador embebido en Table y List se tematiza mediante los tokens compartido
 }
 ```
 
+### 🖼 Los glifos también son variables
+
+Todos los iconos que la biblioteca dibuja por su cuenta —las flechas de ordenación, el expansor de
+fila, los chevrons y la lupa de la lista, el añadir y quitar del panel de filtro, los puntos del
+menú de acciones, las flechas del paginador— son un SVG en línea guardado en una variable CSS y
+pintado como máscara, así que la tinta es un color que pones tú. Para cambiar uno, redefine su
+variable. El nombre de la variable pertenece al componente que dibuja el glifo, de modo que cambiar
+el chevron de la lista deja el de la tabla donde estaba.
+
+```scss
+hub-list {
+	--hub-list-icon-chevron-down: url('data:image/svg+xml,…');
+	--hub-list-icon-color: #6c757d;
+}
+```
+
+Las familias son `--hub-table-icon-*`, `--hub-list-icon-*`, `--hub-paginator-icon-*`,
+`--hub-filter-icon-*` y `--hub-table-dropdown-icon-*`; la
+[referencia de variables CSS](./docs/css-variables-reference.es.md) las lista todas.
+
 ### 🔗 Lista conectada (`connected`)
 
 El input `connected` de `<hub-list>` dibuja un conector vertical entre elementos consecutivos (aspecto timeline / pipeline; solo en modo lista, se omite en cards). Se tematiza con `--hub-list-connector-color` / `-width` / `-style` / `-offset`. Desactivado por defecto.
@@ -1134,7 +1309,9 @@ En lugar de fijar los tokens `--hub-*` a mano, puedes tematizar la tabla o la li
 @use 'ng-hub-ui-paginable/styles/mixins/list-theme' as *;
 ```
 
-**`hub-table-theme(…)`** — color (`$accent`, `$bg`, `$color`, `$border-color`, `$hover-bg`, `$hover-color`, `$selected-bg`, `$selected-color`, `$striped-bg`, `$striped-color`), borde (`$border-width`, `$border-radius`), densidad (`$cell-padding-x`, `$cell-padding-y`) y footer (`$footer-gap`, `$footer-justify`, `$footer-align`, `$footer-wrap`):
+#### `hub-table-theme(…)` — tematiza `<hub-table>`
+
+Color (`$accent`, `$bg`, `$color`, `$border-color`, `$hover-bg`, `$hover-color`, `$selected-bg`, `$selected-color`, `$striped-bg`, `$striped-color`), borde (`$border-width`, `$border-radius`), densidad (`$cell-padding-x`, `$cell-padding-y`) y footer / barra inferior (`$footer-gap`, `$footer-justify`, `$footer-align`, `$footer-wrap`).
 
 ```scss
 .tabla-facturas {
@@ -1147,7 +1324,9 @@ En lugar de fijar los tokens `--hub-*` a mano, puedes tematizar la tabla o la li
 }
 ```
 
-**`hub-list-theme(…)`** — color, borde/radio, densidad (`$gap`, `$item-padding-*`), layout de cards (`$cards-min-column-width`, `$cards-gap`, …) y footer, para `<hub-list>` en modos lista y cards:
+#### `hub-list-theme(…)` — tematiza `<hub-list>` (lista y cards)
+
+Color (`$accent`, `$bg`, `$item-bg`, `$item-color`, `$item-border-color`, `$hover-bg`, `$selected-bg`, `$selected-color`), borde y radio (`$border-radius`, `$item-border-radius`), densidad (`$item-padding-x`, `$item-padding-y`, `$gap`), layout de cards (`$cards-bg`, `$cards-border-color`, `$cards-border-radius`, `$cards-padding-x`, `$cards-padding-y`, `$cards-min-column-width`, `$cards-gap`) y footer (`$footer-gap`, `$footer-justify`, `$footer-align`, `$footer-wrap`).
 
 ```scss
 .lista-equipo {
@@ -1158,6 +1337,107 @@ En lugar de fijar los tokens `--hub-*` a mano, puedes tematizar la tabla o la li
 		$cards-min-column-width: 16rem
 	);
 }
+```
+
+### Estilado dinámico de filas (`rowClass`)
+
+El input `rowClass` asigna clases CSS a cada fila de la tabla y a cada ítem de la lista. Acepta
+una cadena fija (la misma clase para todas) o una función que recibe el dato y devuelve la clase.
+
+#### Ejemplo en tabla: destacar usuarios inactivos
+
+**1. Define la función `rowClass` en tu componente:**
+
+```typescript
+import { Component, signal } from '@angular/core';
+
+@Component({
+	selector: 'app-user-table'
+	// ...
+})
+export class UserTableComponent {
+	users = signal([
+		{ name: 'John Doe', status: 'active' },
+		{ name: 'Jane Smith', status: 'inactive' },
+		{ name: 'Peter Jones', status: 'active' }
+	]);
+
+	// Decide la clase de cada fila
+	getUserRowClass = (user: { status: string }): string => {
+		if (user.status === 'inactive') {
+			return 'row-inactive';
+		}
+		return '';
+	};
+}
+```
+
+**2. Añade tus estilos:**
+
+```scss
+.hub-table__body-row.row-inactive {
+	background-color: #f8d7da;
+	opacity: 0.7;
+
+	&:hover {
+		background-color: #f1c4c8;
+	}
+}
+```
+
+**3. Enlaza la función a la tabla:**
+
+```html
+<hub-ui-table [headers]="headers" [data]="users()" [rowClass]="getUserRowClass"> </hub-ui-table>
+```
+
+#### El enum `RowClass`
+
+Para una versión con tipos, la librería exporta el enum `RowClass`, cuyos estilos ya vienen
+incluidos: no hay que definirlos a mano.
+
+```typescript
+import { RowClass } from 'ng-hub-ui-paginable';
+
+getUserRowClass = (user: { status: string }): string => {
+	switch (user.status) {
+		case 'active':
+			return RowClass.SUCCESS;
+		case 'inactive':
+			return RowClass.DANGER;
+		case 'pending':
+			return RowClass.WARNING;
+		default:
+			return '';
+	}
+};
+```
+
+#### Ejemplo en lista: distinguir carpetas de ficheros
+
+```typescript
+export class FileListComponent {
+	items = signal([
+		{ name: 'Documentos', type: 'folder', children: [] },
+		{ name: 'informe.pdf', type: 'file' }
+	]);
+
+	getItemClass = (item: { type: string }): string => (item.type === 'folder' ? 'list-item-folder' : 'list-item-file');
+}
+```
+
+```scss
+.hub-list__item.list-item-folder .hub-list__label {
+	font-weight: bold;
+}
+
+.hub-list__item.list-item-file .hub-list__label {
+	color: #555;
+}
+```
+
+```html
+<hub-ui-list [items]="items()" [bindLabel]="'name'" [rowClass]="getItemClass"> </hub-ui-list>
 ```
 
 ## ⚡ Consejos de rendimiento
@@ -1407,6 +1687,42 @@ Pasar un `PaginationState` mantiene la tabla en **modo servidor**: renderiza `da
 
 > Indica **`totalItems`** para activar el modo servidor (la tabla renderiza `data` tal cual). Si pasas un array **sin** `totalItems`, la tabla asume el modo cliente (#1) y lo pagina por ti.
 
+### Ejemplo de paginación avanzada
+
+```typescript
+export class AdvancedTableComponent {
+	// Paginación en servidor con estado de carga
+	paginationState = computed(() => {
+		return {
+			page: this.currentPage(),
+			perPage: this.itemsPerPage(),
+			totalItems: this.totalItems(),
+			data: this.loading() ? [] : this.currentData()
+		};
+	});
+
+	currentPage = signal(1);
+	itemsPerPage = signal(20);
+	totalItems = signal(0);
+	loading = signal(false);
+	currentData = signal<User[]>([]);
+
+	async loadData() {
+		this.loading.set(true);
+		try {
+			const result = await this.userService.getUsers({
+				page: this.currentPage(),
+				perPage: this.itemsPerPage()
+			});
+			this.currentData.set(result.data);
+			this.totalItems.set(result.total);
+		} finally {
+			this.loading.set(false);
+		}
+	}
+}
+```
+
 ## 🧬 Interfaz `PaginationState<T>`
 
 ```ts
@@ -1483,48 +1799,8 @@ export class AppComponent {
 
 ## 📊 Changelog
 
-## [22.0.1] - 2026-06-17
-
-### Corregido
-
-- **List:** las listas de hijos anidadas ya no se pegan al contenido del ítem padre — un margen superior (`--hub-list-children-gap`, por defecto `var(--hub-list-item-padding-y)`) las separa, tanto en el layout por defecto como en cards.
-
-## [22.0.0] - 2026-06-17
-
-### Cambiado
-
-- **List:** el bloque BEM ahora vive en el elemento host. El host `hub-list` lleva la clase de bloque `.hub-list` y el `<ul>` pasa a ser el elemento `.hub-list__items` (modificadores `.hub-list__items--root` / `--cards`). Los fondos se controlan con `--hub-list-bg` (host) y `--hub-list-item-bg` (ítems): host transparente y superficie en los ítems por defecto.
-
-### Añadido
-
-- **List:** variables CSS `--hub-list-gap`, `--hub-list-items-bg` y `--hub-list-item-bg`.
-
-### Corregido
-
-- **List:** las variables de tarjeta (`--hub-list-cards-*`) estaban documentadas y eran personalizables pero nunca se aplicaban — ahora surten efecto.
-- **Paginator:** `--hub-paginator-font-size` ahora se aplica realmente.
-- **Docs:** referencia de variables CSS corregida (arreglado el prefijo duplicado `--hub-table-table-*` y documentado el bloque de búsqueda de tabla) y con paridad total EN/ES.
-
-### Eliminado
-
-- **Ruptura — List:** renombradas las variables `--hub-list-container-*` a `--hub-list-bg` / `--hub-list-border-radius` / `--hub-list-padding-x/y` / `--hub-list-items-gap`, y reestructurados los selectores `.hub-list` / `.hub-list--root` / `.hub-list--cards` (ver la nota de Cambiado).
-- **Table:** eliminadas las variables `--hub-table-breakpoint-*` no funcionales (los breakpoints responsive son fijos y no se pueden sobrescribir vía variables CSS).
-
-## [19.10.2] - 2025-12-23
-
-### Añadido
-
-- Tokens de personalización `--hub-table-cell-vertical-align`, `--hub-icon-color` y `--hub-icon-size`.
-
-### Cambiado
-
-- Las utilidades de overlay se movieron a `ng-hub-ui-utils` y la integración de dropdown ahora depende de ese paquete.
-- La alineación vertical de celdas por defecto es `middle` vía variable CSS.
-
-### Corregido
-
-- Las opciones de modos de coincidencia en filtros de menú ahora renderizan correctamente sus etiquetas traducidas.
-- Se añadieron traducciones faltantes para los modos `IsNull` y `IsNotNull`.
+Consulta [CHANGELOG.md](./CHANGELOG.md) para el historial completo de versiones, y
+[BREAKING_CHANGES.md](./BREAKING_CHANGES.md) para las notas de migración.
 
 ## 🤝 Contribuir
 

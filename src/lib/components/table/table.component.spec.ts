@@ -289,6 +289,25 @@ describe('TableComponent', () => {
 			expect(select).toBeTruthy();
 			expect(select.selectedOptions[0]?.textContent?.trim()).toBe('50');
 		});
+
+		it('renders the "showing X of Y" line while paginationInfo stays enabled', () => {
+			component.page.set(1);
+			component.perPage.set(10);
+			component.totalItems.set(25);
+			fixture.detectChanges();
+
+			expect(fixture.nativeElement.querySelector('.hub-table__bottom-bar-info')).toBeTruthy();
+		});
+
+		it('hides the "showing X of Y" line when paginationInfo is false', () => {
+			component.page.set(1);
+			component.perPage.set(10);
+			component.totalItems.set(25);
+			fixture.componentRef.setInput('paginationInfo', false);
+			fixture.detectChanges();
+
+			expect(fixture.nativeElement.querySelector('.hub-table__bottom-bar-info')).toBeNull();
+		});
 	});
 
 	describe('Filtering System', () => {

@@ -79,17 +79,47 @@ describe('MenuFilterComponent', () => {
 		formBuilder = TestBed.inject(FormBuilder);
 
 		// Set a default header before detecting changes
-		component.header = {
+		fixture.componentRef.setInput('header', {
 			title: 'Test Header',
 			property: 'testProperty',
 			filter: { type: 'text' }
-		};
+		});
 
 		fixture.detectChanges();
 	});
 
 	it('should create', () => {
 		expect(component).toBeTruthy();
+	});
+
+	/**
+	 * The match modes and the empty rule used to be written by the `header` setter, one after
+	 * the other, so they were only ever right in the order the setter happened to write them.
+	 * They are derived now, and a header arriving later has to reach both.
+	 */
+	it('offers the match modes of the header it is given', () => {
+		expect(component.matchModes()).toEqual([...Object.values(StringMatchModes), ...Object.values(NullMatchModes)]);
+
+		fixture.componentRef.setInput('header', { property: 'age', filter: { type: 'number' } });
+		fixture.detectChanges();
+
+		expect(component.matchModes()).toEqual([...Object.values(NumberMatchModes), ...Object.values(NullMatchModes)]);
+	});
+
+	it('falls back to one empty rule in the first match mode of that header', () => {
+		fixture.componentRef.setInput('header', { property: 'born', filter: { type: 'date' } });
+		fixture.detectChanges();
+
+		expect(component.defaultValue()).toEqual({
+			operator: MenuFilterOperators.And,
+			rules: [{ value: null, matchMode: Object.values(DateMatchModes)[0] }]
+		});
+	});
+
+	it('writes the fallback into the form when the control holds nothing', () => {
+		component.writeValue(null);
+
+		expect(component.form.value).toEqual(component.defaultValue());
 	});
 
 	// it('should initialize form correctly', () => {

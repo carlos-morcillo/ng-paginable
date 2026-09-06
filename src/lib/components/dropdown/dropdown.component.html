@@ -1,6 +1,6 @@
 <button
-	class="dropdown__toggle btn"
-	[class.dropdown__toggle--open]="isOpened()"
+	class="hub-dropdown__toggle"
+	[class.hub-dropdown__toggle--open]="isOpened()"
 	type="button"
 	[attr.aria-expanded]="isOpened()"
 	(click)="toggle()"
@@ -9,7 +9,7 @@
 </button>
 
 <ng-template #dropdownContent>
-	<ul class="dropdown__menu dropdown-menu show" [attr.aria-hidden]="!isOpened()">
+	<ul class="hub-dropdown__menu" [class.hub-dropdown__menu--open]="isOpened()" [attr.aria-hidden]="!isOpened()">
 		<ng-content select=".content"></ng-content>
 	</ul>
 </ng-template>

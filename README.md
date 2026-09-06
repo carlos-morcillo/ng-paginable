@@ -146,10 +146,10 @@ controls. See the ecosystem-wide
 
 ## Row-actions synergy (optional, agnostic)
 
-The table renders a row's buttons and menus itself by default, in Bootstrap class names —
-`.btn`, `.dropdown-menu`, `.dropdown-item`. In a product that does not ship Bootstrap those
-resolve to nothing: the menu trigger falls back to the browser's default grey button and the
-panel is a transparent box with no border, shadow or padding.
+The table renders a row's buttons and menus itself by default. That markup is a second,
+poorer implementation of a menu the button library already ships: it places its panel by hand
+on the document body, so it neither flips when it does not fit nor follows a scrolling
+container, and it is drawn in the table's own chrome rather than in the application's.
 
 Provide the adapter shipped by `ng-hub-ui-buttons` and the table stops drawing them. It
 _describes_ what a row offers and the adapter draws it with the real components — placement,
@@ -187,7 +187,7 @@ This library arises from the need to offer highly configurable, accessible, and 
 
 - **Table Component** (`<hub-ui-table>` or `<hub-table>`): Advanced data table with pagination, filtering, sorting, and selection
 - **List Component** (`<hub-ui-list>` or `<hub-list>`): Hierarchical list with expandable items, selection, and custom templates
-- **Paginator Component** (`<hub-ui-paginator>` or `<hub-paginator>`): Standalone pagination controls
+- **Paginator Component** (`<hub-paginator>`, `<hub-ui-paginator>` or `<paginable-table-paginator>`): Standalone pagination controls
 - **Additional Components**: Icons, dropdowns, resizable columns, range inputs, and filter menus
 
 All components are built as standalone Angular components with full Angular Signals support.
@@ -394,12 +394,12 @@ npm install ng-hub-ui-paginable
 
 ```typescript
 import { Component, signal } from '@angular/core';
-import { HubUITableModule } from 'ng-hub-ui-paginable';
+import { TableComponent } from 'ng-hub-ui-paginable';
 
 @Component({
 	selector: 'app-example',
 	standalone: true,
-	imports: [HubUITableModule],
+	imports: [TableComponent],
 	template: `
 		<hub-ui-table
 			[headers]="headers()"
@@ -470,7 +470,7 @@ export class ExampleComponent {
 	[clickFn]="onItemClick"
 >
 	<!-- Custom item template -->
-	<ng-template listItem let-data="data" let-depth="depth">
+	<ng-template listItemTpt let-data="data" let-depth="depth">
 		<div class="d-flex align-items-center">
 			<span [style.margin-left.px]="depth * 20"> {{ data.name }} </span>
 			<span class="badge bg-secondary ms-auto"> {{ data.type }} </span>
@@ -500,7 +500,7 @@ Use the same component with `options.display = 'cards'` when you want a card-bas
 ### Standalone Paginator
 
 ```html
-<hub-ui-paginator [(page)]="currentPage" [numberOfPages]="totalPages()"> </hub-ui-paginator>
+<hub-paginator [(page)]="currentPage" [numberOfPages]="totalPages()"> </hub-paginator>
 ```
 
 ## 🏗️ Table Headers Configuration (`PaginableTableHeader`)
@@ -771,54 +771,52 @@ export class DynamicTableComponent {
 
 ## 🔧 Resizable Columns
 
-The library includes a resizable component for interactive column width adjustment:
+The table writes the `resizable` attribute on every header cell itself, so nothing has to be
+added in a template — and a header template cannot add it in any case, since its content is
+rendered *inside* the `<th>` the table already drew.
 
-```html
-<hub-ui-table [headers]="headers">
-	<!-- Custom header with resizable functionality -->
-	<ng-template headerTpt header="name">
-		<th resizable>Resizable Column</th>
-	</ng-template>
-</hub-ui-table>
-```
+The two pieces behind it are exported for a table you build yourself:
 
 ```typescript
-// Enable resizing programmatically
 import { ResizableComponent, ResizableDirective } from 'ng-hub-ui-paginable';
 
-// Use the resizable directive on table headers
+// ResizableComponent matches `th[resizable]` and owns the column width;
+// ResizableDirective matches `[resizable]` and emits the width while a grip is dragged.
 @Component({
-  imports: [ResizableDirective]
+	imports: [ResizableComponent, ResizableDirective]
 })
+export class MyGrid {}
 ```
-
-### Resizable Features
-
-- **Interactive Resize**: Click and drag column borders to adjust width
-- **Minimum Width**: Prevent columns from becoming too narrow
-- **Persistence**: Column widths can be saved and restored
-- **Responsive**: Works with responsive table layouts
 
 ## 🎪 Additional Components
 
-### Icon Component (`<hub-ui-icon>`)
+### Icon Component (`<hub-icon>`)
 
 Supports multiple icon libraries with unified interface:
 
 ```html
 <!-- FontAwesome icon -->
-<hub-ui-icon [config]="{ type: 'font-awesome', value: 'user' }"></hub-ui-icon>
+<hub-icon [config]="{ type: 'font-awesome', value: 'user' }"></hub-icon>
 
 <!-- Material icon -->
-<hub-ui-icon [config]="{ type: 'material', value: 'person', variant: 'outlined' }"></hub-ui-icon>
+<hub-icon [config]="{ type: 'material', value: 'person', variant: 'outlined' }"></hub-icon>
 
 <!-- Bootstrap icon -->
-<hub-ui-icon [config]="{ type: 'bootstrap', value: 'person-fill' }"></hub-ui-icon>
+<hub-icon [config]="{ type: 'bootstrap', value: 'person-fill' }"></hub-icon>
 ```
 
-### Dropdown Component (`<hub-ui-dropdown>`)
+### Row Menus (`PaginableTableDropdown`)
 
-Used internally for action buttons and filters:
+A row menu is configuration, not markup: it is declared in `header.buttons` or in
+`batchActions` and the table draws it. The shape it takes is this one.
+
+> The panel itself is `DropdownComponent` (`<hub-dropdown>` or `<hub-ui-dropdown>`), which the
+> table uses internally; the older `PaginableTableDropdownComponent` (`<hub-table-dropdown>`)
+> is **deprecated since 22.16.0**. Register an actions adapter with
+> `provideHubPaginableActions(hubActionsAdapter)` from `ng-hub-ui-buttons` and the table draws
+> its menus with the design system's dropdown instead. The deprecated component is still
+> exported so that upgrading breaks nobody, but it positions its panel by hand on
+> `document.body`, so it neither flips when it does not fit nor closes on `Escape`.
 
 ```typescript
 interface PaginableTableDropdown {
@@ -920,7 +918,6 @@ const headers: PaginableTableHeader[] = [
 			{
 				icon: 'fa-edit',
 				title: 'Edit',
-				tooltip: 'Edit this record',
 				color: 'primary',
 				handler: (row) => this.editUser(row.data),
 				hidden: (row) => !row.data.canEdit,
@@ -1097,26 +1094,36 @@ filters = signal({
 | Name                 | Type                                                     | Default             | Description                                                                                                                                                                        |
 | -------------------- | -------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `headers`            | `PaginableTableHeader[]`                                 | `[]`                | Column definitions with titles, sorting, filtering, and actions.                                                                                                                   |
-| `data` / `rows`      | `T[]` or `PaginationState<T>`                            | `[]`                | Table data. A plain array → client-side mode (in-memory pagination); a `PaginationState` → server mode.                                                                            |
+| `data`               | `T[]` or `PaginationState<T>`                            | `[]`                | Table data. A plain array → client-side mode (in-memory pagination); a `PaginationState` → server mode.                                                                            |
+| `resource`           | `HubPaginableResource<T>`                                | `null`              | A `resource()` / `httpResource()` bound whole: its value feeds the rows exactly as `data` does, `isLoading()` the loading state and `error()` the error state. Wins over `data`; paging never calls `reload()`. |
+| `id`                 | `string`                                                 | generated           | Identifier of this table instance. Defaults to a generated unique id, so two tables on a page never share one.                                                                     |
 | `page`               | `number`                                                 | `null`              | Current page number (1-based, model signal). Defaulted to `1` automatically in client-side mode.                                                                                   |
 | `perPage`            | `number`                                                 | `10`                | Number of items per page (model signal).                                                                                                                                           |
 | `perPageOptions`     | `number[]`                                               | `[10, 20, 50, 100]` | Available options for items per page.                                                                                                                                              |
 | `totalItems`         | `number`                                                 | `null`              | Total items across all pages. Setting it selects **server mode** (the table renders `data` as-is).                                                                                 |
 | `searchable`         | `boolean`                                                | `true`              | Whether to show the global search input.                                                                                                                                           |
 | `searchTerm`         | `string`                                                 | `''`                | Current search term (model signal).                                                                                                                                                |
-| `searchFn`           | `(a: T, b: T) => boolean`                                | `null`              | Custom search function for filtering.                                                                                                                                              |
-| `selectable`         | `boolean`                                                | `false`             | Whether rows can be selected.                                                                                                                                                      |
+| `searchFn`           | `(item: T, term: string) => boolean`                     | `null`              | Decides whether a row survives the global search, replacing the scan of the searchable columns. Client mode only; the term arrives trimmed and lowercased. Same contract as `hub-list`.                                                          |
+| `compareFn`          | `(a: T, b: T) => boolean`                                | `null`              | Decides when two selection values are the same record, in `markSelected` and in both toggles. Receives what the selection stores: the row data, or the `bindValue` property when one is set. |
+| `selectable`         | `SelectionTypes \| boolean \| null`                      | `null`              | Selection mode. `'single'` / `true` picks one row, `'multiple'` picks many, `false` / `null` disables selection.                                                                   |
 | `multiple`           | `boolean`                                                | `false`             | Whether multiple row selection is allowed.                                                                                                                                         |
+| `selectWhileSelecting` | `boolean`                                              | `false`             | While at least one row is selected, a row click marks it instead of running `clickFn`. Off by default; the touch pattern for picking several rows without losing them to a navigation. |
 | `flush`              | `boolean`                                                | `false`             | Drops the outer border, the radius, the head rule and the cell padding, keeping the row divider. For a table of choices inside a dialog, where the surface already drew the frame. |
 | `bindValue`          | `string`                                                 | `null`              | Property used to uniquely identify selected items.                                                                                                                                 |
 | `ordination`         | `PaginableTableOrdination`                               | `null`              | Current sorting configuration (model signal).                                                                                                                                      |
 | `filters`            | `Record<string, any>`                                    | `{}`                | Active column filters (model signal).                                                                                                                                              |
 | `debounce`           | `number`                                                 | `0`                 | Debounce time in ms for search and filter inputs.                                                                                                                                  |
 | `loading`            | `boolean`                                                | `false`             | Loading state indicator (model signal).                                                                                                                                            |
+| `error`              | `unknown`                                                | `null`              | Error state holder (model signal). Any truthy value renders the error state.                                                                                                       |
+| `loadingComponent`   | `PaginableStateDefault`                                  | `null`              | Component drawn for the loading state on this table, ahead of the application-wide default.                                                                                        |
+| `errorComponent`     | `PaginableStateDefault`                                  | `null`              | Component drawn for the error state on this table, ahead of the application-wide default.                                                                                          |
+| `noResultsComponent` | `PaginableStateDefault`                                  | `null`              | Component drawn for the empty state on this table, ahead of the application-wide default.                                                                                          |
 | `paginate`           | `boolean`                                                | `true`              | Enables pagination. With a plain array and no `totalItems`, this turns on automatic client-side mode. `false` renders the whole array unpaginated.                                 |
 | `paginationPosition` | `'top' \| 'bottom' \| 'both'`                            | `'bottom'`          | Where to display pagination controls.                                                                                                                                              |
 | `paginationInfo`     | `boolean`                                                | `true`              | Whether to show pagination info (e.g., "Showing 1 to 10 of 100").                                                                                                                  |
 | `stickyActions`      | `boolean`                                                | `false`             | Whether action buttons should stick during scrolling.                                                                                                                              |
+| `stickyHeader`       | `boolean`                                                | `false`             | Pins the `<thead>` to the top while the body scrolls, inside any scroll container. Offset via `--hub-table-head-sticky-top`.                                                       |
+| `flushFields`        | `boolean`                                                | `false`             | Drops the frame from the form controls rendered inside cells, so an editable table reads as a table and not as a grid of inputs.                                                   |
 | `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`                | Actions available for selected rows.                                                                                                                                               |
 | `responsive`         | `TableBreakpoint`                                        | `null`              | Responsive breakpoint for table layout.                                                                                                                                            |
 | `options`            | `PaginableTableOptions`                                  | `{}`                | Visual configuration (cursor, hover, striped, variant).                                                                                                                            |
@@ -1153,21 +1160,36 @@ interface TableRowEvent<T> {
 
 #### Inputs
 
-| Name           | Type                                                     | Default      | Description                                                                                                                                                                                                                                                                                                                                              |
-| -------------- | -------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `items`        | `T[]`                                                    | `[]`         | Hierarchical list data.                                                                                                                                                                                                                                                                                                                                  |
-| `bindValue`    | `string`                                                 | `null`       | Property for unique item identification.                                                                                                                                                                                                                                                                                                                 |
-| `bindLabel`    | `string`                                                 | `'label'`    | Property to display as item label.                                                                                                                                                                                                                                                                                                                       |
-| `bindChildren` | `string`                                                 | `'children'` | Property containing child items.                                                                                                                                                                                                                                                                                                                         |
-| `selectable`   | `string`                                                 | `null`       | Selection mode configuration.                                                                                                                                                                                                                                                                                                                            |
-| `options`      | `PaginableTableOptions`                                  | `{}`         | Visual and behavioral options.                                                                                                                                                                                                                                                                                                                           |
-| `batchActions` | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`         | Actions for selected items.                                                                                                                                                                                                                                                                                                                              |
-| `clickFn`      | `(event: ListClickEvent<T>) => void`                     | `null`       | Handler for item click events. The event carries the **item** in `item`, its label in `value` (per `bindLabel`), a group's children as items in `children`, plus `selected`, `collapsed`, `depth`, `index` and the native `mouseEvent`.                                                                                                                  |
-| `searchTerm`   | `string`                                                 | `''`         | The term the list is filtered by while `options.searchable` is on. A model, so it can be driven and read from outside.                                                                                                                                                                                                                                   |
-| `searchFn`     | `(item: T, term: string) => boolean`                     | `null`       | How an item is matched. The default reads `bindLabel`; a group survives while any descendant matches. Same shape as the table's.                                                                                                                                                                                                                         |
-| `rowClass`     | `string \| ((item: T) => string)`                        | `null`       | Custom CSS class for a list item. Can be a fixed string or a function that returns a class based on item data.                                                                                                                                                                                                                                           |
-| `connected`    | `boolean`                                                | `false`      | Draws a vertical connector between consecutive items for a timeline / pipeline look (list display only, skipped in cards). Themed via `--hub-list-connector-color` / `-width` / `-style` / `-offset`.                                                                                                                                                    |
-| `flush`        | `boolean`                                                | `false`      | Draws the list as a list rather than a stack of cards: no border, radius or surface per row, a rule between them instead. Themed via `--hub-list-divider-width` / `-color`. Applies to the cards display too. An input rather than CSS because the token defaults sit on the host, where a consumer class ties on specificity and loses on source order. |
+| Name                 | Type                                                     | Default        | Description                                                                                                                                                                                                                                                                                                                                              |
+| -------------------- | -------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`              | `T[]`                                                    | `[]`           | Hierarchical list data.                                                                                                                                                                                                                                                                                                                                  |
+| `resource`           | `HubPaginableResource<T>`                                | `null`         | A `resource()` / `httpResource()` bound whole: its value feeds the items (an array, or a `PaginationState` that also sets page, size and total), `isLoading()` the loading state and `error()` the error state. Wins over `items`; paging never calls `reload()`.                                                                                        |
+| `bindValue`          | `string`                                                 | `null`         | Property for unique item identification.                                                                                                                                                                                                                                                                                                                 |
+| `bindLabel`          | `string`                                                 | `'label'`      | Property to display as item label.                                                                                                                                                                                                                                                                                                                       |
+| `bindChildren`       | `string`                                                 | `'children'`   | Property containing child items.                                                                                                                                                                                                                                                                                                                         |
+| `selectable`         | `SelectionTypes \| boolean \| null`                      | `null`         | Selection mode. `'single'` / `true` picks one item (radio), `'multiple'` picks many (checkbox), `false` / `null` disables selection.                                                                                                                                                                                                                     |
+| `options`            | `PaginableTableOptions`                                  | `{}`           | Visual and behavioral options.                                                                                                                                                                                                                                                                                                                           |
+| `paginate`           | `boolean`                                                | `false`        | Enables the built-in paginator under the list.                                                                                                                                                                                                                                                                                                           |
+| `page`               | `number`                                                 | `1`            | Current page (model signal).                                                                                                                                                                                                                                                                                                                             |
+| `perPage`            | `number`                                                 | `10`           | Items per page (model signal).                                                                                                                                                                                                                                                                                                                           |
+| `perPageOptions`     | `number[]`                                               | `[10, 20, 50]` | Options offered in the per-page selector.                                                                                                                                                                                                                                                                                                                |
+| `totalItems`         | `number`                                                 | `0`            | Total items across all pages (model signal). Leave it at `0` to let the list count what it holds.                                                                                                                                                                                                                                                        |
+| `loading`            | `boolean`                                                | `false`        | Loading state indicator (model signal).                                                                                                                                                                                                                                                                                                                  |
+| `error`              | `unknown`                                                | `null`         | Error state holder (model signal). Any truthy value renders the error state.                                                                                                                                                                                                                                                                             |
+| `loadingComponent`   | `PaginableStateDefault`                                  | `null`         | Component drawn for the loading state on this list, ahead of the application-wide default.                                                                                                                                                                                                                                                               |
+| `errorComponent`     | `PaginableStateDefault`                                  | `null`         | Component drawn for the error state on this list, ahead of the application-wide default.                                                                                                                                                                                                                                                                 |
+| `noResultsComponent` | `PaginableStateDefault`                                  | `null`         | Component drawn for the empty state on this list, ahead of the application-wide default.                                                                                                                                                                                                                                                                 |
+| `sortable`           | `boolean`                                                | `false`        | Enables drag-and-drop reordering (native HTML5 drag, with a Pointer Events fallback for touch).                                                                                                                                                                                                                                                          |
+| `dragGroup`          | `string`                                                 | `null`         | Shared drag group. Lists with the same non-null group can exchange items; `null` allows in-list reordering only.                                                                                                                                                                                                                                         |
+| `sortDisabled`       | `(item: T) => boolean`                                   | `() => false`  | Predicate marking an item as non-draggable.                                                                                                                                                                                                                                                                                                              |
+| `keyboardSortable`   | `boolean`                                                | `false`        | Opt-in keyboard reordering on the focusable row: `Space`/`Enter` to pick up and drop, arrows to move, `Escape` to cancel.                                                                                                                                                                                                                                |
+| `batchActions`       | `Array<PaginableTableDropdown \| PaginableActionButton>` | `[]`           | Actions for selected items.                                                                                                                                                                                                                                                                                                                              |
+| `clickFn`            | `(event: ListClickEvent<T>) => void`                     | `null`         | Handler for item click events. The event carries the **item** in `item`, its label in `value` (per `bindLabel`), a group's children as items in `children`, plus `selected`, `collapsed`, `depth`, `index` and the native `mouseEvent`.                                                                                                                  |
+| `searchTerm`         | `string`                                                 | `''`           | The term the list is filtered by while `options.searchable` is on. A model, so it can be driven and read from outside.                                                                                                                                                                                                                                   |
+| `searchFn`           | `(item: T, term: string) => boolean`                     | `null`         | How an item is matched. The default reads `bindLabel`; a group survives while any descendant matches. `hub-table` takes the same contract.                                                                                                                                                                                                                         |
+| `rowClass`           | `string \| ((item: T) => string)`                        | `null`         | Custom CSS class for a list item. Can be a fixed string or a function that returns a class based on item data.                                                                                                                                                                                                                                           |
+| `connected`          | `boolean`                                                | `false`        | Draws a vertical connector between consecutive items for a timeline / pipeline look (list display only, skipped in cards). Themed via `--hub-list-connector-color` / `-width` / `-style` / `-offset`.                                                                                                                                                    |
+| `flush`              | `boolean`                                                | `false`        | Draws the list as a list rather than a stack of cards: no border, radius or surface per row, a rule between them instead. Themed via `--hub-list-divider-width` / `-color`. Applies to the cards display too. An input rather than CSS because the token defaults sit on the host, where a consumer class ties on specificity and loses on source order. |
 
 Theming it from a stylesheet instead of a template — every list in a region, without touching
 the markup — is the `hub-list-flush` mixin:
@@ -1183,6 +1205,15 @@ the markup — is the `hub-list-flush` mixin:
 The component includes that same mixin under `:host(.hub-list--flush)`, so the input and the
 mixin cannot drift apart.
 
+#### Outputs
+
+| Name     | Payload             | Description                                                                                                                              |
+| -------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `sorted` | `ListSortEvent<T>`  | Emitted by the **destination** list after a drag-and-drop reorder or a cross-list transfer, so the new order can be persisted.           |
+
+Like the table, the list is a `ControlValueAccessor`, so the selection travels through
+`[(ngModel)]` or a reactive form control rather than through an output.
+
 **List Click Event (`ListClickEvent<T>`):**
 
 ```typescript
@@ -1193,20 +1224,22 @@ interface ListClickEvent<T> {
 	collapsed: boolean; // Expansion state
 	value: any; // Item value (based on bindLabel)
 	item: T; // Full item data
+	children: T[]; // A group's children, as items
 	mouseEvent: MouseEvent; // Original mouse event
 }
 ```
 
 `options.display` accepts `'list' | 'cards'`. The `cards` mode only affects the root level of the list component.
 
-### Paginator Component (`<hub-ui-paginator>`)
+### Paginator Component (`<hub-paginator>`)
 
 #### Inputs
 
-| Name            | Type     | Default | Description                  |
-| --------------- | -------- | ------- | ---------------------------- |
-| `page`          | `number` | `1`     | Current page (model signal). |
-| `numberOfPages` | `number` | `null`  | Total number of pages.       |
+| Name            | Type      | Default | Description                                                                                              |
+| --------------- | --------- | ------- | -------------------------------------------------------------------------------------------------------- |
+| `page`          | `number`  | `1`     | Current page (model signal).                                                                             |
+| `numberOfPages` | `number`  | `null`  | Total number of pages. Left unset, the paginator drops the "last page" control and keeps going forwards. |
+| `rtl`           | `boolean` | `false` | Mirrors the actions for a right-to-left reading order; the icons keep their visual direction.            |
 
 ---
 
@@ -1231,30 +1264,32 @@ Allows replacing the content of a specific header.
 
 ### 📄 cellTpt (column cell)
 
-Overrides the visualization of a specific cell.
+Overrides the visualization of a specific cell. The context carries `item` (the record), `row`
+(the whole `TableRow`), `header` (the column definition) and `property` (the value already
+resolved from `header.property`).
 
 ```html
-<ng-template cellTpt header="name" let-data="data"> {{ data.name.toUpperCase() }} </ng-template>
+<ng-template cellTpt header="name" let-item="item"> {{ item.name.toUpperCase() }} </ng-template>
 ```
 
 ```html
-<ng-template cellTpt header="age" let-data="data">
-	<span [class.text-success]="data.age >= 18"> {{ data.age }} years </span>
+<ng-template cellTpt header="age" let-item="item">
+	<span [class.text-success]="item.age >= 18"> {{ item.age }} years </span>
 </ng-template>
 ```
 
 ```html
-<ng-template cellTpt header="adult" let-data="data">
-	<hub-ui-icon [config]="{ type: 'material', value: data.adult ? 'check' : 'close' }"></hub-ui-icon>
+<ng-template cellTpt header="adult" let-item="item">
+	<hub-icon [config]="{ type: 'material', value: item.adult ? 'check' : 'close' }"></hub-icon>
 </ng-template>
 ```
 
-### 🚫 notFoundTpt (empty state)
+### 🚫 noResultsTpt (empty state)
 
 Displays custom content when there is no data to show.
 
 ```html
-<ng-template notFoundTpt>
+<ng-template noResultsTpt>
 	<div class="alert alert-info text-center">
 		<i class="fa-solid fa-circle-info me-2"></i>
 		No results found for your search.
@@ -1292,17 +1327,23 @@ Displayed if there is an error template configured and it is manually triggered 
 
 Allows you to completely redefine the structure of a row. Useful when the table is not used as a `<table>` but as a `<div>`, or if you need a "card"-type display.
 
+The implicit context variable is the whole `TableRow<T>` — `selected`, `collapsed` and the
+record itself under `data` — not the record on its own.
+
 ```html
-<ng-template tableRow let-item>
+<ng-template rowTpt let-row>
 	<tr>
-		<td>{{ item.name }}</td>
-		<td>{{ item.lastname }}</td>
-		<td>{{ item.age }} years</td>
+		<td>{{ row.data.name }}</td>
+		<td>{{ row.data.lastname }}</td>
+		<td>{{ row.data.age }} years</td>
 	</tr>
 </ng-template>
 ```
 
-You can also use `tableRowTpt` with expandable components.
+`paginableTableRow` is the long-form spelling of the same directive.
+
+A custom row template **replaces** the built-in one, and the built-in one is what draws the
+expanding rows: a table that needs both has to render `expandingRowTpt` itself.
 
 ---
 
@@ -1315,9 +1356,12 @@ The paginator embedded in Table and List is themed through the shared `--hub-pag
 
 ### 🔗 Import styles
 
+Component structure ships compiled with each component, so nothing has to be imported for the
+table, the list or the paginator to render. What the package's `styles` entry point offers is
+the opt-in theming mixins described below:
+
 ```scss
-@use 'bootstrap'; // Optional but recommended
-@use 'ng-hub-ui-paginable/src/lib/styles/paginable.scss';
+@use 'ng-hub-ui-paginable/styles' as *;
 ```
 
 ### 🎛 Quick customization example
@@ -1338,6 +1382,35 @@ The paginator embedded in Table and List is themed through the shared `--hub-pag
 	--hub-paginator-link-active-bg: #0d6efd;
 	--hub-paginator-link-active-color: #fff;
 }
+```
+
+### 🖼 The glyphs are variables too
+
+Every icon the library draws itself — the sort arrows, the row expander, the list's chevrons and
+its magnifier, the filter panel's add and remove, the row-actions dots, the paginator's arrows — is
+an inline SVG held in a CSS variable and painted as a mask, so the ink is a colour you set. Replace
+one by redefining its variable. The component that draws a glyph owns the variable's name, so
+changing the list's chevron leaves the table's where it was.
+
+```scss
+hub-list {
+	--hub-list-icon-chevron-down: url('data:image/svg+xml,…');
+	--hub-list-icon-color: #6c757d;
+}
+```
+
+The families are `--hub-table-icon-*`, `--hub-list-icon-*`, `--hub-paginator-icon-*`,
+`--hub-filter-icon-*` and `--hub-table-dropdown-icon-*`; the
+[CSS Variables Reference](./docs/css-variables-reference.md) lists every one of them.
+
+### 🔗 Connected list (`connected`)
+
+The `connected` input on `<hub-list>` draws a vertical connector between consecutive items — a
+timeline / pipeline look, in the list display only; it is skipped in cards. Theme it with
+`--hub-list-connector-color` / `-width` / `-style` / `-offset`. Off by default.
+
+```html
+<hub-list [items]="steps" [connected]="true" [bindLabel]="'title'"> … </hub-list>
 ```
 
 ### 🧩 SCSS mixins — one-call theming
@@ -1508,11 +1581,11 @@ export class FileListComponent {
 **2. Add custom styles:**
 
 ```scss
-.tree-list__node.list-item-folder > div {
+.hub-list__item.list-item-folder .hub-list__label {
 	font-weight: bold;
 }
 
-.tree-list__node.list-item-file > div {
+.hub-list__item.list-item-file .hub-list__label {
 	color: #555;
 }
 ```
@@ -1627,11 +1700,12 @@ export class MyComponent implements OnDestroy {
 
 ### Module Import Issues
 
-```typescript
-// Correct module import for standalone components
-import { HubUITableModule } from 'ng-hub-ui-paginable';
+Import the components themselves. `HubUITableModule` declares and exports nothing — it only
+carries the providers — so a component that imports the module and writes `<hub-ui-table>` in
+its template gets an unknown element. It is deprecated and goes in `23.0.0`; use
+`providePaginable()` for the providers.
 
-// Or import individual components
+```typescript
 import { TableComponent, PaginatorComponent, ListComponent } from 'ng-hub-ui-paginable';
 
 @Component({
@@ -1664,13 +1738,9 @@ The table component follows WCAG 2.1 AA guidelines:
 - **Focus Management**: Clear focus indicators and logical tab order
 - **High Contrast**: Compatible with high contrast themes
 
-```html
-<hub-ui-table
-	[ariaLabel]="'User data table'"
-	[ariaDescription]="'Contains user information with sorting and filtering options'"
->
-</hub-ui-table>
-```
+The component exposes no `ariaLabel` / `ariaDescription` inputs. Its own controls (search,
+clear, sort, pagination) carry translated ARIA labels; to name the table itself, wrap it in a
+labelled region or precede it with a heading the region points at.
 
 ## 🧪 Testing Guide
 
@@ -1731,7 +1801,7 @@ it('should filter data when search term changes', fakeAsync(() => {
 	component.data.set([{ name: 'John Doe' }, { name: 'Jane Smith' }]);
 	fixture.detectChanges();
 
-	const searchInput = fixture.debugElement.query(By.css('input[type="search"]'));
+	const searchInput = fixture.debugElement.query(By.css('.hub-table__search-input'));
 	searchInput.nativeElement.value = 'John';
 	searchInput.nativeElement.dispatchEvent(new Event('input'));
 
@@ -1752,7 +1822,9 @@ it('should navigate between pages', () => {
 	component.perPage.set(10);
 	fixture.detectChanges();
 
-	const nextButton = fixture.debugElement.query(By.css('.pagination .page-item:last-child button'));
+	// The paginator controls are `<a role="button">` inside `.hub-paginator__item`; their accessible
+	// name comes from the active dictionary, so it reads "Next" under the default English one.
+	const nextButton = fixture.debugElement.query(By.css('.hub-paginator__link[aria-label="Next"]'));
 	nextButton.nativeElement.click();
 	fixture.detectChanges();
 
@@ -1766,8 +1838,8 @@ it('should navigate between pages', () => {
 @Component({
 	template: `
 		<hub-ui-table [headers]="headers" [data]="data">
-			<ng-template cellTpt header="name" let-data="data">
-				<strong>{{ data.name }}</strong>
+			<ng-template cellTpt header="name" let-item="item">
+				<strong>{{ item.name }}</strong>
 			</ng-template>
 		</hub-ui-table>
 	`
@@ -1969,15 +2041,15 @@ onPageChange(page: number) {
 })
 ```
 
-**After (v1.52.x)**
+**After**
 
 ```typescript
 // In main.ts or app.config.ts
-import { provideTableConfig } from 'ng-hub-ui-paginable';
+import { providePaginable } from 'ng-hub-ui-paginable';
 
 export const appConfig = {
 	providers: [
-		provideTableConfig({
+		providePaginable({
 			theme: 'bootstrap',
 			language: 'en'
 		})
@@ -2019,7 +2091,7 @@ onSelectionChange(items: any[]) {
 
 ```html
 <!-- Ensure template directive names are correct -->
-<ng-template cellTpt header="name" let-data="data"> {{ data.name }} </ng-template>
+<ng-template cellTpt header="name" let-item="item"> {{ item.name }} </ng-template>
 ```
 
 ---
@@ -2405,48 +2477,8 @@ export class AppComponent {
 
 ## 📊 Changelog
 
-## [22.0.1] - 2026-06-17
-
-### Fixed
-
-- **List:** nested children lists no longer render flush against the parent item — a top margin (`--hub-list-children-gap`, default `var(--hub-list-item-padding-y)`) now separates them, in both the default and card layouts.
-
-## [22.0.0] - 2026-06-17
-
-### Changed
-
-- **List:** the BEM block now lives on the host element. The host `hub-list` carries the `.hub-list` block class and the `<ul>` becomes the `.hub-list__items` element (modifiers `.hub-list__items--root` / `--cards`). Backgrounds are controlled via `--hub-list-bg` (host) and `--hub-list-item-bg` (items), both defaulting to a transparent host / surface items.
-
-### Added
-
-- **List:** `--hub-list-gap`, `--hub-list-items-bg` and `--hub-list-item-bg` CSS variables.
-
-### Fixed
-
-- **List:** the card CSS variables (`--hub-list-cards-*`) were documented and overridable but never applied — they now take effect.
-- **Paginator:** `--hub-paginator-font-size` is now actually applied.
-- **Docs:** CSS variables reference corrected (fixed the `--hub-table-table-*` doubled-prefix typo, documented the table search block) and brought to full EN/ES parity.
-
-### Removed
-
-- **Breaking — List:** renamed `--hub-list-container-*` variables to `--hub-list-bg` / `--hub-list-border-radius` / `--hub-list-padding-x/y` / `--hub-list-items-gap`, and the `.hub-list` / `.hub-list--root` / `.hub-list--cards` selectors were restructured (see the Changed note above).
-- **Table:** removed the non-functional `--hub-table-breakpoint-*` variables (responsive breakpoints are fixed and cannot be overridden via CSS variables).
-
-## [19.10.2] - 2025-12-23
-
-### Added
-
-- `--hub-table-cell-vertical-align`, `--hub-icon-color`, and `--hub-icon-size` customization tokens.
-
-### Changed
-
-- Overlay utilities moved to `ng-hub-ui-utils` and dropdown integration now relies on that package.
-- Table cell vertical alignment defaults to `middle` via CSS variable.
-
-### Fixed
-
-- Menu filter match mode options now render their translated labels correctly.
-- Added missing translations for `IsNull` and `IsNotNull` match modes.
+See [CHANGELOG.md](./CHANGELOG.md) for the full version history, and
+[BREAKING_CHANGES.md](./BREAKING_CHANGES.md) for migration notes.
 
 ## 🤝 Contribution
 

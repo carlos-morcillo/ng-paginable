@@ -1,4 +1,4 @@
-import { Component, forwardRef, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, input } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 
@@ -7,6 +7,7 @@ import { TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 	templateUrl: './paginable-table-range-input.component.html',
 	styleUrls: ['./paginable-table-range-input.component.scss'],
 	standalone: true,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [FormsModule, TranslatePipe, UcfirstPipe],
 	providers: [
 		{

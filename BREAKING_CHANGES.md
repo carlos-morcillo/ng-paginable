@@ -1,5 +1,64 @@
 # Breaking Changes: ng-hub-ui-paginable
 
+## [22.18.0] - 2026-09-06
+
+### `searchFn` on the table takes an item and a term
+
+- **Change**: `TableComponent.searchFn` was typed `(a: T, b: T) => boolean` and nothing read it. It is now `(item: T, term: string) => boolean`, and the table calls it: in client mode it decides, row by row, what survives the global search. The term arrives already trimmed and lowercased, which is the contract `hub-list.searchFn` has always had — the two components now mean the same thing by "search".
+- **Impact**: nothing in this repository, the documentation site included, ever bound it, and no example did either. What breaks is a consumer who wrote the old signature out by hand — a `const search: (a: Order, b: Order) => boolean` handed to `[searchFn]`, or a field typed from `TableComponent['searchFn']`. That stops compiling, which is the point: it was never going to be called with two rows.
+- **Migration**: rewrite the predicate to take the row and the term, and return whether the row matches. A comparison of two rows has no equivalent, because the input never had the term it would have needed.
+
+    ```ts
+    // Before — declared, never called
+    searchFn = (a: Order, b: Order) => a.reference === b.reference;
+
+    // After — one row against the term
+    searchFn = (order: Order, term: string) => order.reference.toLowerCase().includes(term);
+    ```
+
+- **Also note**: the predicate answers for the whole row, so the searchable columns stop applying while one is bound — that is what makes it able to match on a field the table does not show. It is consulted only in client mode; with a server-managed collection the term is handed to the consumer, who searches wherever the data lives.
+
+### `compareFn` on the table is now read
+
+- **Change**: `TableComponent.compareFn` was declared, documented as pending and never called. It now decides when two selection values are the same record, at every point the table matches the selection against the rows: `markSelected`, and the two toggles.
+- **Impact**: **none unless it is bound.** Unbound, the comparisons are byte for byte what they were — JSON serialization in `markSelected`, reference equality in the toggles. A consumer who had left a `compareFn` bound expecting it to be inert now gets a table that obeys it; that is a change in behaviour for a binding whose whole purpose was this.
+- **Migration**: none, unless a stray `compareFn` was left bound. Check what it returns before relying on the new behaviour — a comparator that answers `true` too readily merges rows into one selection entry.
+- **What it receives**: whatever the table stores in the selection — the row data, or the `bindValue` property when one is set. This mirrors `compareWith` on Angular's own select: the comparison is between values, and `bindValue` is what decides what a value is.
+
+### `HubUITableModule` is deprecated and goes in 23.0.0
+
+- **Change**: `HubUITableModule`, and the `TableModule` alias it is exported under, carry an `@deprecated` tag. **Nothing about their behaviour changes in this release.**
+- **Impact**: an editor now marks the import as deprecated, and a build configured to fail on deprecations will say so. The module keeps working exactly as before until it is removed.
+- **Migration**: import the standalone components you use directly and replace `HubUITableModule.forRoot(config)` with `providePaginable(config)`, which is the same provider set and also works in a route's `providers`.
+
+    ```ts
+    // Before
+    imports: [HubUITableModule],
+    // …
+    HubUITableModule.forRoot({ language: 'es' });
+
+    // After
+    imports: [TableComponent],
+    // …
+    providers: [providePaginable({ language: 'es' })];
+    ```
+
+- **When**: `23.0.0`. In this family the major tracks the Angular major, so 23 is the first release that can drop it.
+
+### The last accessor inputs became signal inputs, so reading them from code means calling them
+
+- **Change**: `ListComponent.items`, `ListComponent.options`, `ListComponent.batchActions`, `MenuFilterComponent.header`, `HubIconComponent.config` and `PaginableTableDropdownComponent.options` were `@Input()` accessors and are now `input()` signals. The state their setters used to write by hand is derived with them: `MenuFilterComponent.matchModes` and `defaultValue`, `PaginableTableDropdownComponent.buttonClass` and `toggleColor`, and `HubIconComponent.type`, `value`, `variant`, `classlist` and `content` are all read-only signals now. `MenuFilterComponent.setMatchMode()` and `setDefaultValue()` are gone, having nothing left to set.
+- **Impact**: **template bindings are untouched** — `[items]`, `[options]`, `[batchActions]`, `[config]` and the rest bind exactly as before. What breaks is reading or writing those members from TypeScript: `list.items` returns the input signal rather than the array, `icon.classlist` returns a function, and `list.items = […]` no longer compiles. A test that assigned an input directly is the common case.
+- **Migration**: call it — `list.items()`, `icon.classlist()`, `dropdown.toggleColor()`. To write one from a test, use `fixture.componentRef.setInput('items', […])`, which worked with the accessors too. `MenuFilterComponent` is not exported from the package, so its two deleted methods were unreachable from outside the library.
+- **One behavioural change comes with it**: `ListComponent.options` folds the component defaults back in on every assignment instead of merging into whatever was set before. Passing `{ display: 'cards' }` still gets `collapsed: true`; what changes is that a key you drop from a later assignment now stops applying, where before it lingered.
+
+### The filter panel, the dropdown and the legacy row-actions menu wear this library's names
+
+- **Change**: three components dropped every Bootstrap class name and moved their own blocks under the `hub-` prefix the rest of the package already uses. The filter panel: `.filter__*` → `hub-filter__*`, with `.dropdown-item` → `hub-filter__item`, `.form-control` / `.form-select` → `hub-filter__control` (`--select` on the selects), `.dropdown-divider` → `hub-filter__divider-line`, and the four triggers now `hub-filter__remove-rule`, `hub-filter__add-rule-btn`, `hub-filter__clear`, `hub-filter__apply`. The dropdown: host class `.dropdown` → `hub-dropdown`, `.dropdown__toggle.btn` → `hub-dropdown__toggle`, `.dropdown__menu.dropdown-menu.show` → `hub-dropdown__menu` (`--open` while open). The legacy row-actions menu: `.table-dropdown__*` → `hub-table-dropdown__*`, dropping `.btn`, `.dropdown-toggle`, `.dropdown-menu`, `.dropdown-menu-<position>`, `.dropdown-item` and `.show`; its trigger colour is now painted from `options.color` through `resolveHubAccent` instead of a `.text-<color>` / `.btn-<fill>-<color>` class pair. The table dropped `.btn.btn-outline-dark` from its search button and `.btn.btn-link.px-2` from its row-expander trigger, and the list dropped `.text-danger` from its default error message. Each surface now ships the rules it used to borrow.
+- **Impact**: CSS that reached any of those internals through the old names no longer matches — `.filter__actions__apply`, `.table-dropdown__item`, `hub-table .dropdown-menu`, `.hub-table__expander-btn.btn-link`, `.hub-list__error.text-danger`. A `classlist` on a dropdown action that used the `table-dropdown__` prefix to opt out of the default item class must say `hub-table-dropdown__` now, or it will be given `hub-table-dropdown__item--default` alongside it. Bootstrap consumers see the library's own panel instead of Bootstrap's; same shape, and no longer repainted by a theme change in the application.
+- **Migration**: rename the selector — every old name maps to exactly one new name in the list above. There is no compatibility class to fall back on, by design: two owners of one appearance is the state this release exists to end.
+- **Also renamed**: the internal `<menu-filter>` element is `<hub-menu-filter>`. `MenuFilterComponent` has never been exported from the package's public API, so nothing outside the library could have been using it; the rename is listed here only because the element name was global while it existed.
+
 ## v22.17.0
 
 ### The column filters and the clear-filters button no longer wear Bootstrap class names

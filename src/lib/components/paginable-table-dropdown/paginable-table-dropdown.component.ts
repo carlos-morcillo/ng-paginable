@@ -1,10 +1,10 @@
 import { AsyncPipe, NgClass } from '@angular/common';
 import {
+	ChangeDetectionStrategy,
 	Component,
+	computed,
 	ElementRef,
 	EmbeddedViewRef,
-	HostListener,
-	Input,
 	TemplateRef,
 	ViewContainerRef,
 	inject,
@@ -12,23 +12,14 @@ import {
 	viewChild
 } from '@angular/core';
 import { Observable, isObservable, of } from 'rxjs';
-import { UnwrapAsyncPipe } from 'ng-hub-ui-utils';
+import { resolveHubAccent, UnwrapAsyncPipe } from 'ng-hub-ui-utils';
 import { TableRowEvent } from '../../interfaces';
 import { TableRow } from '../../interfaces/table-row';
 import { PaginableActionButton } from '../../interfaces/paginable-action-button';
 import { PaginableTableDropdown } from '../../interfaces/paginable-table-dropdown';
 import { HubIconComponent } from '../icon/icon.component';
 import { HubTableTooltipDirective } from '../../table-tooltip';
-import { warnDeprecatedActionsRendering } from '../../actions/actions.warning';
 
-@Component({
-	selector: 'hub-table-dropdown, paginable-table-dropdown',
-
-	standalone: true,
-	imports: [AsyncPipe, HubTableTooltipDirective, NgClass, HubIconComponent, UnwrapAsyncPipe],
-	templateUrl: './paginable-table-dropdown.component.html',
-	styleUrls: ['./paginable-table-dropdown.component.scss']
-})
 /**
  * Component for displaying a dropdown menu within a paginable table row.
  *
@@ -36,22 +27,28 @@ import { warnDeprecatedActionsRendering } from '../../actions/actions.warning';
  * `provideHubPaginableActions(hubActionsAdapter)` from `ng-hub-ui-buttons`; the table then
  * draws its menus with the design system's dropdown and this component is not used.
  *
- * It dresses itself in Bootstrap class names — `.btn`, `.dropdown-menu`, `.dropdown-item`
- * — which resolve to nothing in a product that does not ship Bootstrap: the trigger falls
- * back to the browser's default grey button and the panel to a transparent box. It also
- * places its panel by hand on `document.body`, so it neither flips when it does not fit
- * nor follows a scrolling container. Kept only so that upgrading breaks nobody.
+ * It places its panel by hand on `document.body`, so it neither flips when it does not fit
+ * nor follows a scrolling container; it closes on an outside click and on nothing else, so
+ * Escape and the keyboard never reach it. Kept only so that upgrading breaks nobody.
  *
  * @export
  * @class PaginableTableDropdownComponent
  * @template T
  */
+@Component({
+	selector: 'hub-table-dropdown, paginable-table-dropdown',
+
+	standalone: true,
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	imports: [AsyncPipe, HubTableTooltipDirective, NgClass, HubIconComponent, UnwrapAsyncPipe],
+	templateUrl: './paginable-table-dropdown.component.html',
+	styleUrls: ['./paginable-table-dropdown.component.scss'],
+	host: {
+		'(document:click)': 'clickOut($event)'
+	}
+})
 export class PaginableTableDropdownComponent<T = any> {
 	#elementRef = inject(ElementRef);
-
-	constructor() {
-		warnDeprecatedActionsRendering();
-	}
 
 	readonly dropdownTpt = viewChild.required<TemplateRef<any>>('dropdownTpt');
 
@@ -67,33 +64,29 @@ export class PaginableTableDropdownComponent<T = any> {
 	 */
 	readonly row = input<TableRowEvent<T>>();
 
-	#options: PaginableTableDropdown = { buttons: [] };
-
-	// TODO: Skipped for migration because:
-	//  Accessor inputs cannot be migrated as they are too complex.
 	/**
 	 * Configuration options for the dropdown menu, including buttons and styling.
+	 *
+	 * The defaults are folded in by the transform rather than read at each use site, so
+	 * `options().position` answers even when the consumer only passed `buttons`.
 	 *
 	 * @type {PaginableTableDropdown}
 	 * @memberof PaginableTableDropdownComponent
 	 */
-	@Input()
-	get options(): PaginableTableDropdown {
-		return this.#options;
-	}
-	set options(v: PaginableTableDropdown) {
-		this.#options = {
-			position: 'end',
-			fill: 'clear',
-			color: 'muted',
-			...v
-		};
-		if (this.#options.fill === 'clear') {
-			this.buttonClass = 'btn text-' + (this.#options.color ?? 'muted');
-		} else {
-			this.buttonClass = 'btn ' + ['btn', this.#options.fill, this.#options.color].filter((o) => o).join('-');
+	readonly options = input<PaginableTableDropdown, PaginableTableDropdown>(
+		{ buttons: [] },
+		{
+			transform: (value: PaginableTableDropdown): PaginableTableDropdown => ({
+				position: 'end',
+				fill: 'clear',
+				// `neutral` and not `muted`: the design system has no `--hub-sys-color-muted`, so that
+				// name resolved to an invalid declaration the browser dropped, leaving the trigger to
+				// inherit the table's ink. `neutral` is the same grey and it is what the row actions use.
+				color: 'neutral',
+				...value
+			})
 		}
-	}
+	);
 
 	/**
 	 * The element to append the dropdown to. Can be an HTMLElement, 'body', or null.
@@ -112,7 +105,19 @@ export class PaginableTableDropdownComponent<T = any> {
 	 */
 	readonly disabled = input<boolean>(false);
 
-	buttonClass: string | null = null;
+	readonly buttonClass = computed(() => `hub-table-dropdown__toggle--${this.options().fill ?? 'clear'}`);
+
+	/**
+	 * Resolved accent for the trigger, bound to `style.color`.
+	 *
+	 * `color` is a free-form word, so it is resolved rather than enumerated: a class per
+	 * built-in role would honour exactly those roles and leave a consumer's own name painting
+	 * nothing, which is the trap the row-action buttons already climbed out of.
+	 *
+	 * @see resolveHubAccent
+	 */
+	readonly toggleColor = computed(() => resolveHubAccent(this.options().color ?? 'neutral'));
+
 	shown: boolean = false;
 
 	/**
@@ -122,7 +127,6 @@ export class PaginableTableDropdownComponent<T = any> {
 	 * @param event - Represents the event that triggered the clickOut function. It contains information about the event, such as
 	 * the target element that was clicked.
 	 */
-	@HostListener('document:click', ['$event'])
 	clickOut(event: MouseEvent) {
 		if (!this.#elementRef.nativeElement.contains(event.target) && this.shown) {
 			this.close();
@@ -251,8 +255,8 @@ export class PaginableTableDropdownComponent<T = any> {
 	 */
 	getDropdownItemClassList(action: PaginableActionButton<T>): Array<string> {
 		const normalized = this.normalizeClassList(action.classlist);
-		if (!normalized.some((item) => item.startsWith('table-dropdown__'))) {
-			return ['table-dropdown__item--default', ...normalized];
+		if (!normalized.some((item) => item.startsWith('hub-table-dropdown__'))) {
+			return ['hub-table-dropdown__item--default', ...normalized];
 		}
 		return normalized;
 	}

@@ -1,12 +1,13 @@
-import { Component, ViewEncapsulation, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, input, model } from '@angular/core';
 import { HUB_TRANSLATION_PREFIX, TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 
 @Component({
-	selector: 'hub-paginator, paginable-table-paginator',
+	selector: 'hub-paginator, hub-ui-paginator, paginable-table-paginator',
 	standalone: true,
 	templateUrl: './paginator.component.html',
 	styleUrl: './paginator.component.scss',
 	encapsulation: ViewEncapsulation.None,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [TranslatePipe, UcfirstPipe],
 	providers: [{ provide: HUB_TRANSLATION_PREFIX, useValue: 'HUBUI.PAGINABLE' }]
 })

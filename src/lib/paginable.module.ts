@@ -10,6 +10,15 @@ import { paginableCoreProviders } from './paginable.providers';
 // import { PaginableTableExpandingRowDirective } from './directives/paginable-table-expanding-row.directive';
 // import { PaginableTableFilterDirective } from './directives/paginable-table-filter.directive';
 
+/**
+ * Backward-compatibility module for the paginable components.
+ *
+ * @deprecated Every component in this package is standalone. Import the ones you use
+ * directly (`imports: [TableComponent]`) and register `providePaginable()` in your
+ * application providers instead of `HubUITableModule.forRoot()`. The module declares and
+ * exports nothing, so importing it only pulls in the providers. It will be removed in
+ * `23.0.0`, the release that moves this family to Angular 23.
+ */
 @NgModule({
 	imports: [
 		// PaginableTableComponent,

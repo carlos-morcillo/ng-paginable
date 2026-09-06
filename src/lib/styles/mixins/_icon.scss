@@ -1,0 +1,41 @@
+// ─────────────────────────────────────────────────────────────────────────
+// hub-icon — the glyph machinery every component in this package repeats
+// ─────────────────────────────────────────────────────────────────────────
+//
+// An icon here is a CSS variable holding an inline SVG, painted as a mask over a
+// solid fill, so the ink is a colour the consumer controls and not part of the
+// artwork. Five components draw icons that way — table, list, paginator, filter
+// panel and the legacy row-actions menu — and each had written the same eight
+// declarations out again.
+//
+// Internal plumbing, and deliberately NOT forwarded from `styles/index.scss`:
+// that entry publishes the one-call theming mixins, which is a promise to
+// consumers. This is a promise to ourselves.
+// ─────────────────────────────────────────────────────────────────────────
+
+/// The box a glyph is painted in.
+///
+/// `$color` and `$size` are the calling component's own variables, which is the
+/// whole point: `--hub-list-icon-size` sizes the list's glyphs and nothing else.
+@mixin hub-icon-box($color, $size) {
+	display: inline-block;
+	width: $size;
+	height: $size;
+	background-color: $color;
+	-webkit-mask-size: contain;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
+	vertical-align: middle;
+}
+
+/// Which glyph the box shows.
+///
+/// Both spellings are emitted: without the prefixed one older WebKit applies no
+/// mask at all and the fill shows through as a solid rectangle.
+@mixin hub-icon-glyph($glyph) {
+	-webkit-mask-image: $glyph;
+	mask-image: $glyph;
+}

@@ -1,5 +1,6 @@
 import { AsyncPipe, NgClass, NgTemplateOutlet } from '@angular/common';
 import {
+	ChangeDetectionStrategy,
 	Component,
 	TemplateRef,
 	booleanAttribute,
@@ -57,7 +58,9 @@ import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
 import { PaginableTableOptions } from '../../interfaces/paginable-table-options';
 import { PaginableTableOrdination } from '../../interfaces/paginable-table-ordination';
 import { PaginationState } from '../../interfaces/pagination-state';
+import { HubPaginableResource } from '../../interfaces/paginable-resource';
 import { TableRow } from '../../interfaces/table-row';
+import { readPaginableSource } from '../../utils/paginable-source';
 import { HUB_PAGINABLE_FORM_CONTROLS } from '../../form-controls/form-controls.token';
 import { HubPaginableControlDirective } from '../../form-controls/form-controls.directive';
 import { HubPaginableControlOption } from '../../form-controls/form-controls.types';
@@ -67,7 +70,6 @@ import { MenuFilterComponent } from '../menu-filter/menu-filter.component';
 import { PaginableTableDropdownComponent } from '../paginable-table-dropdown/paginable-table-dropdown.component';
 import { HUB_PAGINABLE_ACTIONS } from '../../actions/actions.token';
 import { HubPaginableActionsDirective } from '../../actions/actions.directive';
-import { warnDeprecatedActionsRendering } from '../../actions/actions.warning';
 import { PaginableTableRangeInputComponent } from '../paginable-table-range-input/paginable-table-range-input.component';
 import { PaginatorComponent } from '../paginator/paginator.component';
 import { HubTableTooltipDirective } from '../../table-tooltip';
@@ -75,6 +77,7 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
 @Component({
 	selector: 'hub-table, hub-ui-table',
 	standalone: true,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	templateUrl: './table.component.html',
 	styleUrl: './table.component.scss',
 	imports: [
@@ -172,10 +175,21 @@ export class TableComponent<T = any> {
 
 	/**
 	 * Tracks whether the latest `[data]` binding was a plain array (as opposed to a
-	 * {@link PaginationState}). Together with `paginate` and an unset `totalItems`,
-	 * this drives the automatic client-side pagination mode.
+	 * {@link PaginationState}).
 	 */
-	readonly #sourceIsArray = signal<boolean>(false);
+	readonly #dataIsArray = signal<boolean>(false);
+
+	/** The same question for `[resource]`, and `null` while no resource is bound. */
+	readonly #resourceIsArray = signal<boolean | null>(null);
+
+	/**
+	 * Whether the collection currently rendered arrived as a plain array. Together with
+	 * `paginate` and an unset `totalItems`, this drives the automatic client-side
+	 * pagination mode. It follows whichever binding is in charge — `[resource]` when one
+	 * is bound, `[data]` otherwise — so the two cannot leave the table in a mode neither
+	 * of them asked for.
+	 */
+	readonly #sourceIsArray = computed<boolean>(() => this.#resourceIsArray() ?? this.#dataIsArray());
 
 	/**
 	 * Optional adapter that renders the table's primitive controls (search, page
@@ -264,12 +278,6 @@ export class TableComponent<T = any> {
 			if (header.constructor.name === 'Object' && header.buttons && !header.property) {
 				Object.assign(header, { wrapping: 'nowrap', onlyButtons: true, align: 'end' }, header);
 			}
-		}
-
-		// Said here rather than in the constructor: a table with no actions has nothing to
-		// warn about, and whether it has any is only known once its headers arrive.
-		if (!this.hasActionsAdapter && fixedHeaders.some((header) => header.buttons?.length)) {
-			warnDeprecatedActionsRendering();
 		}
 
 		return fixedHeaders;
@@ -410,22 +418,98 @@ export class TableComponent<T = any> {
 	readonly rows = input<Array<TableRow<T>>, Array<T> | PaginationState | null | undefined>([], {
 		alias: 'data',
 		transform: (v: Array<T> | PaginationState | null | undefined): Array<TableRow<T>> => {
-			const isArray = Array.isArray(v);
-			this.#sourceIsArray.set(isArray);
-
-			if (!v) return [];
-
-			const items = isArray ? v : ((v.data as Array<T>) ?? []);
-
-			if (!isArray) {
-				this.page.set(v.page);
-				this.perPage.set(v.perPage);
-				this.totalItems.set(v.totalItems);
-			}
-
-			return items.map((item) => this.transformIntoRow(item));
+			this.#dataIsArray.set(Array.isArray(v));
+			return this.#normalizeSource(v);
 		}
 	});
+
+	/**
+	 * A signal-based resource — `resource()`, `httpResource()` or anything shaped like one —
+	 * bound whole, so the collection, the loading state and the failure arrive together
+	 * instead of as three bindings a consumer has to keep in step.
+	 *
+	 * Its value is read exactly as `[data]` is: an array renders as rows, a
+	 * {@link PaginationState} renders as rows plus page, size and total. `isLoading()` feeds
+	 * {@link loading} and `error()` feeds {@link error}, so the states the table already draws
+	 * need no extra wiring.
+	 *
+	 * Two things it deliberately does not do. Bound alongside `[data]`, **the resource wins**:
+	 * one of them has to, and the resource is the more specific statement of intent. And
+	 * **paging does not reload it** — the table never calls `reload()`, so whoever owns the
+	 * request keeps owning it and refetches when they decide to, typically by paging a signal
+	 * the resource's own loader reads.
+	 *
+	 * Typed structurally rather than as `ResourceRef`, which arrived in Angular 19 while this
+	 * package supports 18: see {@link HubPaginableResource}.
+	 */
+	readonly resource = input<HubPaginableResource<T> | null>(null);
+
+	/** Rows published by the bound `[resource]`, or `null` while none is bound. */
+	readonly #resourceRows = signal<Array<TableRow<T>> | null>(null);
+
+	/**
+	 * Mirrors the bound resource into the table: its value becomes the rows, its `isLoading()`
+	 * the loading state and its `error()` the error state.
+	 *
+	 * An effect rather than a computed because reading the resource has to *write* — the page
+	 * metadata of a {@link PaginationState}, and the two state models — which a memoised read
+	 * is not allowed to do.
+	 *
+	 * The failure is read before the value, and the value only when there is none: a failed
+	 * resource has nothing to hand over and says so by rethrowing from `value()`. Reading the
+	 * value first threw out of this effect, so the error state the input exists to drive was
+	 * never set — the one case `[resource]` was added to make easy was the one it could not do.
+	 * The rows of the last good load are left alone, because a refresh that fails should not
+	 * cost the reader the table they were looking at; the error state is drawn over the body
+	 * anyway.
+	 */
+	resourceEffect = effect(() => {
+		const resource = this.resource();
+
+		if (!resource) {
+			this.#resourceIsArray.set(null);
+			this.#resourceRows.set(null);
+			return;
+		}
+
+		const failure = resource.error() ?? null;
+
+		if (!failure) {
+			const value = resource.value();
+			this.#resourceIsArray.set(Array.isArray(value));
+			this.#resourceRows.set(this.#normalizeSource(value));
+		}
+
+		this.loading.set(resource.isLoading());
+		this.error.set(failure);
+	});
+
+	/**
+	 * The rows the table works from: the resource's when one is bound, `[data]`'s otherwise.
+	 */
+	readonly sourceRows = computed<Array<TableRow<T>>>(() => this.#resourceRows() ?? this.rows());
+
+	/**
+	 * Turns either accepted collection shape into rows, publishing the page metadata a
+	 * {@link PaginationState} carries.
+	 *
+	 * Shared by `[data]` and `[resource]` so a paginated object cannot come to mean one thing
+	 * through one binding and something else through the other.
+	 *
+	 * @param value The collection as the consumer supplied it.
+	 * @returns The rows to render.
+	 */
+	#normalizeSource(value: Array<T> | PaginationState | null | undefined): Array<TableRow<T>> {
+		const { items, state } = readPaginableSource<T>(value as Array<T> | PaginationState<T> | null | undefined);
+
+		if (state) {
+			this.page.set(state.page);
+			this.perPage.set(state.perPage);
+			this.totalItems.set(state.totalItems);
+		}
+
+		return items.map((item) => this.transformIntoRow(item));
+	}
 
 	/** Effect that runs when the visible rows change to update selection state */
 	rowsEffect = effect(() => {
@@ -523,13 +607,14 @@ export class TableComponent<T = any> {
 	 * In server mode it is just the rows the consumer supplied.
 	 */
 	readonly clientFilteredRows = computed<Array<TableRow<T>>>(() => {
-		const rows = this.rows();
+		const rows = this.sourceRows();
 		if (!this.clientMode()) {
 			return rows;
 		}
 		return this.#clientData.process(rows, {
 			searchTerm: this.searchTerm(),
 			searchKeys: this.searchableKeys(),
+			searchFn: this.searchFn() ?? null,
 			headers: this.fixedHeaders(),
 			filters: this.filters(),
 			ordination: this.ordination() ?? null
@@ -543,7 +628,7 @@ export class TableComponent<T = any> {
 	 */
 	readonly displayedRows = computed<Array<TableRow<T>>>(() => {
 		if (!this.clientMode()) {
-			return this.rows();
+			return this.sourceRows();
 		}
 		const rows = this.clientFilteredRows();
 		const perPage = this.perPage() || rows.length || 1;
@@ -614,8 +699,19 @@ export class TableComponent<T = any> {
 	/** Per-instance default component for the no-results state. */
 	readonly noResultsComponent = input<PaginableStateDefault | null>(null);
 
-	/** Position where pagination controls should be displayed */
+	/**
+	 * Where the pagination bar is drawn: under the rows, above them, or in both places.
+	 *
+	 * The bar is a whole — paginator, page-size selector and row count — and every value moves
+	 * all of it, so a long table can be paged from wherever the reader happens to be.
+	 */
 	readonly paginationPosition = input<'bottom' | 'top' | 'both'>(this.#defaults.paginationPosition ?? 'bottom');
+
+	/**
+	 * Whether there is a page to draw controls for. A table handed no page number is not
+	 * paginated at all, so it gets no bar wherever {@link paginationPosition} points.
+	 */
+	protected readonly paginated = computed<boolean>(() => this.page() !== undefined && this.page() !== null);
 
 	/** Whether to show pagination information (e.g., "Showing 1 to 10 of 100 entries") */
 	readonly paginationInfo = input<boolean>(this.#defaults.paginationInfo ?? true);
@@ -716,6 +812,29 @@ export class TableComponent<T = any> {
 	});
 
 	/**
+	 * While a selection is under way, a click on a row marks it instead of opening it.
+	 *
+	 * Off by default, and deliberately so. On touch this is the standard gesture and the reason
+	 * the input exists at all; on a pointer the dominant pattern is that a click keeps its
+	 * meaning, and switching everybody over would break the consumers whose readers navigate
+	 * while they pick rows.
+	 *
+	 * The mode carries no state of its own: it is on while at least one row is selected, so a
+	 * reader enters it by ticking the first box and leaves it by unticking the last one, and a
+	 * consumer has nothing to track.
+	 */
+	readonly selectWhileSelecting = input(false, { transform: booleanAttribute });
+
+	/**
+	 * Whether a click on a row currently means "mark this one" rather than "open it".
+	 *
+	 * @returns `true` when {@link selectWhileSelecting} is on and something is already selected.
+	 */
+	protected isSelecting(): boolean {
+		return this.selectWhileSelecting() && this.value.length > 0;
+	}
+
+	/**
 	 * Set whether the rows are selectable
 	 *
 	 * @type {boolean}
@@ -759,11 +878,31 @@ export class TableComponent<T = any> {
 		this.searchTerm.set('');
 	}
 
-	/** Custom search function for filtering table data */
-	readonly searchFn = input<(a: T, b: T) => boolean>();
+	/**
+	 * Decides whether a row matches the global search, when scanning the columns is not
+	 * what you mean by "matches".
+	 *
+	 * The default reads every searchable column and keeps a row whose text contains the
+	 * term, which is right for a grid of names and wrong for a record whose identity is
+	 * spread across fields the table does not show. The predicate receives the row data
+	 * and the term already trimmed and lowercased — the same contract as `hub-list`.
+	 *
+	 * Only consulted in {@link clientMode}: with a server-managed collection the term is
+	 * handed to the consumer, who searches wherever the data lives.
+	 */
+	readonly searchFn = input<(item: T, term: string) => boolean>();
 
-	/** Custom comparison function for row equality checks (TODO: Implement) */
-	// TODO: Implementar
+	/**
+	 * Decides whether two selection values are the same record.
+	 *
+	 * The default compares objects by their JSON serialization, which makes two rows equal
+	 * only when every field matches in the same order — so a row rebuilt by a reload, or one
+	 * carrying a field the stored value does not, silently loses its tick. A comparator that
+	 * reads the identifier settles it.
+	 *
+	 * It receives what the table stores in the selection: the row data, or the `bindValue`
+	 * property when one is set.
+	 */
 	readonly compareFn = input<(a: T, b: T) => boolean>();
 
 	/**
@@ -897,11 +1036,36 @@ export class TableComponent<T = any> {
 	 * @returns void if no click function is defined
 	 */
 	onItemClick(event: MouseEvent, item: TableRow) {
+		// Under `selectWhileSelecting`, a selection already under way turns the row into a
+		// checkbox: marking is what the reader means, and opening the record would throw away
+		// everything they had picked so far.
+		if (this.isSelecting()) {
+			this.toggle(item as TableRow<T>);
+			return;
+		}
+
 		const clickFn = this.clickFn();
 		if (!clickFn) {
 			return;
 		}
 		clickFn({ ...item, event });
+	}
+
+	/**
+	 * Enter and Space on a focused row do what a click does.
+	 *
+	 * Only when the row itself has focus: a checkbox, an action button or a filter inside the row
+	 * answers to those keys on its own, and the event bubbles, so acting on anything but the row
+	 * would open the record every time somebody ticked its checkbox with the keyboard. Space is
+	 * also the page-scroll key, hence the `preventDefault`.
+	 */
+	onItemKeydown(event: Event, item: TableRow): void {
+		if ((!this.clickFn() && !this.isSelecting()) || event.target !== event.currentTarget) {
+			return;
+		}
+
+		event.preventDefault();
+		this.onItemClick(event as MouseEvent, item);
 	}
 
 	/**
@@ -1170,7 +1334,7 @@ export class TableComponent<T = any> {
 	 *
 	 * Read once and held, because it decides which branch of the cell template runs and
 	 * that answer cannot change while the application is alive. When nothing is wired the
-	 * table falls back to its own deprecated markup and says so, once.
+	 * table falls back to its own deprecated markup.
 	 */
 	protected readonly hasActionsAdapter = !!inject(HUB_PAGINABLE_ACTIONS, {
 		optional: true
@@ -1241,7 +1405,7 @@ export class TableComponent<T = any> {
 		for (const row of rows) {
 			const bindValue = this.bindValue();
 			const needle = bindValue ? (row.data as Record<string, any>)[bindValue] : row.data;
-			const index = this.value.indexOf(needle);
+			const index = this.#indexOfValue(needle);
 			if (index > -1 && !this.allRowsSelected) {
 				this.value.splice(index, 1);
 			} else if (index === -1 && this.allRowsSelected) {
@@ -1274,7 +1438,7 @@ export class TableComponent<T = any> {
 		const bindValue = this.bindValue();
 		const needle = bindValue ? (row.data as Record<string, any>)[bindValue] : row.data;
 
-		const index = this.value.indexOf(needle);
+		const index = this.#indexOfValue(needle);
 		if (index > -1) {
 			this.value.splice(index, 1);
 			row.selected = false;
@@ -1287,7 +1451,7 @@ export class TableComponent<T = any> {
 			this.value = row.selected ? [needle] : [];
 			rows.forEach((o) => {
 				const needle = bindValue ? (o.data as Record<string, any>)[bindValue] : o.data;
-				o.selected = this.value.indexOf(needle) > -1;
+				o.selected = this.#indexOfValue(needle) > -1;
 			});
 		} else {
 			this.allRowsSelected = rows.every((o) => o.selected);
@@ -1349,10 +1513,33 @@ export class TableComponent<T = any> {
 	 * @todo Move this utility function to a shared utils file
 	 */
 	private _contains(items: T[], needle: T): boolean {
+		const compareFn = this.compareFn();
+		if (compareFn) {
+			return items.some((item) => compareFn(item, needle));
+		}
 		if (typeof needle === 'object' && needle !== null) {
 			return items.some((o) => JSON.stringify(o) === JSON.stringify(needle));
 		}
 		return items.indexOf(needle) > -1;
+	}
+
+	/**
+	 * Position of a selection value inside the current selection.
+	 *
+	 * Without a `compareFn` this is `indexOf`, which the toggles have always used — note
+	 * that it is reference equality for objects, stricter than the serialization
+	 * {@link _contains} falls back to. The two defaults are left as they were; a
+	 * `compareFn` settles both at once.
+	 *
+	 * @param needle The value the row contributes to the selection.
+	 * @returns Its index, or `-1`.
+	 */
+	#indexOfValue(needle: unknown): number {
+		const compareFn = this.compareFn();
+		if (compareFn) {
+			return this.value.findIndex((item) => compareFn(item, needle as T));
+		}
+		return this.value.indexOf(needle as T);
 	}
 
 	/**
