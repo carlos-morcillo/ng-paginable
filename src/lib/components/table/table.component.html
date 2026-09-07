@@ -385,6 +385,11 @@
 		implicit `row` role rather than taking `role="button"`: the row already contains a
 		checkbox and action buttons, and a button role would nest interactive controls and cost
 		the table its grid semantics. The row takes focus and answers to Enter and Space instead.
+
+		Only a clickFn earns the stop. `selectWhileSelecting` also makes a row click do something,
+		but what it does — mark the row — is what the row's own checkbox already does from the
+		keyboard, so a second stop per row would buy nothing and cost every reader two hundred
+		extra stops in a two-hundred-row table.
 	-->
 	<tr
 		class="hub-table__body-row"

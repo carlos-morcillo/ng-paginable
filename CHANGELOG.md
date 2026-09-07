@@ -1,5 +1,19 @@
 # Changelog
 
+## [22.19.1] - 2026-09-07
+
+### Changed
+
+- **The documentation says where the keyboard marks a row.** With `selectWhileSelecting` on and
+  no `clickFn`, the row carries no `tabindex` — which reads as a keyboard hole, and was reported
+  as one. It is not: every row of a selectable table already draws its own checkbox, a native
+  control that sits in the natural tab order and marks the row when it is ticked, so the row
+  click is a pointer shortcut for a path the keyboard has had all along. Giving the row a stop of
+  its own would double the tab stops of a two-hundred-row table to reach something already
+  reachable, which is worse for everybody. Nothing in the behaviour changes; the input's
+  documentation, both READMEs and `FUNCTIONALITIES.md` now say it, and a test pins it so the
+  next reader does not have to re-derive it.
+
 ## [22.19.0] - 2026-09-06
 
 ### Changed

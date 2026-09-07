@@ -35,6 +35,7 @@ This table lists the functionalities of the `ng-hub-ui-paginable` library:
 |                             | Row click handling (`clickFn`)                                                                                     |     ✅      |   ✅    |
 |                             | A clickable row is a tab stop and answers to Enter and Space                                                       |     ✅      |   ✅    |
 |                             | Click marks the row while a selection is under way (`selectWhileSelecting`)                                        |     ✅      |   ✅    |
+|                             | The keyboard reaches the selection through each row's own checkbox, not a stop on the row                          |     ✅      |   ✅    |
 |                             | Dynamic row styling (`rowClass`)                                                                                   |     ✅      |   ✅    |
 |                             | Row action buttons (per-row `buttons`)                                                                             |     ✅      |   ✅    |
 |                             | Conditional row actions (`hidden` / `disabled`, boolean or predicate)                                              |     ✅      |   ✅    |

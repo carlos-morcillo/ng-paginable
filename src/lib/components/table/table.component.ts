@@ -830,6 +830,12 @@ export class TableComponent<T = any> {
 	 * The mode carries no state of its own: it is on while at least one row is selected, so a
 	 * reader enters it by ticking the first box and leaves it by unticking the last one, and a
 	 * consumer has nothing to track.
+	 *
+	 * It adds nothing for the keyboard, and deliberately: the checkbox of each row is already a
+	 * tab stop and already marks it, so the row click is a pointer shortcut for a path the
+	 * keyboard has had all along. Giving the row a stop of its own would double the tab stops of
+	 * a two-hundred-row table to reach something already reachable. The row does take focus when
+	 * {@link clickFn} is set, because opening a record is an action the checkbox cannot perform.
 	 */
 	readonly selectWhileSelecting = input(false, { transform: booleanAttribute });
 
