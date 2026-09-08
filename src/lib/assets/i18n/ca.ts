@@ -9,6 +9,8 @@ export const locale = {
 		SEARCH: 'cercar',
 		SEARCH_PLACEHOLDER: 'Cercar...',
 		PAGINATION: 'paginació',
+		PAGINATION_TOP: 'paginació, a dalt',
+		PAGINATION_BOTTOM: 'paginació, a baix',
 		ROWS_PER_PAGE: 'Files per pàgina',
 		SHOWING_X_OF_Y_ROWS: 'Mostrant {{ amount }} de {{ total }} files',
 		NO_RESULTS_FOUND: "No s'han trobat resultats",

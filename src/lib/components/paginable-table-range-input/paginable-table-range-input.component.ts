@@ -2,6 +2,13 @@ import { ChangeDetectionStrategy, Component, forwardRef, input } from '@angular/
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 
+/**
+ * Component for inputting a range of values (number or date) in a table filter.
+ *
+ * @export
+ * @class PaginableTableRangeInputComponent
+ * @implements {ControlValueAccessor}
+ */
 @Component({
 	selector: 'hub-table-range-input, paginable-table-range-input',
 	templateUrl: './paginable-table-range-input.component.html',
@@ -17,13 +24,6 @@ import { TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 		}
 	]
 })
-/**
- * Component for inputting a range of values (number or date) in a table filter.
- *
- * @export
- * @class PaginableTableRangeInputComponent
- * @implements {ControlValueAccessor}
- */
 export class PaginableTableRangeInputComponent implements ControlValueAccessor {
 	disabled = false;
 	/**

@@ -9,6 +9,8 @@ export const locale = {
 		SEARCH: 'поиск',
 		SEARCH_PLACEHOLDER: 'Поиск...',
 		PAGINATION: 'постраничная навигация',
+		PAGINATION_TOP: 'постраничная навигация, сверху',
+		PAGINATION_BOTTOM: 'постраничная навигация, снизу',
 		ROWS_PER_PAGE: 'Строк на страницу',
 		SHOWING_X_OF_Y_ROWS: 'Показано {{ amount }} из {{ total }} строк',
 		NO_RESULTS_FOUND: 'Результаты не найдены',

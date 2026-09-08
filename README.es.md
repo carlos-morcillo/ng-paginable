@@ -1140,6 +1140,7 @@ interface ListClickEvent<T> {
 | `page`          | `number`  | `1`         | Página actual (señal model).                                                                            |
 | `numberOfPages` | `number`  | `null`      | Número total de páginas. Sin él, el paginador retira el control de «última página» y sigue avanzando.   |
 | `rtl`           | `boolean` | `false`     | Refleja las acciones para una lectura de derecha a izquierda; los iconos conservan su dirección visual. |
+| `placement`     | `'top' \| 'bottom' \| null` | `null`      | Dónde está este paginador cuando el anfitrión dibuja dos para la misma colección. Entra en el nombre accesible de la región de navegación, para que un lector de pantalla pueda distinguirlas; un paginador único lo deja sin poner. |
 
 ---
 

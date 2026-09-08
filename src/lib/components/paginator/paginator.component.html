@@ -1,4 +1,4 @@
-<nav class="hub-paginator-container" [attr.aria-label]="'PAGINATION' | translate | ucfirst">
+<nav class="hub-paginator-container" [attr.aria-label]="ariaLabelKey() | translate | ucfirst">
 	<ul class="hub-paginator">
 		<li class="hub-paginator__item" [class.hub-paginator__item--disabled]="isFirstControlDisabled()">
 			<a

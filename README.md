@@ -1240,6 +1240,7 @@ interface ListClickEvent<T> {
 | `page`          | `number`  | `1`     | Current page (model signal).                                                                             |
 | `numberOfPages` | `number`  | `null`  | Total number of pages. Left unset, the paginator drops the "last page" control and keeps going forwards. |
 | `rtl`           | `boolean` | `false` | Mirrors the actions for a right-to-left reading order; the icons keep their visual direction.            |
+| `placement`     | `'top' \| 'bottom' \| null` | `null` | Where this paginator sits, when a host draws two of them for the same collection. It goes into the navigation landmark's accessible name, so a screen reader can tell the two apart; a lone paginator leaves it unset. |
 
 ---
 

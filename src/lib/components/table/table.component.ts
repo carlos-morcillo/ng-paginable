@@ -74,6 +74,39 @@ import { PaginableTableRangeInputComponent } from '../paginable-table-range-inpu
 import { PaginatorComponent } from '../paginator/paginator.component';
 import { HubTableTooltipDirective } from '../../table-tooltip';
 
+/**
+ * A highly configurable and feature-rich table component for Angular applications.
+ * Provides data visualization with pagination, sorting, filtering, and selection capabilities.
+ *
+ * Features:
+ * - Pagination (local and remote)
+ * - Column sorting with customizable sort functions
+ * - Advanced filtering with column-specific filters
+ * - Row selection (single and multiple)
+ * - Expandable rows
+ * - Custom templates for headers, cells, and special states
+ * - Responsive design with configurable breakpoints
+ * - Batch actions for selected rows
+ * - Search functionality with debouncing
+ * - Loading and error states
+ * - Accessibility features
+ *
+ * @template T The type of data objects displayed in the table
+ * @example
+ * ```html
+ * <hub-ui-table
+ *   [headers]="headers"
+ *   [data]="data()"
+ *   [(page)]="page"
+ *   [totalItems]="totalItems"
+ *   [loading]="loading"
+ *   [searchable]="true"
+ *   [selectable]="true"
+ *   [(searchTerm)]="searchTerm"
+ *   [(ordination)]="ordination">
+ * </hub-ui-table>
+ * ```
+ */
 @Component({
 	selector: 'hub-table, hub-ui-table',
 	standalone: true,
@@ -122,39 +155,6 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
 		'[style.--hub-table-accent]': 'accentVar()'
 	}
 })
-/**
- * A highly configurable and feature-rich table component for Angular applications.
- * Provides data visualization with pagination, sorting, filtering, and selection capabilities.
- *
- * Features:
- * - Pagination (local and remote)
- * - Column sorting with customizable sort functions
- * - Advanced filtering with column-specific filters
- * - Row selection (single and multiple)
- * - Expandable rows
- * - Custom templates for headers, cells, and special states
- * - Responsive design with configurable breakpoints
- * - Batch actions for selected rows
- * - Search functionality with debouncing
- * - Loading and error states
- * - Accessibility features
- *
- * @template T The type of data objects displayed in the table
- * @example
- * ```html
- * <hub-ui-table
- *   [headers]="headers"
- *   [data]="data()"
- *   [(page)]="page"
- *   [totalItems]="totalItems"
- *   [loading]="loading"
- *   [searchable]="true"
- *   [selectable]="true"
- *   [(searchTerm)]="searchTerm"
- *   [(ordination)]="ordination">
- * </hub-ui-table>
- * ```
- */
 export class TableComponent<T = any> {
 	/** Form builder service for creating reactive forms */
 	#fb = inject(UntypedFormBuilder);

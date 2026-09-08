@@ -330,11 +330,17 @@
 -->
 <ng-template #paginationBar let-placement>
 	<div class="hub-table__bottom-bar hub-table__bottom-bar--{{ placement }}">
+		<!--
+			Under `both` there are two navigation landmarks for the same collection, so each one has
+			to say which end of the table it sits at or a screen reader lists two identical regions.
+			A lone bar needs no such qualifier and keeps the plain name.
+		-->
 		<hub-paginator
 			class="hub-table__paginator hub-table__bottom-bar-paginator"
 			[(page)]="$any(page)"
 			[numberOfPages]="numberOfPages()"
 			[rtl]="isRtl()"
+			[placement]="paginationPosition() === 'both' ? placement : null"
 		>
 		</hub-paginator>
 		<div class="hub-table__bottom-bar-settings hub-paginator__settings">

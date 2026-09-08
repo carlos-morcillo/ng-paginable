@@ -9,6 +9,8 @@ export const locale = {
 		SEARCH: 'bilatu',
 		SEARCH_PLACEHOLDER: 'Bilatu...',
 		PAGINATION: 'orrikatzea',
+		PAGINATION_TOP: 'orrikatzea, goian',
+		PAGINATION_BOTTOM: 'orrikatzea, behean',
 		ROWS_PER_PAGE: 'Errenkadak orrialdeko',
 		SHOWING_X_OF_Y_ROWS: '{{ total }} errenkadetatik {{ amount }} erakusten',
 		NO_RESULTS_FOUND: 'Ez da emaitzarik aurkitu',

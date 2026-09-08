@@ -9,6 +9,8 @@ export const locale = {
 		SEARCH: 'suchen',
 		SEARCH_PLACEHOLDER: 'Suchen...',
 		PAGINATION: 'Seitennummerierung',
+		PAGINATION_TOP: 'Seitennummerierung, oben',
+		PAGINATION_BOTTOM: 'Seitennummerierung, unten',
 		ROWS_PER_PAGE: 'Zeilen pro Seite',
 		SHOWING_X_OF_Y_ROWS: 'Zeige {{ amount }} von {{ total }} Zeilen',
 		NO_RESULTS_FOUND: 'Keine Ergebnisse gefunden',

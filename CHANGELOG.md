@@ -1,5 +1,26 @@
 # Changelog
 
+## [22.21.0] - 2026-09-08
+
+### Added
+
+- **`placement` on `hub-paginator`, so two paginators are not one name twice.** A `<nav>` is a
+  landmark, and with `paginationPosition="both"` the table drew two of them announcing the same
+  "Pagination": a screen reader listed two identical regions and offered no way to choose between
+  them. Each bar now says which end of the table it sits at — "Pagination, at the top" and
+  "Pagination, at the bottom", translated in every dictionary the package ships — while a lone
+  paginator keeps the plain name it always had, because there is nothing to tell it apart from.
+  The input is optional and unset by default; a paginator used on its own is unchanged.
+
+### Fixed
+
+- **The JSDoc of five components reaches the published `.d.ts`.** `ListComponent`,
+  `TableComponent`, `PaginatorComponent`, `ResizableComponent` and
+  `PaginableTableRangeInputComponent` carried their class documentation between the decorator and
+  the class, where TypeScript associates it with nothing: it was dropped from the type
+  declarations, so a consumer hovering any of them in an editor got no description at all. The
+  comments now sit above the decorator and travel with the build. Nothing about the API changes.
+
 ## [22.20.0] - 2026-09-07
 
 ### Removed

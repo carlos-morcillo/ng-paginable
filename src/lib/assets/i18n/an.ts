@@ -9,6 +9,8 @@ export const locale = {
 		SEARCH: 'buscar',
 		SEARCH_PLACEHOLDER: 'Buscar...',
 		PAGINATION: 'pachinación',
+		PAGINATION_TOP: 'pachinación, en alto',
+		PAGINATION_BOTTOM: 'pachinación, en baixo',
 		ROWS_PER_PAGE: 'Filas per pachina',
 		SHOWING_X_OF_Y_ROWS: 'Mostrando {{ amount }} de {{ total }} filas',
 		NO_RESULTS_FOUND: "No s'han trobau resultaus",

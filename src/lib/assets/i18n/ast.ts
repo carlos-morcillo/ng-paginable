@@ -9,6 +9,8 @@ export const locale = {
 		SEARCH: 'buscar',
 		SEARCH_PLACEHOLDER: 'Buscar...',
 		PAGINATION: 'paxinación',
+		PAGINATION_TOP: 'paxinación, arriba',
+		PAGINATION_BOTTOM: 'paxinación, abaxo',
 		ROWS_PER_PAGE: 'Fileres por páxina',
 		SHOWING_X_OF_Y_ROWS: 'Amosando {{ amount }} de {{ total }} fileres',
 		NO_RESULTS_FOUND: "Nun s'atoparon resultaos",

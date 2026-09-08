@@ -24,7 +24,7 @@ This table lists the functionalities of the `ng-hub-ui-paginable` library:
 |                             | Inline column text filters                                                                                         |     ✅      |   ✅    |
 |                             | Active-filter state on the filter cell (`hub-table__filter-cell--active`)                                          |     ✅      |   ✅    |
 |                             | Clear-filters button (`hub-table__delete-filters-btn`)                                                             |     ✅      |   ✅    |
-|                             | Advanced menu filters (operators, AND/OR)                                                                          |     ✅      |   ✅    |
+|                             | Column filter panel (`filter.mode: 'menu'`, operators, match all / match any)                                       |     ✅      |   ✅    |
 |                             | Date-range filtering                                                                                               |     ✅      |   ✅    |
 |                             | Number-range filtering                                                                                             |     ✅      |   ✅    |
 |                             | Custom filter templates (`filterTpt` / `paginableTableFilter`)                                                     |     ✅      |   ✅    |
@@ -41,6 +41,7 @@ This table lists the functionalities of the `ng-hub-ui-paginable` library:
 |                             | Conditional row actions (`hidden` / `disabled`, boolean or predicate)                                              |     ✅      |   ✅    |
 |                             | Row dropdown menus (nested `buttons`)                                                                              |     ✅      |   ✅    |
 |                             | Conditional row menus (`hidden` / `disabled` on `PaginableTableDropdown`)                                          |     ✅      |   ✅    |
+|                             | Built-in row menu markup, drawn when no actions adapter is registered — **deprecated since 22.16.0**                |     ✅      |   ❌    |
 |                             | Batch actions (on selected items)                                                                                  |     ✅      |   ✅    |
 | **Advanced Features**       | Expandable rows (master-detail)                                                                                    |     ✅      |   ✅    |
 |                             | Sticky columns (start/end, multiple per side)                                                                      |     ✅      |   ✅    |
@@ -85,6 +86,7 @@ This table lists the functionalities of the `ng-hub-ui-paginable` library:
 | Item                                                                       | Implemented |                Example                |
 | :------------------------------------------------------------------------- | :---------: | :-----------------------------------: |
 | Standalone paginator (`hub-paginator` / `hub-ui-paginator`)                |     ✅      |                  ✅                   |
+| Distinct landmark names for two paginators (`placement`)                   |     ✅      | ✅ _(shown by pagination positioning)_ |
 | Range input (`hub-table-range-input`)                                      |     ✅      | ❌ _(used inside advanced filtering)_ |
 
 ---

@@ -1,5 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
+/**
+ * Component for creating resizable table headers.
+ * Applied to `th` elements with the `resizable` attribute.
+ *
+ * @export
+ * @class ResizableComponent
+ */
 @Component({
 	selector: 'th[resizable]',
 	templateUrl: './resizable.component.html',
@@ -9,13 +16,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 		'[style.width.px]': 'width'
 	}
 })
-/**
- * Component for creating resizable table headers.
- * Applied to `th` elements with the `resizable` attribute.
- *
- * @export
- * @class ResizableComponent
- */
 export class ResizableComponent {
 	/**
 	 * The width of the resizable element in pixels.

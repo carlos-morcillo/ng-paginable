@@ -9,6 +9,8 @@ export const locale = {
 		SEARCH: '搜索',
 		SEARCH_PLACEHOLDER: '搜索...',
 		PAGINATION: '分页',
+		PAGINATION_TOP: '分页，顶部',
+		PAGINATION_BOTTOM: '分页，底部',
 		ROWS_PER_PAGE: '每页行数',
 		SHOWING_X_OF_Y_ROWS: '显示 {{ amount }} / {{ total }} 行',
 		NO_RESULTS_FOUND: '未找到结果',

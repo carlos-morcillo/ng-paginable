@@ -9,6 +9,8 @@ export const locale = {
 		SEARCH: 'بحث',
 		SEARCH_PLACEHOLDER: 'بحث...',
 		PAGINATION: 'ترقيم الصفحات',
+		PAGINATION_TOP: 'ترقيم الصفحات، في الأعلى',
+		PAGINATION_BOTTOM: 'ترقيم الصفحات، في الأسفل',
 		ROWS_PER_PAGE: 'الصفوف لكل صفحة',
 		SHOWING_X_OF_Y_ROWS: 'عرض {{ amount }} من {{ total }} صف',
 		NO_RESULTS_FOUND: 'لم يتم العثور على نتائج',

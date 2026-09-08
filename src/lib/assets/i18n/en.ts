@@ -6,6 +6,8 @@ export const locale = {
 		SEARCH: 'search',
 		SEARCH_PLACEHOLDER: 'Search...',
 		PAGINATION: 'pagination',
+		PAGINATION_TOP: 'pagination, at the top',
+		PAGINATION_BOTTOM: 'pagination, at the bottom',
 		ROWS_PER_PAGE: 'rows per page',
 		SHOWING_X_OF_Y_ROWS: 'Showing {{ amount }} of {{ total }} rows',
 		NO_RESULTS_FOUND: 'No results found',

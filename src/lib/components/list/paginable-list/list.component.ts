@@ -96,6 +96,13 @@ const DEFAULT_LIST_OPTIONS: PaginableTableOptions = {
 	collapsed: true
 };
 
+/**
+ * A component for displaying a paginable and selectable list of items.
+ *
+ * @export
+ * @class ListComponent
+ * @template T The type of data for each item in the list.
+ */
 @Component({
 	selector: 'hub-list, hub-ui-list, hub-paginable-list',
 	changeDetection: ChangeDetectionStrategy.OnPush,
@@ -129,13 +136,6 @@ const DEFAULT_LIST_OPTIONS: PaginableTableOptions = {
 	],
 	standalone: true
 })
-/**
- * A component for displaying a paginable and selectable list of items.
- *
- * @export
- * @class ListComponent
- * @template T The type of data for each item in the list.
- */
 export class ListComponent<T = any> implements OnChanges {
 	#fb = inject(FormBuilder);
 	#cdr = inject(ChangeDetectorRef);

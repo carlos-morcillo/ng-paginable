@@ -1,6 +1,16 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, computed, input, model } from '@angular/core';
 import { HUB_TRANSLATION_PREFIX, TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 
+/** Where a paginator sits relative to the rows it pages, when that has to be said out loud. */
+export type PaginatorPlacement = 'top' | 'bottom';
+
+/**
+ * Component for handling pagination controls in a table or list throughout the library.
+ * It provides a user interface for navigating through pages of data.
+ *
+ * @export
+ * @class PaginatorComponent
+ */
 @Component({
 	selector: 'hub-paginator, hub-ui-paginator, paginable-table-paginator',
 	standalone: true,
@@ -11,13 +21,6 @@ import { HUB_TRANSLATION_PREFIX, TranslatePipe, UcfirstPipe } from 'ng-hub-ui-ut
 	imports: [TranslatePipe, UcfirstPipe],
 	providers: [{ provide: HUB_TRANSLATION_PREFIX, useValue: 'HUBUI.PAGINABLE' }]
 })
-/**
- * Component for handling pagination controls in a table or list throughout the library.
- * It provides a user interface for navigating through pages of data.
- *
- * @export
- * @class PaginatorComponent
- */
 export class PaginatorComponent {
 	/**
 	 * Enables right-to-left behavior for paginator controls.
@@ -39,6 +42,28 @@ export class PaginatorComponent {
 	 * @memberof PaginatorComponent
 	 */
 	readonly numberOfPages = input<number | null>();
+
+	/**
+	 * Where this paginator sits, when a host draws more than one of them for the same collection.
+	 * A `<nav>` is a landmark, and two landmarks answering to the same name are indistinguishable
+	 * in a screen reader's landmark list — so the placement, when given, goes into the name.
+	 * Left `null` for the ordinary case of a single paginator, which needs no disambiguation.
+	 */
+	readonly placement = input<PaginatorPlacement | null>(null);
+
+	/**
+	 * Translation key for the navigation landmark's accessible name.
+	 */
+	readonly ariaLabelKey = computed<string>(() => {
+		switch (this.placement()) {
+			case 'top':
+				return 'PAGINATION_TOP';
+			case 'bottom':
+				return 'PAGINATION_BOTTOM';
+			default:
+				return 'PAGINATION';
+		}
+	});
 
 	/**
 	 * Returns whether paginator should behave in right-to-left mode.
