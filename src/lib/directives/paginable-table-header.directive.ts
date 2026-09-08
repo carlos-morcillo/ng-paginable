@@ -4,7 +4,7 @@ import { Directive, TemplateRef, input } from '@angular/core';
 	selector: '[headerTpt], [paginableTableHeader]',
 	standalone: true
 })
-export class PaginableTableHeaderDirective {
+export class HubPaginableTableHeaderDirective {
 	readonly header = input.required<string>();
 	constructor(public template: TemplateRef<any>) {}
 }

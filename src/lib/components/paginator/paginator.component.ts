@@ -9,19 +9,28 @@ export type PaginatorPlacement = 'top' | 'bottom';
  * It provides a user interface for navigating through pages of data.
  *
  * @export
- * @class PaginatorComponent
+ * @class HubPaginatorComponent
  */
 @Component({
 	selector: 'hub-paginator, hub-ui-paginator, paginable-table-paginator',
 	standalone: true,
 	templateUrl: './paginator.component.html',
 	styleUrl: './paginator.component.scss',
+	// Reason 3 of CODING_RULES.md — the sheet also dresses elements that are not in this
+	// component's view. `<hub-table>` and `<hub-list>` draw the bottom bar beside the
+	// paginator and reuse its skin for it: `.hub-paginator__settings`, `__label`,
+	// `__select` and `__info` live in *their* templates, so an encapsulated rule would
+	// carry this component's marker and never reach them. The `:root` block is part of the
+	// same exception: `table-icon-symmetry.spec.ts` reads the `--hub-paginator-icon-*`
+	// tokens off `document.documentElement`, which only a global sheet can declare (under
+	// `ViewEncapsulation.None` Angular leaves `:host` untransformed, and it matches
+	// nothing). Every selector stays namespaced under `.hub-paginator*`.
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	imports: [TranslatePipe, UcfirstPipe],
 	providers: [{ provide: HUB_TRANSLATION_PREFIX, useValue: 'HUBUI.PAGINABLE' }]
 })
-export class PaginatorComponent {
+export class HubPaginatorComponent {
 	/**
 	 * Enables right-to-left behavior for paginator controls.
 	 * Icons keep their visual direction while actions are mirrored.
@@ -32,14 +41,14 @@ export class PaginatorComponent {
 	 * The current page number.
 	 *
 	 * @type {(number)}
-	 * @memberof PaginatorComponent
+	 * @memberof HubPaginatorComponent
 	 */
 	readonly page = model<number>(1);
 	/**
 	 * The total number of pages available.
 	 *
 	 * @type {(number | null)}
-	 * @memberof PaginatorComponent
+	 * @memberof HubPaginatorComponent
 	 */
 	readonly numberOfPages = input<number | null>();
 

@@ -4,7 +4,7 @@ import { PaginableTablePagination } from '../interfaces/paginable-table-paginati
 @Injectable({
 	providedIn: 'root'
 })
-export class PaginationService {
+export class HubPaginationService {
 	generate(items: any[] | ReadonlyArray<any>, params: any): any {
 		let filtered: Array<any> = [];
 		if (items && items.length) {

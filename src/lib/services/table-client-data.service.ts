@@ -13,7 +13,7 @@ import {
 import { PaginableTableHeader } from '../interfaces/paginable-table-header';
 import { PaginableTableOrdination } from '../interfaces/paginable-table-ordination';
 import { TableRow } from '../interfaces/table-row';
-import { PaginationService } from './pagination.service';
+import { HubPaginationService } from './pagination.service';
 
 /**
  * In-memory data engine for the table's automatic client-side pagination mode.
@@ -29,14 +29,14 @@ import { PaginationService } from './pagination.service';
  * so per-row UI state such as `selected` and `collapsed` is preserved across
  * filtering, sorting and page changes.
  *
- * @see PaginationService for the raw-item utility variant used in manual setups.
+ * @see HubPaginationService for the raw-item utility variant used in manual setups.
  */
 @Injectable({
 	providedIn: 'root'
 })
 export class TableClientDataService {
 	/** Shared utility service reused for nested property access. */
-	readonly #pagination = inject(PaginationService);
+	readonly #pagination = inject(HubPaginationService);
 
 	/**
 	 * Runs the full client-side pipeline (search → column filters → sort) over the
@@ -136,7 +136,7 @@ export class TableClientDataService {
 	/**
 	 * Returns a sorted copy of the rows based on the current ordination.
 	 *
-	 * Mirrors {@link PaginationService.orderBy} but reads the sort key from `row.data`.
+	 * Mirrors {@link HubPaginationService.orderBy} but reads the sort key from `row.data`.
 	 *
 	 * @template T The row data type.
 	 * @param rows The rows to sort.

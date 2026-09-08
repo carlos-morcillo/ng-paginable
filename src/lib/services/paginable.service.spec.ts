@@ -1,21 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-import { PaginableService } from './paginable.service';
+import { HubPaginableService } from './paginable.service';
 import { PaginableConfigService } from './paginate-config.service';
 import { DEFAULT_PAGINABLE_CONFIG } from '../constants/defaults';
 
 /**
- * Test suite for PaginableService
+ * Test suite for HubPaginableService
  * Tests configuration management for paginable components
  */
-describe('PaginableService', () => {
-	let service: PaginableService;
+describe('HubPaginableService', () => {
+	let service: HubPaginableService;
 
 	describe('with default config', () => {
 		beforeEach(() => {
 			TestBed.configureTestingModule({
-				providers: [PaginableService]
+				providers: [HubPaginableService]
 			});
-			service = TestBed.inject(PaginableService);
+			service = TestBed.inject(HubPaginableService);
 		});
 
 		it('should be created', () => {
@@ -48,14 +48,14 @@ describe('PaginableService', () => {
 		beforeEach(() => {
 			TestBed.configureTestingModule({
 				providers: [
-					PaginableService,
+					HubPaginableService,
 					{
 						provide: PaginableConfigService,
 						useValue: customConfig
 					}
 				]
 			});
-			service = TestBed.inject(PaginableService);
+			service = TestBed.inject(HubPaginableService);
 		});
 
 		it('should merge custom config with default config', () => {
@@ -78,9 +78,9 @@ describe('PaginableService', () => {
 	describe('initialize', () => {
 		beforeEach(() => {
 			TestBed.configureTestingModule({
-				providers: [PaginableService]
+				providers: [HubPaginableService]
 			});
-			service = TestBed.inject(PaginableService);
+			service = TestBed.inject(HubPaginableService);
 		});
 
 		it('should be called during construction', () => {
@@ -97,9 +97,9 @@ describe('PaginableService', () => {
 	describe('mapping getter', () => {
 		beforeEach(() => {
 			TestBed.configureTestingModule({
-				providers: [PaginableService]
+				providers: [HubPaginableService]
 			});
-			service = TestBed.inject(PaginableService);
+			service = TestBed.inject(HubPaginableService);
 		});
 
 		it('should return mapping from config', () => {

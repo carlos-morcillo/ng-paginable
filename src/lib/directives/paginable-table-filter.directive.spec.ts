@@ -1,9 +1,9 @@
 import { Component, TemplateRef, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PaginableTableFilterDirective } from './paginable-table-filter.directive';
+import { HubPaginableTableFilterDirective } from './paginable-table-filter.directive';
 
 /**
- * Test component for PaginableTableFilterDirective
+ * Test component for HubPaginableTableFilterDirective
  */
 @Component({
 	template: `
@@ -12,22 +12,22 @@ import { PaginableTableFilterDirective } from './paginable-table-filter.directiv
 		</ng-template>
 	`,
 	standalone: true,
-	imports: [PaginableTableFilterDirective]
+	imports: [HubPaginableTableFilterDirective]
 })
 class TestFilterDirectiveComponent {
-	readonly directive = viewChild.required(PaginableTableFilterDirective);
+	readonly directive = viewChild.required(HubPaginableTableFilterDirective);
 
 	filterHeader = signal('filterColumn');
 }
 
 /**
- * Test suite for PaginableTableFilterDirective
+ * Test suite for HubPaginableTableFilterDirective
  * Tests custom filter template directive functionality
  */
-describe('PaginableTableFilterDirective', () => {
+describe('HubPaginableTableFilterDirective', () => {
 	let component: TestFilterDirectiveComponent;
 	let fixture: ComponentFixture<TestFilterDirectiveComponent>;
-	let directive: PaginableTableFilterDirective;
+	let directive: HubPaginableTableFilterDirective;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
@@ -70,10 +70,10 @@ describe('PaginableTableFilterDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableTableFilterDirective]
+			imports: [HubPaginableTableFilterDirective]
 		})
 		class TestFilterTptComponent {
-			readonly directive = viewChild.required(PaginableTableFilterDirective);
+			readonly directive = viewChild.required(HubPaginableTableFilterDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestFilterTptComponent);

@@ -3,10 +3,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { PaginatorComponent } from '../paginator/paginator.component';
-import { TableComponent } from './table.component';
+import { HubPaginatorComponent } from '../paginator/paginator.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * The arrow glyphs come in pairs, and a pair is one shape and its reflection.
@@ -282,16 +282,16 @@ describe('icon glyph symmetry', () => {
 
 		beforeEach(async () => {
 			await TestBed.configureTestingModule({
-				imports: [TableComponent, BrowserAnimationsModule],
+				imports: [HubTableComponent, BrowserAnimationsModule],
 				providers: [
 					{ provide: HubTranslationService, useClass: MockHubTranslationService },
-					{ provide: PaginableService, useClass: MockPaginableService },
+					{ provide: HubPaginableService, useClass: MockPaginableService },
 					{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 				]
 			}).compileComponents();
 
 			// Instantiating the component is what loads its stylesheet into the document.
-			const fixture = TestBed.createComponent(TableComponent);
+			const fixture = TestBed.createComponent(HubTableComponent);
 			fixture.detectChanges();
 			read = tokenReader(fixture.nativeElement, '--hub-table-icon-');
 		});
@@ -306,11 +306,11 @@ describe('icon glyph symmetry', () => {
 
 		beforeEach(async () => {
 			await TestBed.configureTestingModule({
-				imports: [PaginatorComponent],
+				imports: [HubPaginatorComponent],
 				providers: [{ provide: HubTranslationService, useClass: MockHubTranslationService }]
 			}).compileComponents();
 
-			const fixture = TestBed.createComponent(PaginatorComponent);
+			const fixture = TestBed.createComponent(HubPaginatorComponent);
 			fixture.detectChanges();
 			// The paginator ships unencapsulated, so its declarations land on `:root`.
 			read = tokenReader(document.documentElement, '--hub-paginator-icon-');

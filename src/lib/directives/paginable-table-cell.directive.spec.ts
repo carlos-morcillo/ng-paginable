@@ -1,7 +1,7 @@
 import { Component, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PaginableTableCellDirective } from './paginable-table-cell.directive';
+import { HubPaginableTableCellDirective } from './paginable-table-cell.directive';
 
 /**
  * Test component to verify the directive functionality
@@ -43,18 +43,18 @@ import { PaginableTableCellDirective } from './paginable-table-cell.directive';
 		</ng-template>
 	`,
 	standalone: true,
-	imports: [PaginableTableCellDirective]
+	imports: [HubPaginableTableCellDirective]
 })
 class TestComponent {
-	readonly nameDirective = viewChild.required('nameTemplate', { read: PaginableTableCellDirective });
+	readonly nameDirective = viewChild.required('nameTemplate', { read: HubPaginableTableCellDirective });
 
 	readonly nameTemplateRef = viewChild.required('nameTemplate', { read: TemplateRef });
 
-	readonly ageDirective = viewChild.required('ageTemplate', { read: PaginableTableCellDirective });
+	readonly ageDirective = viewChild.required('ageTemplate', { read: HubPaginableTableCellDirective });
 
-	readonly statusDirective = viewChild.required('statusTemplate', { read: PaginableTableCellDirective });
+	readonly statusDirective = viewChild.required('statusTemplate', { read: HubPaginableTableCellDirective });
 
-	readonly descDirective = viewChild.required('descTemplate', { read: PaginableTableCellDirective });
+	readonly descDirective = viewChild.required('descTemplate', { read: HubPaginableTableCellDirective });
 
 	readonly regularTemplateRef = viewChild.required('regularTemplate', { read: TemplateRef });
 
@@ -84,10 +84,10 @@ class TestComponent {
 	};
 }
 
-describe('PaginableTableCellDirective', () => {
+describe('HubPaginableTableCellDirective', () => {
 	let component: TestComponent;
 	let fixture: ComponentFixture<TestComponent>;
-	let directive: PaginableTableCellDirective;
+	let directive: HubPaginableTableCellDirective;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
@@ -105,8 +105,8 @@ describe('PaginableTableCellDirective', () => {
 			expect(directive).toBeTruthy();
 		});
 
-		it('should be a PaginableTableCellDirective instance', () => {
-			expect(directive).toBeInstanceOf(PaginableTableCellDirective);
+		it('should be a HubPaginableTableCellDirective instance', () => {
+			expect(directive).toBeInstanceOf(HubPaginableTableCellDirective);
 		});
 
 		it('should have required header property', () => {

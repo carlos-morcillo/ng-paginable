@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { locale as enLocale } from '../../assets/i18n/en';
 import { providePaginable } from '../../paginable.providers';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * With `paginationPosition="both"` the table draws its pagination bar twice, and each bar carries
@@ -13,8 +13,8 @@ import { TableComponent } from './table.component';
  * These specs read the accessible name off the rendered `<nav>` — the thing assistive technology
  * actually announces — rather than asserting that some class or attribute is present.
  */
-describe('TableComponent pagination landmarks', () => {
-	let fixture: ComponentFixture<TableComponent>;
+describe('HubTableComponent pagination landmarks', () => {
+	let fixture: ComponentFixture<HubTableComponent>;
 
 	/** Applies the `ucfirst` pipe every shipped label is piped through before it is rendered. */
 	const ucfirst = (value: string): string => value.charAt(0).toUpperCase() + value.slice(1);
@@ -29,11 +29,11 @@ describe('TableComponent pagination landmarks', () => {
 	beforeEach(async () => {
 		TestBed.resetTestingModule();
 		await TestBed.configureTestingModule({
-			imports: [TableComponent],
+			imports: [HubTableComponent],
 			providers: [providePaginable({ language: 'en' })]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(TableComponent);
+		fixture = TestBed.createComponent(HubTableComponent);
 		fixture.componentInstance.page.set(1);
 		fixture.componentInstance.perPage.set(10);
 		fixture.componentInstance.totalItems.set(25);

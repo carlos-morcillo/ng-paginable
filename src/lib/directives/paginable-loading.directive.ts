@@ -9,7 +9,7 @@ import { Directive, TemplateRef } from '@angular/core';
 	selector: '[loadingTpt], [paginableLoading], [paginableTableLoading]',
 	standalone: true
 })
-export class PaginableLoadingDirective {
+export class HubPaginableLoadingDirective {
 	/** Stores the projected template instance so host components can render it on demand. */
 	constructor(public template: TemplateRef<any>) {}
 }
@@ -18,4 +18,4 @@ export class PaginableLoadingDirective {
  * Backward-compatible export kept for integrations that still import the
  * table-prefixed name.
  */
-export { PaginableLoadingDirective as PaginableTableLoadingDirective };
+export { HubPaginableLoadingDirective as PaginableTableLoadingDirective };

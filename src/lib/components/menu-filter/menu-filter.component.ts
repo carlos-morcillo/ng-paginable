@@ -21,7 +21,7 @@ import {
 	StringMatchModes
 } from '../../interfaces/column-filter-event';
 import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
-import { DropdownComponent } from '../dropdown/dropdown.component';
+import { HubDropdownComponent } from '../dropdown/dropdown.component';
 
 @Component({
 	selector: 'hub-menu-filter',
@@ -40,7 +40,7 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 })
 export class MenuFilterComponent implements ControlValueAccessor {
 	#fb = inject(FormBuilder);
-	#parent = inject(DropdownComponent);
+	#parent = inject(HubDropdownComponent);
 
 	/**
 	 * The table header configuration associated with this filter.

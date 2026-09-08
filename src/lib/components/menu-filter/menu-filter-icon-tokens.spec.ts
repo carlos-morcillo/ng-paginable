@@ -3,7 +3,7 @@ import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
 import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
-import { DropdownComponent } from '../dropdown/dropdown.component';
+import { HubDropdownComponent } from '../dropdown/dropdown.component';
 import { MenuFilterComponent } from './menu-filter.component';
 
 /**
@@ -42,7 +42,7 @@ describe('menu filter icon tokens', () => {
 			imports: [MenuFilterComponent],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: DropdownComponent, useValue: { closeDropdown: () => {} } }
+				{ provide: HubDropdownComponent, useValue: { closeDropdown: () => {} } }
 			]
 		});
 

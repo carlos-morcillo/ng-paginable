@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { PaginableTableRangeInputComponent } from './paginable-table-range-input.component';
+import { HubPaginableTableRangeInputComponent } from './paginable-table-range-input.component';
 import { HUB_TRANSLATION_CONFIG, HubTranslationService, TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 
 /**
- * Test suite for PaginableTableRangeInputComponent
+ * Test suite for HubPaginableTableRangeInputComponent
  * Tests range input functionality for filtering table data
  */
-describe('PaginableTableRangeInputComponent', () => {
-	let component: PaginableTableRangeInputComponent;
-	let fixture: ComponentFixture<PaginableTableRangeInputComponent>;
+describe('HubPaginableTableRangeInputComponent', () => {
+	let component: HubPaginableTableRangeInputComponent;
+	let fixture: ComponentFixture<HubPaginableTableRangeInputComponent>;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [PaginableTableRangeInputComponent, FormsModule, TranslatePipe, UcfirstPipe],
+			imports: [HubPaginableTableRangeInputComponent, FormsModule, TranslatePipe, UcfirstPipe],
 			providers: [
 				HubTranslationService,
 				{
@@ -32,7 +32,7 @@ describe('PaginableTableRangeInputComponent', () => {
 			]
 		});
 
-		fixture = TestBed.createComponent(PaginableTableRangeInputComponent);
+		fixture = TestBed.createComponent(HubPaginableTableRangeInputComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});

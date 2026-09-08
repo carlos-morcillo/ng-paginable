@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
-import { ListComponent } from './list.component';
+import { HubListComponent } from './list.component';
 
 /**
  * The list draws its own glyphs, so it owns the variables behind them.
@@ -35,7 +35,7 @@ class MockHubTranslationService {
 }
 
 describe('list icon tokens', () => {
-	let fixture: ComponentFixture<ListComponent<TestListItem>>;
+	let fixture: ComponentFixture<HubListComponent<TestListItem>>;
 
 	/** The variable a rendered icon actually consumes. */
 	function maskOf(selector: string): string {
@@ -51,11 +51,11 @@ describe('list icon tokens', () => {
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [ListComponent],
+			imports: [HubListComponent],
 			providers: [{ provide: HubTranslationService, useClass: MockHubTranslationService }]
 		});
 
-		fixture = TestBed.createComponent(ListComponent<TestListItem>);
+		fixture = TestBed.createComponent(HubListComponent<TestListItem>);
 		fixture.componentRef.setInput('options', { searchable: true });
 		fixture.componentRef.setInput('items', [
 			{ id: 1, label: 'Parent', children: [{ id: 2, label: 'Child' }] }

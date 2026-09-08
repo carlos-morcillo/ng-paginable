@@ -6,9 +6,9 @@ import { Subject } from 'rxjs';
 import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
 import { TableRow } from '../../interfaces/table-row';
 import { HubTranslationService } from 'ng-hub-ui-utils';
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 // Mock services
 class MockHubTranslationService {
@@ -42,20 +42,20 @@ class MockPaginableService {
 	initialize() {}
 }
 
-describe('TableComponent', () => {
-	let component: TableComponent;
-	let fixture: ComponentFixture<TableComponent>;
+describe('HubTableComponent', () => {
+	let component: HubTableComponent;
+	let fixture: ComponentFixture<HubTableComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [
 				{
 					provide: HubTranslationService,
 					useClass: MockHubTranslationService
 				},
 				{
-					provide: PaginableService,
+					provide: HubPaginableService,
 					useClass: MockPaginableService
 				},
 				{
@@ -68,7 +68,7 @@ describe('TableComponent', () => {
 			]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(TableComponent);
+		fixture = TestBed.createComponent(HubTableComponent);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});

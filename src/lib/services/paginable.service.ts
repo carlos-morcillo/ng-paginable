@@ -5,7 +5,7 @@ import { mergeDeep } from 'ng-hub-ui-utils';
 import { PaginableConfigService } from './paginate-config.service';
 
 @Injectable({ providedIn: 'root' })
-export class PaginableService {
+export class HubPaginableService {
 	config!: Required<PaginableTableConfig>;
 
 	get mapping(): any {

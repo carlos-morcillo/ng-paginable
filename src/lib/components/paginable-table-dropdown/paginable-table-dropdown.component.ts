@@ -17,7 +17,7 @@ import { TableRowEvent } from '../../interfaces';
 import { TableRow } from '../../interfaces/table-row';
 import { PaginableActionButton } from '../../interfaces/paginable-action-button';
 import { PaginableTableDropdown } from '../../interfaces/paginable-table-dropdown';
-import { HubIconComponent } from '../icon/icon.component';
+import { HubPaginableIconComponent } from '../icon/icon.component';
 import { HubTableTooltipDirective } from '../../table-tooltip';
 
 /**
@@ -32,7 +32,7 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
  * Escape and the keyboard never reach it. Kept only so that upgrading breaks nobody.
  *
  * @export
- * @class PaginableTableDropdownComponent
+ * @class HubPaginableTableDropdownComponent
  * @template T
  */
 @Component({
@@ -40,14 +40,14 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
 
 	standalone: true,
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [AsyncPipe, HubTableTooltipDirective, NgClass, HubIconComponent, UnwrapAsyncPipe],
+	imports: [AsyncPipe, HubTableTooltipDirective, NgClass, HubPaginableIconComponent, UnwrapAsyncPipe],
 	templateUrl: './paginable-table-dropdown.component.html',
 	styleUrls: ['./paginable-table-dropdown.component.scss'],
 	host: {
 		'(document:click)': 'clickOut($event)'
 	}
 })
-export class PaginableTableDropdownComponent<T = any> {
+export class HubPaginableTableDropdownComponent<T = any> {
 	#elementRef = inject(ElementRef);
 
 	readonly dropdownTpt = viewChild.required<TemplateRef<any>>('dropdownTpt');
@@ -60,7 +60,7 @@ export class PaginableTableDropdownComponent<T = any> {
 	 * The row data and event information associated with the dropdown.
 	 *
 	 * @type {(TableRowEvent<T> | undefined)}
-	 * @memberof PaginableTableDropdownComponent
+	 * @memberof HubPaginableTableDropdownComponent
 	 */
 	readonly row = input<TableRowEvent<T>>();
 
@@ -71,7 +71,7 @@ export class PaginableTableDropdownComponent<T = any> {
 	 * `options().position` answers even when the consumer only passed `buttons`.
 	 *
 	 * @type {PaginableTableDropdown}
-	 * @memberof PaginableTableDropdownComponent
+	 * @memberof HubPaginableTableDropdownComponent
 	 */
 	readonly options = input<PaginableTableDropdown, PaginableTableDropdown>(
 		{ buttons: [] },
@@ -93,7 +93,7 @@ export class PaginableTableDropdownComponent<T = any> {
 	 * Defaults to 'body'.
 	 *
 	 * @type {(HTMLElement | 'body' | null)}
-	 * @memberof PaginableTableDropdownComponent
+	 * @memberof HubPaginableTableDropdownComponent
 	 */
 	readonly appendTo = input<HTMLElement | 'body' | null>('body');
 
@@ -101,7 +101,7 @@ export class PaginableTableDropdownComponent<T = any> {
 	 * Whether the dropdown button is disabled.
 	 *
 	 * @type {boolean}
-	 * @memberof PaginableTableDropdownComponent
+	 * @memberof HubPaginableTableDropdownComponent
 	 */
 	readonly disabled = input<boolean>(false);
 

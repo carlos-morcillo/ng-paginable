@@ -1,9 +1,9 @@
 import { Component, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PaginableNoResultsDirective } from './paginable-no-results.directive';
+import { HubPaginableNoResultsDirective } from './paginable-no-results.directive';
 
 /**
- * Test component for PaginableNoResultsDirective.
+ * Test component for HubPaginableNoResultsDirective.
  */
 @Component({
 	template: `
@@ -12,22 +12,22 @@ import { PaginableNoResultsDirective } from './paginable-no-results.directive';
 		</ng-template>
 	`,
 	standalone: true,
-	imports: [PaginableNoResultsDirective]
+	imports: [HubPaginableNoResultsDirective]
 })
 class TestNotFoundDirectiveComponent {
-	readonly directive = viewChild.required(PaginableNoResultsDirective);
+	readonly directive = viewChild.required(HubPaginableNoResultsDirective);
 
 	noDataMessage = 'No data available';
 }
 
 /**
- * Test suite for PaginableNoResultsDirective.
+ * Test suite for HubPaginableNoResultsDirective.
  * Validates the new selector names and the legacy aliases kept for compatibility.
  */
-describe('PaginableNoResultsDirective', () => {
+describe('HubPaginableNoResultsDirective', () => {
 	let component: TestNotFoundDirectiveComponent;
 	let fixture: ComponentFixture<TestNotFoundDirectiveComponent>;
-	let directive: PaginableNoResultsDirective;
+	let directive: HubPaginableNoResultsDirective;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
@@ -57,10 +57,10 @@ describe('PaginableNoResultsDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableNoResultsDirective]
+			imports: [HubPaginableNoResultsDirective]
 		})
 		class TestNoResultsTptComponent {
-			readonly directive = viewChild.required(PaginableNoResultsDirective);
+			readonly directive = viewChild.required(HubPaginableNoResultsDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestNoResultsTptComponent);
@@ -77,10 +77,10 @@ describe('PaginableNoResultsDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableNoResultsDirective]
+			imports: [HubPaginableNoResultsDirective]
 		})
 		class TestNoDataTptComponent {
-			readonly directive = viewChild.required(PaginableNoResultsDirective);
+			readonly directive = viewChild.required(HubPaginableNoResultsDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestNoDataTptComponent);
@@ -97,10 +97,10 @@ describe('PaginableNoResultsDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableNoResultsDirective]
+			imports: [HubPaginableNoResultsDirective]
 		})
 		class TestLegacySelectorComponent {
-			readonly directive = viewChild.required(PaginableNoResultsDirective);
+			readonly directive = viewChild.required(HubPaginableNoResultsDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestLegacySelectorComponent);
@@ -117,10 +117,10 @@ describe('PaginableNoResultsDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableNoResultsDirective]
+			imports: [HubPaginableNoResultsDirective]
 		})
 		class TestPreviousSelectorComponent {
-			readonly directive = viewChild.required(PaginableNoResultsDirective);
+			readonly directive = viewChild.required(HubPaginableNoResultsDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestPreviousSelectorComponent);

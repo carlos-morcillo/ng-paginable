@@ -39,10 +39,10 @@ import {
 } from 'ng-hub-ui-utils';
 import { HubListDragPlaceholderDirective } from '../../../directives/list-drag-placeholder.directive';
 import { HubListDragPreviewDirective } from '../../../directives/list-drag-preview.directive';
-import { PaginableErrorDirective } from '../../../directives/paginable-error.directive';
-import { PaginableListItemDirective } from '../../../directives/paginable-list-item.directive';
-import { PaginableLoadingDirective } from '../../../directives/paginable-loading.directive';
-import { PaginableNoResultsDirective } from '../../../directives/paginable-no-results.directive';
+import { HubPaginableErrorDirective } from '../../../directives/paginable-error.directive';
+import { HubPaginableListItemDirective } from '../../../directives/paginable-list-item.directive';
+import { HubPaginableLoadingDirective } from '../../../directives/paginable-loading.directive';
+import { HubPaginableNoResultsDirective } from '../../../directives/paginable-no-results.directive';
 import { SelectionTypes } from '../../../enums/selection-types';
 import { ListClickEvent } from '../../../interfaces/item-click-event';
 import { ListSortEvent } from '../../../interfaces/list-sort-event';
@@ -53,9 +53,9 @@ import { PaginableTableOptions } from '../../../interfaces/paginable-table-optio
 import { HubPaginableResource } from '../../../interfaces/paginable-resource';
 import { readPaginableSource } from '../../../utils/paginable-source';
 import { DragPointerMode, DragTarget, HubListDragService } from '../../../services/hub-list-drag.service';
-import { PaginableDefaultsService } from '../../../services/paginable-defaults.service';
-import { PaginableService } from '../../../services/paginable.service';
-import { PaginableStateOutlet } from '../../state-outlet/paginable-state-outlet.component';
+import { HubPaginableDefaultsService } from '../../../services/paginable-defaults.service';
+import { HubPaginableService } from '../../../services/paginable.service';
+import { HubPaginableStateOutlet } from '../../state-outlet/paginable-state-outlet.component';
 import {
 	computeTargetIndex,
 	containsNode,
@@ -68,7 +68,7 @@ import {
 	transferControlBetweenFormArrays
 } from '../../../utils/list-drag.utils';
 import { createPointerDragSession, PointerDragSession } from '../../../utils/list-pointer-drag';
-import { PaginatorComponent } from '../../paginator/paginator.component';
+import { HubPaginatorComponent } from '../../paginator/paginator.component';
 
 /**
  * Internal state held while reordering an item by keyboard.
@@ -100,7 +100,7 @@ const DEFAULT_LIST_OPTIONS: PaginableTableOptions = {
  * A component for displaying a paginable and selectable list of items.
  *
  * @export
- * @class ListComponent
+ * @class HubListComponent
  * @template T The type of data for each item in the list.
  */
 @Component({
@@ -120,23 +120,23 @@ const DEFAULT_LIST_OPTIONS: PaginableTableOptions = {
 		{ provide: HUB_TRANSLATION_PREFIX, useValue: 'HUBUI.PAGINABLE' },
 		{
 			provide: NG_VALUE_ACCESSOR,
-			useExisting: ListComponent,
+			useExisting: HubListComponent,
 			multi: true
 		}
 	],
 	imports: [
 		ReactiveFormsModule,
 		FormsModule,
-		PaginatorComponent,
+		HubPaginatorComponent,
 		TranslatePipe,
 		UcfirstPipe,
 		NgTemplateOutlet,
 		NgClass,
-		PaginableStateOutlet
+		HubPaginableStateOutlet
 	],
 	standalone: true
 })
-export class ListComponent<T = any> implements OnChanges {
+export class HubListComponent<T = any> implements OnChanges {
 	#fb = inject(FormBuilder);
 	#cdr = inject(ChangeDetectorRef);
 	#host = inject(ElementRef);
@@ -152,10 +152,10 @@ export class ListComponent<T = any> implements OnChanges {
 	readonly _listId = generateUniqueId(12);
 
 	/** Resolved application-wide default state components. */
-	readonly defaults = inject(PaginableDefaultsService);
+	readonly defaults = inject(HubPaginableDefaultsService);
 
 	/** Application-wide paginable configuration (holds the input defaults). */
-	readonly #config = inject(PaginableService);
+	readonly #config = inject(HubPaginableService);
 
 	/** Resolved default input values from {@link providePaginable}. */
 	get #defaults() {
@@ -493,7 +493,7 @@ export class ListComponent<T = any> implements OnChanges {
 	/**
 	 * A function that is called when an item in the list is clicked.
 	 * @type {() => (event: ListClickEvent<T>) => void | Promise<void>}
-	 * @memberof ListComponent
+	 * @memberof HubListComponent
 	 */
 	readonly clickFn = input<(event: ListClickEvent<T>) => void | Promise<void>>(() => {});
 
@@ -502,7 +502,7 @@ export class ListComponent<T = any> implements OnChanges {
 	 * If a string is provided, it is used as the class for all rows.
 	 * If a function is provided, it is called with the item data and should return a string representing the class.
 	 * @type {(string | ((item: T) => string))}
-	 * @memberof ListComponent
+	 * @memberof HubListComponent
 	 */
 	readonly rowClass = input<string | ((item: T) => string)>();
 
@@ -512,18 +512,18 @@ export class ListComponent<T = any> implements OnChanges {
 
 	// NOTE: Templates
 
-	readonly itemTpt = contentChild(PaginableListItemDirective, { read: TemplateRef });
+	readonly itemTpt = contentChild(HubPaginableListItemDirective, { read: TemplateRef });
 
 	/**
 	 * Custom template rendered when the list has no visible items to display.
 	 */
-	readonly noResultsTpt = contentChild(PaginableNoResultsDirective, { read: TemplateRef });
+	readonly noResultsTpt = contentChild(HubPaginableNoResultsDirective, { read: TemplateRef });
 
 	/** Custom template rendered while the list is loading. */
-	readonly loadingTpt = contentChild(PaginableLoadingDirective, { read: TemplateRef });
+	readonly loadingTpt = contentChild(HubPaginableLoadingDirective, { read: TemplateRef });
 
 	/** Custom template rendered when the list is in an error state. */
-	readonly errorTpt = contentChild(PaginableErrorDirective, { read: TemplateRef });
+	readonly errorTpt = contentChild(HubPaginableErrorDirective, { read: TemplateRef });
 
 	/**
 	 * Custom template for the drop placeholder shown while dragging.
@@ -1759,7 +1759,7 @@ export class ListComponent<T = any> implements OnChanges {
 	 *
 	 * @param {T} item The item for which to get the class.
 	 * @returns {string} The class to apply to the row.
-	 * @memberof ListComponent
+	 * @memberof HubListComponent
 	 */
 	_getRowClass(item: T): string {
 		const rowClass = this.rowClass();
@@ -1783,4 +1783,4 @@ export class ListComponent<T = any> implements OnChanges {
 	}
 }
 
-export { ListComponent as PaginableListComponent };
+export { HubListComponent as PaginableListComponent };

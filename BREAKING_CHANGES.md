@@ -1,5 +1,51 @@
 # Breaking Changes: ng-hub-ui-paginable
 
+## [22.22.0] - 2026-09-08
+
+### `<hub-icon>` no longer matches this package's icon component
+
+- **Change**: the component's selector was `hub-icon, ng-hub-ui-icon` and is now
+  `hub-paginable-icon, ng-hub-ui-icon`. The class, exported as `HubIconComponent`, is
+  `HubPaginableIconComponent`; the old name is kept as a deprecated alias and is removed in
+  23.0.0, the release that moves this family to Angular 23.
+
+- **Why**: `ng-hub-ui-icons` — the package whose whole job is icons — exports a
+  `HubIconComponent` matching `hub-icon`. Two components claiming one element name is not a
+  preference, it is a hard failure: importing both into the same component and writing
+  `<hub-icon>` fails to compile with NG8023, "Multiple components match node with tagname
+  hub-icon". Nothing the consumer writes can settle it, because both names come from libraries.
+  The tag belongs to the icon package; this one only draws the `Icon` descriptor the table's
+  configuration carries.
+
+- **What happens if you do nothing**: a template writing `<hub-icon [config]="…">` and importing
+  it from this package stops matching. That is a silent failure — an unmatched element name with
+  a `[config]` binding on it is a template error only under `strictTemplates`; otherwise the icon
+  simply stops being drawn. `import { HubIconComponent } from 'ng-hub-ui-paginable'` keeps
+  compiling, so the import list will not point you here. Check the markup.
+
+- **Migration**: rename the element. `<ng-hub-ui-icon>` has always matched this component too, so
+  a codebase already writing that one changes nothing.
+
+    ```html
+    <!-- Before -->
+    <hub-icon [config]="{ type: 'material', value: 'person' }"></hub-icon>
+
+    <!-- After -->
+    <hub-paginable-icon [config]="{ type: 'material', value: 'person' }"></hub-paginable-icon>
+    ```
+
+    ```ts
+    // Before
+    import { HubIconComponent } from 'ng-hub-ui-paginable';
+
+    // After
+    import { HubPaginableIconComponent } from 'ng-hub-ui-paginable';
+    ```
+
+    If what you actually wanted was the general-purpose icon component — packs, a registry,
+    `--hub-icon-*` tokens — that is `HubIconComponent` from `ng-hub-ui-icons`, and `<hub-icon>` is
+    now unambiguously its element.
+
 ## [22.20.0] - 2026-09-07
 
 ### The `TooltipDirective` re-export is removed

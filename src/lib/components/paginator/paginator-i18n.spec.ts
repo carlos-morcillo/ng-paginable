@@ -11,7 +11,7 @@ import { locale as glLocale } from '../../assets/i18n/gl';
 import { locale as ruLocale } from '../../assets/i18n/ru';
 import { locale as zhLocale } from '../../assets/i18n/zh';
 import { providePaginable } from '../../paginable.providers';
-import { PaginatorComponent } from './paginator.component';
+import { HubPaginatorComponent } from './paginator.component';
 
 /**
  * The paginator's first/previous/next/last controls are icon-only: their `aria-label` is
@@ -19,7 +19,7 @@ import { PaginatorComponent } from './paginator.component';
  * dictionary of the configured language, so a paginator can never again announce itself in
  * English to someone browsing in Catalan or German.
  */
-describe('PaginatorComponent i18n', () => {
+describe('HubPaginatorComponent i18n', () => {
 	/** The five keys that carry every accessible name the paginator exposes. */
 	const PAGINATOR_KEYS = ['PAGINATION', 'FIRST', 'PREVIOUS', 'NEXT', 'LAST'] as const;
 
@@ -27,14 +27,14 @@ describe('PaginatorComponent i18n', () => {
 	type PaginatorLabels = { data: Record<PaginatorKey, string> };
 
 	/** Renders a paginator with the library configured for `language`. */
-	function renderIn(language: string): ComponentFixture<PaginatorComponent> {
+	function renderIn(language: string): ComponentFixture<HubPaginatorComponent> {
 		TestBed.resetTestingModule();
 		TestBed.configureTestingModule({
-			imports: [PaginatorComponent],
+			imports: [HubPaginatorComponent],
 			providers: [providePaginable({ language })]
 		});
 
-		const fixture = TestBed.createComponent(PaginatorComponent);
+		const fixture = TestBed.createComponent(HubPaginatorComponent);
 		fixture.componentRef.setInput('numberOfPages', 10);
 		fixture.componentInstance.page.set(5);
 		fixture.detectChanges();
@@ -43,7 +43,7 @@ describe('PaginatorComponent i18n', () => {
 	}
 
 	/** Reads the accessible name of every labelled paginator control, in template order. */
-	function accessibleNames(fixture: ComponentFixture<PaginatorComponent>): Record<string, string | null> {
+	function accessibleNames(fixture: ComponentFixture<HubPaginatorComponent>): Record<string, string | null> {
 		const host: HTMLElement = fixture.nativeElement;
 		const nav = host.querySelector('nav.hub-paginator-container');
 		const [first, previous, next, last] = Array.from(host.querySelectorAll('a.hub-paginator__link[aria-label]'));

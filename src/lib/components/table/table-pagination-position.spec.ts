@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Subject } from 'rxjs';
 import { HubTranslationService } from 'ng-hub-ui-utils';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 /** Minimal translation service stand-in so the standalone component can render. */
 class MockHubTranslationService {
@@ -24,8 +24,8 @@ class MockHubTranslationService {
  * These read the placement off the rendered DOM rather than off the signal, which is the half the
  * old test suite never covered.
  */
-describe('TableComponent pagination position', () => {
-	let fixture: ComponentFixture<TableComponent>;
+describe('HubTableComponent pagination position', () => {
+	let fixture: ComponentFixture<HubTableComponent>;
 
 	/** Position of a pagination bar relative to the table container, in document order. */
 	function barPlacements(): Array<'top' | 'bottom'> {
@@ -37,11 +37,11 @@ describe('TableComponent pagination position', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [{ provide: HubTranslationService, useClass: MockHubTranslationService }]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(TableComponent);
+		fixture = TestBed.createComponent(HubTableComponent);
 		fixture.componentInstance.page.set(1);
 		fixture.componentInstance.perPage.set(10);
 		fixture.componentInstance.totalItems.set(25);

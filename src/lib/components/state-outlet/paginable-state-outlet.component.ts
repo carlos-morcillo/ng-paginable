@@ -28,12 +28,12 @@ import { normalizeStateDefault } from '../../utils';
 		}
 	`
 })
-export class PaginableStateOutlet {
+export class HubPaginableStateOutlet {
 	/** Content-projected directive template — highest precedence. */
 	readonly template = input<TemplateRef<unknown> | null | undefined>(null);
 	/** Per-instance default declared via `@Input` on the host component. */
 	readonly instanceDefault = input<PaginableStateDefault | null>(null);
-	/** Application-wide default resolved by `PaginableDefaultsService`. */
+	/** Application-wide default resolved by `HubPaginableDefaultsService`. */
 	readonly globalDefault = input<ResolvedStateDefault | null>(null);
 	/** Built-in template rendered when nothing else is provided. */
 	readonly fallback = input.required<TemplateRef<unknown>>();

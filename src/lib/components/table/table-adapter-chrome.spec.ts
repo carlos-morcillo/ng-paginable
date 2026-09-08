@@ -3,10 +3,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { TableComponent } from './table.component';
-import { PaginatorComponent } from '../paginator/paginator.component';
+import { HubTableComponent } from './table.component';
+import { HubPaginatorComponent } from '../paginator/paginator.component';
 
 /**
  * The table's own chrome controls, when a consumer swaps them for hub-forms ones.
@@ -69,17 +69,17 @@ function rulesMatching(test: (selector: string) => boolean): { selector: string;
 describe('adapter-rendered chrome', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, PaginatorComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, HubPaginatorComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
 
 		// Instantiating them is what loads their stylesheets into the document.
-		TestBed.createComponent(TableComponent).detectChanges();
-		TestBed.createComponent(PaginatorComponent).detectChanges();
+		TestBed.createComponent(HubTableComponent).detectChanges();
+		TestBed.createComponent(HubPaginatorComponent).detectChanges();
 	});
 
 	describe('the search button', () => {

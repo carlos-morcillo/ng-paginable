@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { PaginableActionButton } from '../../interfaces/paginable-action-button';
 import { TableRow } from '../../interfaces/table-row';
 import { TableRowEvent } from '../../interfaces';
-import { PaginableTableDropdownComponent } from './paginable-table-dropdown.component';
+import { HubPaginableTableDropdownComponent } from './paginable-table-dropdown.component';
 
 /**
  * An action tucked into the dropdown is the same action, and it answered to nothing.
@@ -19,8 +19,8 @@ import { PaginableTableDropdownComponent } from './paginable-table-dropdown.comp
  * is exactly the crowding the dropdown exists to relieve.
  */
 describe('dropdown item state', () => {
-	let fixture: ComponentFixture<PaginableTableDropdownComponent>;
-	let component: PaginableTableDropdownComponent;
+	let fixture: ComponentFixture<HubPaginableTableDropdownComponent>;
+	let component: HubPaginableTableDropdownComponent;
 
 	const houseRow = { data: { companyId: null }, event: new MouseEvent('click') } as TableRowEvent;
 	const ownRow = { data: { companyId: 7 }, event: new MouseEvent('click') } as TableRowEvent;
@@ -30,10 +30,10 @@ describe('dropdown item state', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [PaginableTableDropdownComponent]
+			imports: [HubPaginableTableDropdownComponent]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(PaginableTableDropdownComponent);
+		fixture = TestBed.createComponent(HubPaginableTableDropdownComponent);
 		component = fixture.componentInstance;
 	});
 

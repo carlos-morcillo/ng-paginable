@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 
 import { HubPaginableResource } from '../../../interfaces/paginable-resource';
 import { PaginationState } from '../../../interfaces/pagination-state';
-import { ListComponent } from './list.component';
+import { HubListComponent } from './list.component';
 
 class MockHubTranslationService {
 	readonly translationObserver = new Subject<any>().asObservable();
@@ -56,7 +56,7 @@ function fakeResource<T>(): HubPaginableResource<T> & {
 
 @Component({
 	standalone: true,
-	imports: [ListComponent],
+	imports: [HubListComponent],
 	template: ` <hub-list [resource]="resource" /> `
 })
 class Host {
@@ -67,7 +67,7 @@ describe('list [resource]', () => {
 	let fixture: ComponentFixture<Host>;
 	let host: Host;
 
-	const list = () => fixture.debugElement.children[0].componentInstance as ListComponent<Room>;
+	const list = () => fixture.debugElement.children[0].componentInstance as HubListComponent<Room>;
 	const labels = () =>
 		[...fixture.nativeElement.querySelectorAll('.hub-list__label')].map((label: any) => label.textContent?.trim());
 
@@ -148,7 +148,7 @@ describe('list [resource]', () => {
 /** Bound together, the resource is the more specific statement of intent and wins. */
 @Component({
 	standalone: true,
-	imports: [ListComponent],
+	imports: [HubListComponent],
 	template: ` <hub-list [items]="items" [resource]="resource" /> `
 })
 class BothHost {

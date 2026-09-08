@@ -38,18 +38,18 @@ import {
 import { BehaviorSubject, Observable, debounceTime, distinctUntilChanged, isObservable, of } from 'rxjs';
 import { TableBreakpoint } from '../../constants/breakpoints';
 import { PaginableStateDefault } from '../../interfaces/paginable-state';
-import { PaginableDefaultsService } from '../../services/paginable-defaults.service';
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableDefaultsService } from '../../services/paginable-defaults.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { TableClientDataService } from '../../services/table-client-data.service';
-import { PaginableStateOutlet } from '../state-outlet/paginable-state-outlet.component';
-import { PaginableNoResultsDirective } from '../../directives/paginable-no-results.directive';
-import { PaginableTableCellDirective } from '../../directives/paginable-table-cell.directive';
-import { PaginableErrorDirective } from '../../directives/paginable-error.directive';
-import { PaginableTableExpandingRowDirective } from '../../directives/paginable-table-expanding-row.directive';
-import { PaginableTableFilterDirective } from '../../directives/paginable-table-filter.directive';
-import { PaginableTableHeaderDirective } from '../../directives/paginable-table-header.directive';
-import { PaginableLoadingDirective } from '../../directives/paginable-loading.directive';
-import { PaginableTableRowDirective } from '../../directives/paginable-table-row.directive';
+import { HubPaginableStateOutlet } from '../state-outlet/paginable-state-outlet.component';
+import { HubPaginableNoResultsDirective } from '../../directives/paginable-no-results.directive';
+import { HubPaginableTableCellDirective } from '../../directives/paginable-table-cell.directive';
+import { HubPaginableErrorDirective } from '../../directives/paginable-error.directive';
+import { HubPaginableTableExpandingRowDirective } from '../../directives/paginable-table-expanding-row.directive';
+import { HubPaginableTableFilterDirective } from '../../directives/paginable-table-filter.directive';
+import { HubPaginableTableHeaderDirective } from '../../directives/paginable-table-header.directive';
+import { HubPaginableLoadingDirective } from '../../directives/paginable-loading.directive';
+import { HubPaginableTableRowDirective } from '../../directives/paginable-table-row.directive';
 import { HubStickyColumnsDirective } from '../../directives/paginable-sticky-columns.directive';
 import { SelectionTypes } from '../../enums/selection-types';
 import { PaginableActionButton, TableRowEvent } from '../../interfaces';
@@ -64,14 +64,14 @@ import { readPaginableSource } from '../../utils/paginable-source';
 import { HUB_PAGINABLE_FORM_CONTROLS } from '../../form-controls/form-controls.token';
 import { HubPaginableControlDirective } from '../../form-controls/form-controls.directive';
 import { HubPaginableControlOption } from '../../form-controls/form-controls.types';
-import { DropdownComponent } from '../dropdown/dropdown.component';
-import { HubIconComponent } from '../icon/icon.component';
+import { HubDropdownComponent } from '../dropdown/dropdown.component';
+import { HubPaginableIconComponent } from '../icon/icon.component';
 import { MenuFilterComponent } from '../menu-filter/menu-filter.component';
-import { PaginableTableDropdownComponent } from '../paginable-table-dropdown/paginable-table-dropdown.component';
+import { HubPaginableTableDropdownComponent } from '../paginable-table-dropdown/paginable-table-dropdown.component';
 import { HUB_PAGINABLE_ACTIONS } from '../../actions/actions.token';
 import { HubPaginableActionsDirective } from '../../actions/actions.directive';
-import { PaginableTableRangeInputComponent } from '../paginable-table-range-input/paginable-table-range-input.component';
-import { PaginatorComponent } from '../paginator/paginator.component';
+import { HubPaginableTableRangeInputComponent } from '../paginable-table-range-input/paginable-table-range-input.component';
+import { HubPaginatorComponent } from '../paginator/paginator.component';
 import { HubTableTooltipDirective } from '../../table-tooltip';
 
 /**
@@ -124,16 +124,16 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
 		UcfirstPipe,
 		UnwrapAsyncPipe,
 		IsObservablePipe,
-		PaginableTableDropdownComponent,
-		PaginatorComponent,
-		DropdownComponent,
+		HubPaginableTableDropdownComponent,
+		HubPaginatorComponent,
+		HubDropdownComponent,
 		MenuFilterComponent,
-		HubIconComponent,
-		PaginatorComponent,
-		PaginableTableRangeInputComponent,
+		HubPaginableIconComponent,
+		HubPaginatorComponent,
+		HubPaginableTableRangeInputComponent,
 		AsyncPipe,
 		GetPipe,
-		PaginableStateOutlet,
+		HubPaginableStateOutlet,
 		HubPaginableControlDirective,
 		HubPaginableActionsDirective,
 		HubStickyColumnsDirective
@@ -142,7 +142,7 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
 		{ provide: HUB_TRANSLATION_PREFIX, useValue: 'HUBUI.PAGINABLE' },
 		{
 			provide: NG_VALUE_ACCESSOR,
-			useExisting: forwardRef(() => TableComponent),
+			useExisting: forwardRef(() => HubTableComponent),
 			multi: true
 		}
 	],
@@ -155,18 +155,18 @@ import { HubTableTooltipDirective } from '../../table-tooltip';
 		'[style.--hub-table-accent]': 'accentVar()'
 	}
 })
-export class TableComponent<T = any> {
+export class HubTableComponent<T = any> {
 	/** Form builder service for creating reactive forms */
 	#fb = inject(UntypedFormBuilder);
 
 	/** Resolved application-wide default state components. */
-	readonly defaults = inject(PaginableDefaultsService);
+	readonly defaults = inject(HubPaginableDefaultsService);
 
 	/** In-memory data engine powering the automatic client-side pagination mode. */
 	readonly #clientData = inject(TableClientDataService);
 
 	/** Application-wide paginable configuration (holds the input defaults). */
-	readonly #config = inject(PaginableService);
+	readonly #config = inject(HubPaginableService);
 
 	/** Resolved default input values from {@link providePaginable}. */
 	get #defaults() {
@@ -932,7 +932,7 @@ export class TableComponent<T = any> {
 	 * If a function is provided, it is called with the row data and should return a string representing the class.
 	 *
 	 * @type {(string | ((item: T) => string))}
-	 * @memberof TableComponent
+	 * @memberof HubTableComponent
 	 */
 	readonly rowClass = input<string | ((item: T) => string)>();
 
@@ -952,32 +952,32 @@ export class TableComponent<T = any> {
 	disabled: boolean = false;
 
 	/** Custom template for table rows */
-	readonly templateRow = contentChild(PaginableTableRowDirective, {
+	readonly templateRow = contentChild(HubPaginableTableRowDirective, {
 		read: TemplateRef
 	});
 	/** Collection of custom header templates */
-	readonly headerTpts = contentChildren(PaginableTableHeaderDirective);
+	readonly headerTpts = contentChildren(HubPaginableTableHeaderDirective);
 	/** Collection of custom cell templates for specific columns */
-	readonly templateCells = contentChildren(PaginableTableCellDirective);
+	readonly templateCells = contentChildren(HubPaginableTableCellDirective);
 	/** Template to display when the table has no rows to render. */
-	readonly noResultsTpt = contentChild(PaginableNoResultsDirective, {
+	readonly noResultsTpt = contentChild(HubPaginableNoResultsDirective, {
 		read: TemplateRef
 	});
 	/** Template to display during loading state */
-	readonly loadingTpt = contentChild(PaginableLoadingDirective, {
+	readonly loadingTpt = contentChild(HubPaginableLoadingDirective, {
 		read: TemplateRef
 	});
 	/** Template to display during error state */
-	readonly errorTpt = contentChild(PaginableErrorDirective, {
+	readonly errorTpt = contentChild(HubPaginableErrorDirective, {
 		read: TemplateRef
 	});
 	/** Collection of templates for expandable row content */
-	readonly templateExpandingRows = contentChildren(PaginableTableExpandingRowDirective);
+	readonly templateExpandingRows = contentChildren(HubPaginableTableExpandingRowDirective);
 	/** Collection of custom filter templates for specific columns */
-	readonly filterTpts = contentChildren(PaginableTableFilterDirective);
+	readonly filterTpts = contentChildren(HubPaginableTableFilterDirective);
 
 	/** Collection of dropdown components used in the table */
-	readonly dropdownComponents = viewChildren(DropdownComponent);
+	readonly dropdownComponents = viewChildren(HubDropdownComponent);
 
 	/**
 	 * Implements ControlValueAccessor.writeValue()
@@ -1142,7 +1142,7 @@ export class TableComponent<T = any> {
 	 * If it exists, returns the header cell template for the header passed by parameter
 	 *
 	 * @param {(PaginableTableHeader)} header
-	 * @returns {TemplateRef<PaginableTableCellDirective>}
+	 * @returns {TemplateRef<HubPaginableTableCellDirective>}
 	 * @memberof PaginableTableComponent
 	 */
 	/**
@@ -1167,7 +1167,7 @@ export class TableComponent<T = any> {
 	 * If it exists, returns the cell template for the header passed by parameter
 	 *
 	 * @param {(PaginableTableHeader)} header
-	 * @returns {TemplateRef<PaginableTableCellDirective>}
+	 * @returns {TemplateRef<HubPaginableTableCellDirective>}
 	 * @memberof PaginableTableComponent
 	 */
 	/**
@@ -1192,7 +1192,7 @@ export class TableComponent<T = any> {
 	 * If it exists, returns the filter template for the header passed by parameter
 	 *
 	 * @param {(PaginableTableHeader)} header
-	 * @returns {TemplateRef<PaginableTableCellDirective>}
+	 * @returns {TemplateRef<HubPaginableTableCellDirective>}
 	 * @memberof PaginableTableComponent
 	 */
 	/**
@@ -1202,7 +1202,7 @@ export class TableComponent<T = any> {
 	 * @param header The header configuration to find filter template for
 	 * @returns The filter template reference if found, null otherwise
 	 */
-	getFilterTemplate(header: PaginableTableHeader): TemplateRef<PaginableTableFilterDirective> | null {
+	getFilterTemplate(header: PaginableTableHeader): TemplateRef<HubPaginableTableFilterDirective> | null {
 		const property = header instanceof String ? header : header.property;
 		if (!property) {
 			return null;
@@ -1634,7 +1634,7 @@ export class TableComponent<T = any> {
 	 *
 	 * @param {TableRow<T>} row The row for which to get the class.
 	 * @returns {string} The class to apply to the row.
-	 * @memberof TableComponent
+	 * @memberof HubTableComponent
 	 */
 	_getRowClass(row: TableRow<T>): string {
 		const rowClass = this.rowClass();

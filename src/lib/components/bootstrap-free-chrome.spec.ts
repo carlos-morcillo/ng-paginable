@@ -5,15 +5,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
-import { PaginableTableExpandingRowDirective } from '../directives/paginable-table-expanding-row.directive';
+import { HubPaginableTableExpandingRowDirective } from '../directives/paginable-table-expanding-row.directive';
 import { PaginableTableHeader } from '../interfaces/paginable-table-header';
-import { PaginableService } from '../services/paginable.service';
+import { HubPaginableService } from '../services/paginable.service';
 import { PaginableConfigService } from '../services/paginate-config.service';
-import { DropdownComponent } from './dropdown/dropdown.component';
-import { ListComponent } from './list/paginable-list/list.component';
+import { HubDropdownComponent } from './dropdown/dropdown.component';
+import { HubListComponent } from './list/paginable-list/list.component';
 import { MenuFilterComponent } from './menu-filter/menu-filter.component';
-import { PaginableTableDropdownComponent } from './paginable-table-dropdown/paginable-table-dropdown.component';
-import { TableComponent } from './table/table.component';
+import { HubPaginableTableDropdownComponent } from './paginable-table-dropdown/paginable-table-dropdown.component';
+import { HubTableComponent } from './table/table.component';
 
 /**
  * Every piece of chrome this library draws has to be dressed by this library.
@@ -106,9 +106,9 @@ describe('the filter panel dresses itself', () => {
 			imports: [MenuFilterComponent, ReactiveFormsModule],
 			providers: [
 				FormBuilder,
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: DropdownComponent, useValue: { closeDropdown: () => undefined } }
+				{ provide: HubDropdownComponent, useValue: { closeDropdown: () => undefined } }
 			]
 		}).compileComponents();
 
@@ -162,7 +162,7 @@ describe('the filter panel dresses itself', () => {
 describe('the dropdown dresses itself', () => {
 	@Component({
 		standalone: true,
-		imports: [DropdownComponent],
+		imports: [HubDropdownComponent],
 		template: `
 			<hub-dropdown>
 				<div class="button">Open</div>
@@ -172,7 +172,7 @@ describe('the dropdown dresses itself', () => {
 		`
 	})
 	class Host {
-		readonly dropdown = viewChild.required(DropdownComponent);
+		readonly dropdown = viewChild.required(HubDropdownComponent);
 		readonly outlet = viewChild.required('outlet', { read: ViewContainerRef });
 	}
 
@@ -220,15 +220,15 @@ describe('the dropdown dresses itself', () => {
 });
 
 describe('the legacy row-actions menu dresses itself', () => {
-	let fixture: ComponentFixture<PaginableTableDropdownComponent>;
-	let component: PaginableTableDropdownComponent;
+	let fixture: ComponentFixture<HubPaginableTableDropdownComponent>;
+	let component: HubPaginableTableDropdownComponent;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [PaginableTableDropdownComponent]
+			imports: [HubPaginableTableDropdownComponent]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(PaginableTableDropdownComponent);
+		fixture = TestBed.createComponent(HubPaginableTableDropdownComponent);
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('options', { buttons: [{ label: 'Edit', handler: () => undefined }] });
 		fixture.detectChanges();
@@ -289,7 +289,7 @@ describe('the legacy row-actions menu dresses itself', () => {
 describe('the table stops leaning on Bootstrap for its own controls', () => {
 	@Component({
 		standalone: true,
-		imports: [TableComponent, PaginableTableExpandingRowDirective],
+		imports: [HubTableComponent, HubPaginableTableExpandingRowDirective],
 		template: `
 			<hub-table [headers]="headers" [data]="data" [searchable]="true">
 				<ng-template expandingRowTpt>expanded</ng-template>
@@ -308,7 +308,7 @@ describe('the table stops leaning on Bootstrap for its own controls', () => {
 			imports: [Host, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
@@ -339,15 +339,15 @@ describe('the table stops leaning on Bootstrap for its own controls', () => {
 });
 
 describe('the list stops leaning on Bootstrap for its error state', () => {
-	let fixture: ComponentFixture<ListComponent>;
+	let fixture: ComponentFixture<HubListComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [ListComponent],
+			imports: [HubListComponent],
 			providers: [{ provide: HubTranslationService, useClass: MockHubTranslationService }]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(ListComponent);
+		fixture = TestBed.createComponent(HubListComponent);
 		fixture.componentRef.setInput('items', [{ id: 1, label: 'First' }]);
 		fixture.componentRef.setInput('error', new Error('boom'));
 		fixture.detectChanges();

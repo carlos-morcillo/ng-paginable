@@ -6,7 +6,7 @@ import { distinctUntilChanged, map, switchMap, takeUntil, tap } from 'rxjs/opera
 @Directive({
 	selector: '[resizable]'
 })
-export class ResizableDirective {
+export class HubResizableDirective {
 	@Output()
 	readonly resizable: Observable<number>;
 

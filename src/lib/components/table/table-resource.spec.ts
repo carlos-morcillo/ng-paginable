@@ -6,9 +6,9 @@ import { Subject } from 'rxjs';
 
 import { HubPaginableResource } from '../../interfaces/paginable-resource';
 import { PaginationState } from '../../interfaces/pagination-state';
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 class MockHubTranslationService {
 	translationObserver = new Subject<any>().asObservable();
@@ -72,7 +72,7 @@ function fakeResource<T>(): HubPaginableResource<T> & {
  */
 @Component({
 	standalone: true,
-	imports: [TableComponent],
+	imports: [HubTableComponent],
 	template: ` <hub-table [headers]="headers" [resource]="resource" /> `
 })
 class Host {
@@ -84,7 +84,7 @@ describe('table [resource]', () => {
 	let fixture: ComponentFixture<Host>;
 	let host: Host;
 
-	const table = () => fixture.debugElement.children[0].componentInstance as TableComponent<Person>;
+	const table = () => fixture.debugElement.children[0].componentInstance as HubTableComponent<Person>;
 	const bodyRows = () => [...fixture.nativeElement.querySelectorAll('tr.hub-table__body-row')] as HTMLElement[];
 	const names = () => bodyRows().map((row) => row.textContent?.trim());
 
@@ -93,7 +93,7 @@ describe('table [resource]', () => {
 			imports: [Host, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
@@ -168,7 +168,7 @@ describe('table [resource]', () => {
 /** Bound together, the resource is the more specific statement of intent and wins. */
 @Component({
 	standalone: true,
-	imports: [TableComponent],
+	imports: [HubTableComponent],
 	template: ` <hub-table [headers]="headers" [data]="rows" [resource]="resource" /> `
 })
 class BothHost {
@@ -185,7 +185,7 @@ describe('table [resource] alongside [data]', () => {
 			imports: [BothHost, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();

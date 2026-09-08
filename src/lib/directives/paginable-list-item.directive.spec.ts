@@ -1,9 +1,9 @@
 import { Component, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PaginableListItemDirective } from './paginable-list-item.directive';
+import { HubPaginableListItemDirective } from './paginable-list-item.directive';
 
 /**
- * Test component for PaginableListItemDirective
+ * Test component for HubPaginableListItemDirective
  */
 @Component({
 	template: `
@@ -11,24 +11,24 @@ import { PaginableListItemDirective } from './paginable-list-item.directive';
 			<div class="list-item">{{ item.name }}</div>
 		</ng-template>
 	`,
-	imports: [PaginableListItemDirective]
+	imports: [HubPaginableListItemDirective]
 })
 class TestListItemDirectiveComponent {
-	readonly directive = viewChild.required(PaginableListItemDirective);
+	readonly directive = viewChild.required(HubPaginableListItemDirective);
 }
 
 /**
- * Test suite for PaginableListItemDirective
+ * Test suite for HubPaginableListItemDirective
  * Tests custom list item template directive functionality
  */
-describe('PaginableListItemDirective', () => {
+describe('HubPaginableListItemDirective', () => {
 	let component: TestListItemDirectiveComponent;
 	let fixture: ComponentFixture<TestListItemDirectiveComponent>;
-	let directive: PaginableListItemDirective;
+	let directive: HubPaginableListItemDirective;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [TestListItemDirectiveComponent, PaginableListItemDirective]
+			imports: [TestListItemDirectiveComponent, HubPaginableListItemDirective]
 		});
 
 		fixture = TestBed.createComponent(TestListItemDirectiveComponent);

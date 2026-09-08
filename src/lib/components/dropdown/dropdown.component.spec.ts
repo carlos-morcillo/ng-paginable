@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DropdownComponent } from './dropdown.component';
+import { HubDropdownComponent } from './dropdown.component';
 
 /**
  * The table closes every dropdown but the one just opened by comparing `dropdown.id()` with
@@ -10,12 +10,12 @@ import { DropdownComponent } from './dropdown.component';
  * binds the signal itself rather than what it holds — nothing unwraps a signal in a host
  * binding — so the rendered `id` was the stringified function.
  */
-describe('DropdownComponent', () => {
-	let fixture: ComponentFixture<DropdownComponent>;
+describe('HubDropdownComponent', () => {
+	let fixture: ComponentFixture<HubDropdownComponent>;
 
 	beforeEach(async () => {
-		await TestBed.configureTestingModule({ imports: [DropdownComponent] }).compileComponents();
-		fixture = TestBed.createComponent(DropdownComponent);
+		await TestBed.configureTestingModule({ imports: [HubDropdownComponent] }).compileComponents();
+		fixture = TestBed.createComponent(HubDropdownComponent);
 	});
 
 	it('reflects the identifier it was given on the host element', () => {

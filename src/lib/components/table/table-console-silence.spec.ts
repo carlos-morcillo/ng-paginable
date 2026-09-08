@@ -4,10 +4,10 @@ import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 import { vi } from 'vitest';
 
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { PaginableTableDropdownComponent } from '../paginable-table-dropdown/paginable-table-dropdown.component';
-import { TableComponent } from './table.component';
+import { HubPaginableTableDropdownComponent } from '../paginable-table-dropdown/paginable-table-dropdown.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * Falling back to the built-in action markup is not something to announce in someone
@@ -50,10 +50,10 @@ describe('the deprecated actions fallback stays out of the consuming console', (
 		(globalThis as any).ngDevMode = false;
 
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, PaginableTableDropdownComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, HubPaginableTableDropdownComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
@@ -65,7 +65,7 @@ describe('the deprecated actions fallback stays out of the consuming console', (
 	});
 
 	it('says nothing when a table draws row actions with no adapter registered', () => {
-		const fixture = TestBed.createComponent(TableComponent);
+		const fixture = TestBed.createComponent(HubTableComponent);
 
 		fixture.componentRef.setInput('headers', [
 			{ title: 'Actions', buttons: [{ icon: 'icon--ph--eye', handler: () => undefined }] }
@@ -79,7 +79,7 @@ describe('the deprecated actions fallback stays out of the consuming console', (
 	});
 
 	it('says nothing when the deprecated dropdown is instantiated', () => {
-		const fixture = TestBed.createComponent(PaginableTableDropdownComponent);
+		const fixture = TestBed.createComponent(HubPaginableTableDropdownComponent);
 		fixture.detectChanges();
 
 		expect(fixture.componentInstance).toBeTruthy();

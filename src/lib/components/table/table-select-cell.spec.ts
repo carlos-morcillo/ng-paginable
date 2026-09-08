@@ -5,9 +5,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 class MockHubTranslationService {
 	translationObserver = new Subject<any>().asObservable();
@@ -34,7 +34,7 @@ class MockPaginableService {
  */
 @Component({
 	standalone: true,
-	imports: [TableComponent],
+	imports: [HubTableComponent],
 	template: ` <hub-table [headers]="headers" [data]="rows" [selectable]="true" [multiple]="true" [clickFn]="open" /> `
 })
 class Host {
@@ -54,7 +54,7 @@ class Host {
  */
 @Component({
 	standalone: true,
-	imports: [TableComponent, FormsModule],
+	imports: [HubTableComponent, FormsModule],
 	template: ` <hub-table [headers]="headers" [data]="rows" [selectable]="true" [(ngModel)]="picked" /> `
 })
 class SingleHost {
@@ -76,7 +76,7 @@ describe('table selection cell', () => {
 			imports: [Host, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
@@ -133,7 +133,7 @@ describe('table clickable row, from the keyboard', () => {
 			imports: [Host, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
@@ -179,7 +179,7 @@ describe('table selection cell, one row at a time', () => {
 			imports: [SingleHost, BrowserAnimationsModule, FormsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();

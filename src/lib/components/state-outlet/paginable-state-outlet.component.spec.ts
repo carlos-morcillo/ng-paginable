@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PaginableStateContext, PaginableStateDefault, ResolvedStateDefault } from '../../interfaces/paginable-state';
-import { PaginableStateOutlet } from './paginable-state-outlet.component';
+import { HubPaginableStateOutlet } from './paginable-state-outlet.component';
 
 @Component({ selector: 'hub-global-state', standalone: true, template: '<span class="global">global</span>' })
 class GlobalComponent {}
@@ -20,7 +20,7 @@ class InputsComponent {
 
 @Component({
 	standalone: true,
-	imports: [PaginableStateOutlet],
+	imports: [HubPaginableStateOutlet],
 	template: `
 		<ng-template #fallback><span class="fallback">fallback</span></ng-template>
 		<ng-template #local><span class="local">local</span></ng-template>
@@ -40,7 +40,7 @@ class HostComponent {
 	context: PaginableStateContext = {};
 }
 
-describe('PaginableStateOutlet', () => {
+describe('HubPaginableStateOutlet', () => {
 	let fixture: ComponentFixture<HostComponent>;
 	let host: HostComponent;
 

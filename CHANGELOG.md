@@ -1,5 +1,25 @@
 # Changelog
 
+## [22.22.0] - 2026-09-08
+
+### Changed
+
+- **The icon component is `HubPaginableIconComponent`, and `<hub-icon>` is no longer one of its
+  element names.** `ng-hub-ui-icons` exports a `HubIconComponent` matching `hub-icon` too, so the
+  two packages were claiming one class name and one tag. The tag was the expensive half: a
+  component importing both and writing `<hub-icon>` did not compile at all — Angular rejected the
+  template with NG8023, "Multiple components match node with tagname hub-icon" — which reads as a
+  bug in the application rather than as two libraries colliding, and has no fix a consumer can
+  apply from outside.
+
+  This one keeps `<ng-hub-ui-icon>`, which it has always matched, and gains
+  `<hub-paginable-icon>`; `<hub-icon>` now belongs to `ng-hub-ui-icons` alone. The class is
+  exported under its new name, with `HubIconComponent` kept as a deprecated alias that goes in
+  23.0.0. The component itself is unchanged — same `config` input, same output.
+
+  **Breaking** for a template writing `<hub-icon [config]>` — see
+  [`BREAKING_CHANGES.md`](./BREAKING_CHANGES.md).
+
 ## [22.21.0] - 2026-09-08
 
 ### Added

@@ -2,10 +2,10 @@ import { DOCUMENT } from '@angular/common';
 import { Component, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { ResizableDirective } from './resizable.directive';
+import { HubResizableDirective } from './resizable.directive';
 
 /**
- * Test component for ResizableDirective
+ * Test component for HubResizableDirective
  */
 @Component({
 	template: `
@@ -20,30 +20,30 @@ import { ResizableDirective } from './resizable.directive';
 			</thead>
 		</table>
 	`,
-	imports: [ResizableDirective]
+	imports: [HubResizableDirective]
 })
 class TestResizableComponent {}
 
 /**
- * Test suite for ResizableDirective
+ * Test suite for HubResizableDirective
  * Tests column resizing functionality via mouse drag interactions
  */
-describe('ResizableDirective', () => {
+describe('HubResizableDirective', () => {
 	let component: TestResizableComponent;
 	let fixture: ComponentFixture<TestResizableComponent>;
 	let resizableElement: DebugElement;
-	let directive: ResizableDirective;
+	let directive: HubResizableDirective;
 	let documentRef: Document;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [TestResizableComponent, ResizableDirective]
+			imports: [TestResizableComponent, HubResizableDirective]
 		});
 
 		fixture = TestBed.createComponent(TestResizableComponent);
 		component = fixture.componentInstance;
 		resizableElement = fixture.debugElement.query(By.css('[data-test="resizable-handle"]'));
-		directive = resizableElement.injector.get(ResizableDirective);
+		directive = resizableElement.injector.get(HubResizableDirective);
 		documentRef = TestBed.inject(DOCUMENT);
 		fixture.detectChanges();
 	});

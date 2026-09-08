@@ -87,7 +87,7 @@ const DROPDOWN_POSITIONS: ReadonlyArray<ConnectionPosition> = [
 		'[id]': 'id()'
 	}
 })
-export class DropdownComponent implements OnDestroy {
+export class HubDropdownComponent implements OnDestroy {
 	/** Change detection reference for manual updates */
 	private readonly _cdr = inject(ChangeDetectorRef);
 

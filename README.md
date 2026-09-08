@@ -240,7 +240,7 @@ ng-hub-ui-paginable/
 │   ├── PaginatorComponent    - Standalone pagination controls
 │   └── ListComponent - Hierarchical list with tree structure
 ├── 🎨 UI Components
-│   ├── HubIconComponent      - Multi-library icon support
+│   ├── HubPaginableIconComponent - Multi-library icon support
 │   ├── DropdownComponent     - Action dropdowns and menus
 │   ├── MenuFilterComponent   - Advanced filtering interfaces
 │   └── PaginableTableRangeInputComponent - Date/number range inputs
@@ -790,19 +790,29 @@ export class MyGrid {}
 
 ## 🎪 Additional Components
 
-### Icon Component (`<hub-icon>`)
+### Icon Component (`<hub-paginable-icon>`)
 
-Supports multiple icon libraries with unified interface:
+Draws the `Icon` descriptor the table's own configuration carries — a class string, or
+`{ type, value, variant }` for FontAwesome, Material Symbols and Bootstrap Icons. It is not a
+general-purpose icon component: `ng-hub-ui-icons` is, with its registry, packs and
+`--hub-icon-*` tokens.
+
+> **`<hub-icon>` no longer matches this component, from 22.22.0.** That element name belongs to
+> `ng-hub-ui-icons`; while both packages claimed it, a component importing the two could not
+> write `<hub-icon>` at all — Angular rejected the template with NG8023. Write
+> `<hub-paginable-icon>`, or `<ng-hub-ui-icon>`, which has always matched too. The exported class
+> is `HubPaginableIconComponent`; the old `HubIconComponent` name still resolves as a deprecated
+> alias and goes in 23.0.0. See `BREAKING_CHANGES.md`.
 
 ```html
 <!-- FontAwesome icon -->
-<hub-icon [config]="{ type: 'font-awesome', value: 'user' }"></hub-icon>
+<hub-paginable-icon [config]="{ type: 'font-awesome', value: 'user' }"></hub-paginable-icon>
 
 <!-- Material icon -->
-<hub-icon [config]="{ type: 'material', value: 'person', variant: 'outlined' }"></hub-icon>
+<hub-paginable-icon [config]="{ type: 'material', value: 'person', variant: 'outlined' }"></hub-paginable-icon>
 
 <!-- Bootstrap icon -->
-<hub-icon [config]="{ type: 'bootstrap', value: 'person-fill' }"></hub-icon>
+<hub-paginable-icon [config]="{ type: 'bootstrap', value: 'person-fill' }"></hub-paginable-icon>
 ```
 
 ### Row Menus (`PaginableTableDropdown`)
@@ -1281,7 +1291,7 @@ resolved from `header.property`).
 
 ```html
 <ng-template cellTpt header="adult" let-item="item">
-	<hub-icon [config]="{ type: 'material', value: item.adult ? 'check' : 'close' }"></hub-icon>
+	<hub-paginable-icon [config]="{ type: 'material', value: item.adult ? 'check' : 'close' }"></hub-paginable-icon>
 </ng-template>
 ```
 

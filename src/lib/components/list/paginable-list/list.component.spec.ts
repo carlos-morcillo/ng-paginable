@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 
 import { SelectionTypes } from '../../../enums/selection-types';
-import { ListComponent } from './list.component';
+import { HubListComponent } from './list.component';
 
 interface TestListItem {
 	id: number;
@@ -28,13 +28,13 @@ class MockHubTranslationService {
 	initialize() {}
 }
 
-describe('ListComponent', () => {
-	let component: ListComponent<TestListItem>;
-	let fixture: ComponentFixture<ListComponent<TestListItem>>;
+describe('HubListComponent', () => {
+	let component: HubListComponent<TestListItem>;
+	let fixture: ComponentFixture<HubListComponent<TestListItem>>;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [ListComponent],
+			imports: [HubListComponent],
 			providers: [
 				{
 					provide: HubTranslationService,
@@ -43,7 +43,7 @@ describe('ListComponent', () => {
 			]
 		});
 
-		fixture = TestBed.createComponent(ListComponent<TestListItem>);
+		fixture = TestBed.createComponent(HubListComponent<TestListItem>);
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('items', [
 			{ id: 1, label: 'First item' },
@@ -180,7 +180,7 @@ describe('ListComponent', () => {
 		 * would fight over one selection if they shared a name.
 		 */
 		it('gives each list its own radio group', () => {
-			const other = TestBed.createComponent(ListComponent<TestListItem>);
+			const other = TestBed.createComponent(HubListComponent<TestListItem>);
 
 			expect(other.componentInstance.radioGroupName).not.toBe(component.radioGroupName);
 		});
@@ -355,7 +355,7 @@ describe('ListComponent', () => {
 			fixture.componentRef.setInput('selectable', SelectionTypes.Single);
 			fixture.detectChanges();
 
-			const other = TestBed.createComponent(ListComponent<TestListItem>);
+			const other = TestBed.createComponent(HubListComponent<TestListItem>);
 			other.componentRef.setInput('items', [{ id: 3, label: 'Third item' }]);
 			other.componentRef.setInput('selectable', SelectionTypes.Single);
 			other.detectChanges();

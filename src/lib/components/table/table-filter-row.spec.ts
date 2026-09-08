@@ -4,9 +4,9 @@ import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
 import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * The column-filter row, and the two questions it has to answer at a glance: which columns
@@ -43,20 +43,20 @@ const HEADERS: Array<PaginableTableHeader> = [
 ];
 
 describe('table column-filter row', () => {
-	let fixture: ComponentFixture<TableComponent>;
-	let component: TableComponent;
+	let fixture: ComponentFixture<HubTableComponent>;
+	let component: HubTableComponent;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(TableComponent);
+		fixture = TestBed.createComponent(HubTableComponent);
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('headers', HEADERS);
 		fixture.componentRef.setInput('data', [{ id: 1, name: 'Laptop', price: 1200, category: 'Electronics' }]);
@@ -121,20 +121,20 @@ describe('table column-filter row', () => {
 });
 
 describe('table search box', () => {
-	let fixture: ComponentFixture<TableComponent>;
-	let component: TableComponent;
+	let fixture: ComponentFixture<HubTableComponent>;
+	let component: HubTableComponent;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(TableComponent);
+		fixture = TestBed.createComponent(HubTableComponent);
 		component = fixture.componentInstance;
 		fixture.componentRef.setInput('searchable', true);
 		fixture.detectChanges();

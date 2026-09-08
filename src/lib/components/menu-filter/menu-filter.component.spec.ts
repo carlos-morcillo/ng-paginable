@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MenuFilterComponent } from './menu-filter.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { DropdownComponent } from '../dropdown/dropdown.component';
+import { HubDropdownComponent } from '../dropdown/dropdown.component';
 import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
 import {
 	BooleanMatchModes,
@@ -12,7 +12,7 @@ import {
 	NumberMatchModes,
 	StringMatchModes
 } from '../../interfaces/column-filter-event';
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { HubTranslationService, TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
@@ -58,7 +58,7 @@ describe('MenuFilterComponent', () => {
 			providers: [
 				FormBuilder,
 				{
-					provide: PaginableService,
+					provide: HubPaginableService,
 					useClass: MockPaginableService
 				},
 				{
@@ -66,7 +66,7 @@ describe('MenuFilterComponent', () => {
 					useClass: MockHubTranslationService
 				},
 				{
-					provide: DropdownComponent,
+					provide: HubDropdownComponent,
 					useValue: {
 						closeDropdown: vi.fn().mockName('closeDropdown')
 					}

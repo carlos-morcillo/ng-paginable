@@ -4,8 +4,8 @@ import { Subject } from 'rxjs';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { PaginableConfigService } from '../../services/paginate-config.service';
 import { PaginableDefaults } from '../../interfaces/paginable-defaults';
-import { ListComponent } from '../list/paginable-list/list.component';
-import { TableComponent } from './table.component';
+import { HubListComponent } from '../list/paginable-list/list.component';
+import { HubTableComponent } from './table.component';
 
 /** Minimal translation service stand-in so the standalone components can render. */
 class MockHubTranslationService {
@@ -28,7 +28,7 @@ describe('Paginable input defaults provider', () => {
 	async function configure(defaults: PaginableDefaults): Promise<void> {
 		TestBed.resetTestingModule();
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, ListComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, HubListComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
 				{ provide: PaginableConfigService, useValue: { defaults } }
@@ -46,7 +46,7 @@ describe('Paginable input defaults provider', () => {
 			searchable: false,
 			debounce: 300
 		});
-		const table = TestBed.createComponent(TableComponent).componentInstance;
+		const table = TestBed.createComponent(HubTableComponent).componentInstance;
 
 		expect(table.paginate()).toBe(false);
 		expect(table.perPage()).toBe(25);
@@ -59,7 +59,7 @@ describe('Paginable input defaults provider', () => {
 
 	it('applies list defaults from the provider config', async () => {
 		await configure({ paginate: true, perPage: 15, perPageOptions: [15, 30] });
-		const list = TestBed.createComponent(ListComponent).componentInstance;
+		const list = TestBed.createComponent(HubListComponent).componentInstance;
 
 		expect(list.paginate()).toBe(true);
 		expect(list.perPage()).toBe(15);
@@ -70,11 +70,11 @@ describe('Paginable input defaults provider', () => {
 		// Only perPage is configured; paginate must keep each component's own default.
 		await configure({ perPage: 25 });
 
-		const table = TestBed.createComponent(TableComponent).componentInstance;
+		const table = TestBed.createComponent(HubTableComponent).componentInstance;
 		expect(table.perPage()).toBe(25);
 		expect(table.paginate()).toBe(true); // table default
 
-		const list = TestBed.createComponent(ListComponent).componentInstance;
+		const list = TestBed.createComponent(HubListComponent).componentInstance;
 		expect(list.perPage()).toBe(25);
 		expect(list.paginate()).toBe(false); // list default preserved
 	});

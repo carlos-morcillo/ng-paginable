@@ -22,21 +22,28 @@ interface ResolvedIcon {
 }
 
 /**
- * @component HubIconComponent
- * @selector hub-icon
- * @description A versatile icon component that supports multiple icon libraries.
+ * Draws the `Icon` descriptor a table header, cell button or dropdown item carries — a class
+ * string, or `{ type, value, variant }` for the three families the table understands.
+ *
+ * It is deliberately not a general-purpose icon component: `ng-hub-ui-icons` owns that job, with
+ * its own registry, packs and `--hub-icon-*` tokens. This one only turns the table's own
+ * configuration object into classes.
+ *
+ * The `hub-icon` element name is **gone**: `ng-hub-ui-icons` owns it, and while both packages
+ * claimed it a component importing the two and writing `<hub-icon>` failed to compile with
+ * NG8023. Write `hub-paginable-icon` — or `ng-hub-ui-icon`, which has always matched too.
  *
  * @example
- * <hub-icon [config]="iconConfig"></hub-icon>
+ * <hub-paginable-icon [config]="iconConfig" />
  */
 @Component({
-	selector: 'hub-icon, ng-hub-ui-icon',
+	selector: 'hub-paginable-icon, ng-hub-ui-icon',
 	standalone: true,
 	imports: [NgClass],
 	templateUrl: './icon.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HubIconComponent {
+export class HubPaginableIconComponent {
 	/**
 	 * @input config
 	 * @description Sets the icon configuration. Can be a string or an Icon object.

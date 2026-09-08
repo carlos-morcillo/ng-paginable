@@ -4,6 +4,6 @@ import { Directive, TemplateRef } from '@angular/core';
 	selector: '[rowTpt], [paginableTableRow]',
 	standalone: true
 })
-export class PaginableTableRowDirective {
+export class HubPaginableTableRowDirective {
 	constructor(public template: TemplateRef<any>) {}
 }

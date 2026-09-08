@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
  * Applied to `th` elements with the `resizable` attribute.
  *
  * @export
- * @class ResizableComponent
+ * @class HubResizableComponent
  */
 @Component({
 	selector: 'th[resizable]',
@@ -16,12 +16,12 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 		'[style.width.px]': 'width'
 	}
 })
-export class ResizableComponent {
+export class HubResizableComponent {
 	/**
 	 * The width of the resizable element in pixels.
 	 *
 	 * @type {(number | null)}
-	 * @memberof ResizableComponent
+	 * @memberof HubResizableComponent
 	 */
 	width: number | null = null;
 

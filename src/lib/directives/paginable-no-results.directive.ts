@@ -10,7 +10,7 @@ import { Directive, TemplateRef } from '@angular/core';
 		'[noResultsTpt], [paginableNoResults], [emptyStateTpt], [paginableEmptyState], [noDataTpt], [paginableTableNotFound]',
 	standalone: true
 })
-export class PaginableNoResultsDirective {
+export class HubPaginableNoResultsDirective {
 	/**
 	 * Stores the projected template instance so host components can render it on demand.
 	 */
@@ -20,5 +20,5 @@ export class PaginableNoResultsDirective {
 /**
  * Backward-compatible export kept for existing integrations that still use previous names.
  */
-export { PaginableNoResultsDirective as PaginableEmptyStateDirective };
-export { PaginableNoResultsDirective as PaginableTableNotFoundDirective };
+export { HubPaginableNoResultsDirective as PaginableEmptyStateDirective };
+export { HubPaginableNoResultsDirective as PaginableTableNotFoundDirective };

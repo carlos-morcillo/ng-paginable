@@ -1,9 +1,9 @@
 import { Component, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PaginableLoadingDirective } from './paginable-loading.directive';
+import { HubPaginableLoadingDirective } from './paginable-loading.directive';
 
 /**
- * Test component for PaginableLoadingDirective
+ * Test component for HubPaginableLoadingDirective
  */
 @Component({
 	template: `
@@ -12,22 +12,22 @@ import { PaginableLoadingDirective } from './paginable-loading.directive';
 		</ng-template>
 	`,
 	standalone: true,
-	imports: [PaginableLoadingDirective]
+	imports: [HubPaginableLoadingDirective]
 })
 class TestLoadingDirectiveComponent {
-	readonly directive = viewChild.required(PaginableLoadingDirective);
+	readonly directive = viewChild.required(HubPaginableLoadingDirective);
 
 	loadingMessage = 'Loading...';
 }
 
 /**
- * Test suite for PaginableLoadingDirective
+ * Test suite for HubPaginableLoadingDirective
  * Tests custom loading state template directive functionality
  */
-describe('PaginableLoadingDirective', () => {
+describe('HubPaginableLoadingDirective', () => {
 	let component: TestLoadingDirectiveComponent;
 	let fixture: ComponentFixture<TestLoadingDirectiveComponent>;
-	let directive: PaginableLoadingDirective;
+	let directive: HubPaginableLoadingDirective;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
@@ -57,10 +57,10 @@ describe('PaginableLoadingDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableLoadingDirective]
+			imports: [HubPaginableLoadingDirective]
 		})
 		class TestLoadingTptComponent {
-			readonly directive = viewChild.required(PaginableLoadingDirective);
+			readonly directive = viewChild.required(HubPaginableLoadingDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestLoadingTptComponent);

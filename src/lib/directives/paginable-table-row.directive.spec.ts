@@ -1,9 +1,9 @@
 import { Component, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PaginableTableRowDirective } from './paginable-table-row.directive';
+import { HubPaginableTableRowDirective } from './paginable-table-row.directive';
 
 /**
- * Test component for PaginableTableRowDirective
+ * Test component for HubPaginableTableRowDirective
  */
 @Component({
 	template: `
@@ -12,20 +12,20 @@ import { PaginableTableRowDirective } from './paginable-table-row.directive';
 		</ng-template>
 	`,
 	standalone: true,
-	imports: [PaginableTableRowDirective]
+	imports: [HubPaginableTableRowDirective]
 })
 class TestRowDirectiveComponent {
-	readonly directive = viewChild.required(PaginableTableRowDirective);
+	readonly directive = viewChild.required(HubPaginableTableRowDirective);
 }
 
 /**
- * Test suite for PaginableTableRowDirective
+ * Test suite for HubPaginableTableRowDirective
  * Tests custom row template directive functionality
  */
-describe('PaginableTableRowDirective', () => {
+describe('HubPaginableTableRowDirective', () => {
 	let component: TestRowDirectiveComponent;
 	let fixture: ComponentFixture<TestRowDirectiveComponent>;
-	let directive: PaginableTableRowDirective;
+	let directive: HubPaginableTableRowDirective;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
@@ -59,10 +59,10 @@ describe('PaginableTableRowDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableTableRowDirective]
+			imports: [HubPaginableTableRowDirective]
 		})
 		class TestRowTptComponent {
-			readonly directive = viewChild.required(PaginableTableRowDirective);
+			readonly directive = viewChild.required(HubPaginableTableRowDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestRowTptComponent);

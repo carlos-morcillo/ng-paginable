@@ -5,9 +5,9 @@ import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
 import { SelectionTypes } from '../../enums/selection-types';
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 class MockHubTranslationService {
 	translationObserver = new Subject<any>().asObservable();
@@ -35,7 +35,7 @@ class MockPaginableService {
  */
 @Component({
 	standalone: true,
-	imports: [TableComponent],
+	imports: [HubTableComponent],
 	template: `
 		<hub-table
 			[headers]="headers"
@@ -83,7 +83,7 @@ describe('table selectWhileSelecting', () => {
 			imports: [Host, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();

@@ -3,10 +3,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
 import { PaginableTableHeader } from '../../interfaces';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * The chrome of the sort trigger.
@@ -69,20 +69,20 @@ function declared(fragment: string, property: string): string[] {
 }
 
 describe('sort trigger chrome', () => {
-	let fixture: ReturnType<typeof TestBed.createComponent<TableComponent>>;
+	let fixture: ReturnType<typeof TestBed.createComponent<HubTableComponent>>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
 
 		// Instantiating the component is what loads its stylesheet into the document.
-		fixture = TestBed.createComponent(TableComponent);
+		fixture = TestBed.createComponent(HubTableComponent);
 		fixture.detectChanges();
 	});
 

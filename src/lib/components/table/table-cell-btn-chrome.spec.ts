@@ -3,9 +3,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * The chrome of a row-action button.
@@ -72,16 +72,16 @@ function declared(fragment: string, property: string): string[] {
 describe('row action button chrome', () => {
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
 
 		// Instantiating the component is what loads its stylesheet into the document.
-		TestBed.createComponent(TableComponent).detectChanges();
+		TestBed.createComponent(HubTableComponent).detectChanges();
 	});
 
 	/** Empty means the rule was renamed or dropped, and every case below is vacuous. */
@@ -105,7 +105,7 @@ describe('row action button chrome', () => {
 	 * Both selectors: the icon component answers to two names, and a consumer's table may be
 	 * rendering either of them.
 	 */
-	for (const host of ['hub-icon', 'ng-hub-ui-icon']) {
+	for (const host of ['hub-paginable-icon', 'ng-hub-ui-icon']) {
 		it(`centres the glyph inside ${host}`, () => {
 			const rules = declarationsFor('hub-table__cell-btn-content').filter(({ selector }) => selector.includes(host));
 			expect(rules.length).toBeGreaterThan(0);

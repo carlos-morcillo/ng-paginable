@@ -3,11 +3,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject, firstValueFrom } from 'rxjs';
 
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
 import { PaginableActionButton } from '../../interfaces';
 import { TableRow } from '../../interfaces/table-row';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * A row action can be offered and refused, and until now it could only vanish.
@@ -59,22 +59,22 @@ function declarationsFor(fragment: string): { selector: string; style: CSSStyleD
 }
 
 describe('row action disabled state', () => {
-	let component: TableComponent;
+	let component: HubTableComponent;
 
 	const row = { data: { status: 'cancelled' } } as TableRow;
 	const liveRow = { data: { status: 'completed' } } as TableRow;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
 
-		const fixture = TestBed.createComponent(TableComponent);
+		const fixture = TestBed.createComponent(HubTableComponent);
 		fixture.detectChanges();
 		component = fixture.componentInstance;
 	});

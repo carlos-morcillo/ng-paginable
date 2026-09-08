@@ -1,18 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { PaginationService } from './pagination.service';
+import { HubPaginationService } from './pagination.service';
 
 /**
- * Test suite for PaginationService
+ * Test suite for HubPaginationService
  * Tests pagination, filtering, and sorting functionality for table data
  */
-describe('PaginationService', () => {
-	let service: PaginationService;
+describe('HubPaginationService', () => {
+	let service: HubPaginationService;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			providers: [PaginationService]
+			providers: [HubPaginationService]
 		});
-		service = TestBed.inject(PaginationService);
+		service = TestBed.inject(HubPaginationService);
 	});
 
 	it('should be created', () => {

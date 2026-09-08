@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { Subject } from 'rxjs';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 
-import { PaginatorComponent } from './paginator.component';
+import { HubPaginatorComponent } from './paginator.component';
 
 class MockHubTranslationService {
 	private readonly translationSource = new Subject<any>();
@@ -31,7 +31,7 @@ class MockHubTranslationService {
 @Component({
 	template: ` <hub-paginator [(page)]="page" [numberOfPages]="numberOfPages()"> </hub-paginator> `,
 	standalone: true,
-	imports: [PaginatorComponent]
+	imports: [HubPaginatorComponent]
 })
 class TestHostComponent {
 	page = signal(1);
@@ -46,15 +46,15 @@ class TestHostComponent {
 	}
 }
 
-describe('PaginatorComponent', () => {
-	let component: PaginatorComponent;
-	let fixture: ComponentFixture<PaginatorComponent>;
+describe('HubPaginatorComponent', () => {
+	let component: HubPaginatorComponent;
+	let fixture: ComponentFixture<HubPaginatorComponent>;
 	let hostComponent: TestHostComponent;
 	let hostFixture: ComponentFixture<TestHostComponent>;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [PaginatorComponent, TestHostComponent],
+			imports: [HubPaginatorComponent, TestHostComponent],
 			providers: [
 				{
 					provide: HubTranslationService,
@@ -64,7 +64,7 @@ describe('PaginatorComponent', () => {
 		}).compileComponents();
 
 		// Create standalone component fixture
-		fixture = TestBed.createComponent(PaginatorComponent);
+		fixture = TestBed.createComponent(HubPaginatorComponent);
 		component = fixture.componentInstance;
 
 		// Set required inputs for standalone component
@@ -89,7 +89,7 @@ describe('PaginatorComponent', () => {
 
 		it('should have undefined numberOfPages by default', () => {
 			// Create a new component without setting numberOfPages
-			const testFixture = TestBed.createComponent(PaginatorComponent);
+			const testFixture = TestBed.createComponent(HubPaginatorComponent);
 			const testComponent = testFixture.componentInstance;
 			testFixture.detectChanges();
 
@@ -105,7 +105,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setNumberOfPages(10);
 			hostFixture.detectChanges();
 
-			const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+			const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 			expect(paginatorInstance.numberOfPages()).toBe(10);
 		});
 	});
@@ -121,7 +121,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setNumberOfPages(null);
 			hostFixture.detectChanges();
 
-			const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+			const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 			expect(paginatorInstance.numberOfPages()).toBeNull();
 		});
 
@@ -129,7 +129,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setNumberOfPages(0);
 			hostFixture.detectChanges();
 
-			const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+			const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 			expect(paginatorInstance.numberOfPages()).toBe(0);
 		});
 
@@ -137,7 +137,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setNumberOfPages(1000);
 			hostFixture.detectChanges();
 
-			const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+			const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 			expect(paginatorInstance.numberOfPages()).toBe(1000);
 		});
 
@@ -202,7 +202,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setNumberOfPages(5);
 			hostFixture.detectChanges();
 
-			const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+			const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 			expect(paginatorInstance.numberOfPages()).toBe(5);
 
 			hostComponent.setNumberOfPages(15);
@@ -216,14 +216,14 @@ describe('PaginatorComponent', () => {
 			expect(hostComponent.page()).toBe(1);
 
 			// Get the paginator component instance from host
-			const paginatorDebugElement = hostFixture.debugElement.query(By.directive(PaginatorComponent));
+			const paginatorDebugElement = hostFixture.debugElement.query(By.directive(HubPaginatorComponent));
 			const paginatorInstance = paginatorDebugElement.componentInstance;
 
 			expect(paginatorInstance.page()).toBe(1);
 		});
 
 		it('should update page in host component when paginator page changes', () => {
-			const paginatorDebugElement = hostFixture.debugElement.query(By.directive(PaginatorComponent));
+			const paginatorDebugElement = hostFixture.debugElement.query(By.directive(HubPaginatorComponent));
 			const paginatorInstance = paginatorDebugElement.componentInstance;
 
 			// Update page in paginator
@@ -237,7 +237,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setNumberOfPages(25);
 			hostFixture.detectChanges();
 
-			const paginatorDebugElement = hostFixture.debugElement.query(By.directive(PaginatorComponent));
+			const paginatorDebugElement = hostFixture.debugElement.query(By.directive(HubPaginatorComponent));
 			const paginatorInstance = paginatorDebugElement.componentInstance;
 
 			expect(paginatorInstance.numberOfPages()).toBe(25);
@@ -247,7 +247,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setPage(8);
 			hostFixture.detectChanges();
 
-			const paginatorDebugElement = hostFixture.debugElement.query(By.directive(PaginatorComponent));
+			const paginatorDebugElement = hostFixture.debugElement.query(By.directive(HubPaginatorComponent));
 			const paginatorInstance = paginatorDebugElement.componentInstance;
 
 			expect(paginatorInstance.page()).toBe(8);
@@ -281,7 +281,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setPage(10);
 			hostFixture.detectChanges();
 
-			const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+			const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 
 			expect(paginatorInstance.page()).toBe(10);
 			expect(paginatorInstance.numberOfPages()).toBe(5);
@@ -310,7 +310,7 @@ describe('PaginatorComponent', () => {
 
 	describe('Multiple Selector Support', () => {
 		it('should work with hub-paginator selector', () => {
-			const fixture2 = TestBed.createComponent(PaginatorComponent);
+			const fixture2 = TestBed.createComponent(HubPaginatorComponent);
 			const element = fixture2.nativeElement;
 
 			expect(element).toBeTruthy();
@@ -336,7 +336,7 @@ describe('PaginatorComponent', () => {
 			hostComponent.setNumberOfPages(12);
 			hostFixture.detectChanges();
 
-			const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+			const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 			expect(paginatorInstance.numberOfPages()).toBe(12);
 
 			// numberOfPages is input-only, so it should only receive values
@@ -379,7 +379,7 @@ describe('PaginatorComponent', () => {
 			// Should complete within reasonable time (less than 50ms)
 			expect(duration).toBeLessThan(50);
 
-			const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+			const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 			expect(paginatorInstance.numberOfPages()).toBe(100);
 		});
 	});
@@ -434,7 +434,7 @@ describe('PaginatorComponent', () => {
 				hostComponent.setNumberOfPages(value);
 				hostFixture.detectChanges();
 
-				const paginatorInstance = hostFixture.debugElement.query(By.directive(PaginatorComponent)).componentInstance;
+				const paginatorInstance = hostFixture.debugElement.query(By.directive(HubPaginatorComponent)).componentInstance;
 				expect(paginatorInstance.numberOfPages()).toBe(value);
 			});
 		});

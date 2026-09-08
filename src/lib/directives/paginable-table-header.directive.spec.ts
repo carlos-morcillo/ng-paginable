@@ -1,9 +1,9 @@
 import { Component, TemplateRef, signal, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PaginableTableHeaderDirective } from './paginable-table-header.directive';
+import { HubPaginableTableHeaderDirective } from './paginable-table-header.directive';
 
 /**
- * Test component for PaginableTableHeaderDirective
+ * Test component for HubPaginableTableHeaderDirective
  */
 @Component({
 	template: `
@@ -12,23 +12,23 @@ import { PaginableTableHeaderDirective } from './paginable-table-header.directiv
 		</ng-template>
 	`,
 	standalone: true,
-	imports: [PaginableTableHeaderDirective]
+	imports: [HubPaginableTableHeaderDirective]
 })
 class TestHeaderDirectiveComponent {
-	readonly directive = viewChild.required(PaginableTableHeaderDirective);
+	readonly directive = viewChild.required(HubPaginableTableHeaderDirective);
 
 	headerName = signal('testColumn');
 	headerTitle = 'Test Header';
 }
 
 /**
- * Test suite for PaginableTableHeaderDirective
+ * Test suite for HubPaginableTableHeaderDirective
  * Tests custom header template directive functionality
  */
-describe('PaginableTableHeaderDirective', () => {
+describe('HubPaginableTableHeaderDirective', () => {
 	let component: TestHeaderDirectiveComponent;
 	let fixture: ComponentFixture<TestHeaderDirectiveComponent>;
-	let directive: PaginableTableHeaderDirective;
+	let directive: HubPaginableTableHeaderDirective;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
@@ -69,10 +69,10 @@ describe('PaginableTableHeaderDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableTableHeaderDirective]
+			imports: [HubPaginableTableHeaderDirective]
 		})
 		class TestHeaderTptComponent {
-			readonly directive = viewChild.required(PaginableTableHeaderDirective);
+			readonly directive = viewChild.required(HubPaginableTableHeaderDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestHeaderTptComponent);

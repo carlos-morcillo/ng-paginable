@@ -5,9 +5,9 @@ import { Subject } from 'rxjs';
 
 import { MenuFilterOperators, StringMatchModes } from '../../interfaces/column-filter-event';
 import { PaginableTableHeader } from '../../interfaces/paginable-table-header';
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * The column filter panel — `filter.mode: 'menu'` — is the half of filtering nothing on the
@@ -48,7 +48,7 @@ const PRODUCTS = [
 ];
 
 describe('table column filter panel', () => {
-	let fixture: ComponentFixture<TableComponent>;
+	let fixture: ComponentFixture<HubTableComponent>;
 
 	/** Header cell of a column, by the `data-col` the template stamps on it. */
 	function headerCell(property: string): HTMLElement {
@@ -71,15 +71,15 @@ describe('table column filter panel', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
 
-		fixture = TestBed.createComponent(TableComponent);
+		fixture = TestBed.createComponent(HubTableComponent);
 		fixture.componentRef.setInput('headers', HEADERS);
 		fixture.componentRef.setInput('data', PRODUCTS);
 		fixture.componentRef.setInput('paginate', true);

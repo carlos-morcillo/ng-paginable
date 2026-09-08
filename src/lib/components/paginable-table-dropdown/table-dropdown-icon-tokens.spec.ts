@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PaginableTableDropdownComponent } from './paginable-table-dropdown.component';
+import { HubPaginableTableDropdownComponent } from './paginable-table-dropdown.component';
 
 /**
  * The legacy row-actions menu draws one glyph, and it is its own.
@@ -12,7 +12,7 @@ import { PaginableTableDropdownComponent } from './paginable-table-dropdown.comp
  * glyph has to come from somewhere, and in this library a glyph is always a variable.
  */
 describe('table dropdown icon tokens', () => {
-	let fixture: ComponentFixture<PaginableTableDropdownComponent>;
+	let fixture: ComponentFixture<HubPaginableTableDropdownComponent>;
 
 	function maskOf(selector: string): string {
 		const element = fixture.nativeElement.querySelector(selector) as HTMLElement | null;
@@ -25,9 +25,9 @@ describe('table dropdown icon tokens', () => {
 	}
 
 	beforeEach(() => {
-		TestBed.configureTestingModule({ imports: [PaginableTableDropdownComponent] });
+		TestBed.configureTestingModule({ imports: [HubPaginableTableDropdownComponent] });
 
-		fixture = TestBed.createComponent(PaginableTableDropdownComponent);
+		fixture = TestBed.createComponent(HubPaginableTableDropdownComponent);
 		fixture.componentRef.setInput('options', { buttons: [] });
 		fixture.detectChanges();
 	});

@@ -1,14 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HubIconComponent, IconType } from './icon.component';
+import { HubPaginableIconComponent, IconType } from './icon.component';
 import { Icon } from '../../interfaces/paginable-table-header';
 
 /**
- * Test suite for HubIconComponent
+ * Test suite for HubPaginableIconComponent
  * Tests icon rendering with support for different icon libraries
  */
-describe('HubIconComponent', () => {
-	let component: HubIconComponent;
-	let fixture: ComponentFixture<HubIconComponent>;
+describe('HubPaginableIconComponent', () => {
+	let component: HubPaginableIconComponent;
+	let fixture: ComponentFixture<HubPaginableIconComponent>;
 
 	/** Writes the only input the component has and settles the derived state. */
 	function setConfig(config: string | Icon | undefined): void {
@@ -18,10 +18,10 @@ describe('HubIconComponent', () => {
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			imports: [HubIconComponent]
+			imports: [HubPaginableIconComponent]
 		});
 
-		fixture = TestBed.createComponent(HubIconComponent);
+		fixture = TestBed.createComponent(HubPaginableIconComponent);
 		component = fixture.componentInstance;
 	});
 

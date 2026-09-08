@@ -3,10 +3,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HubTranslationService } from 'ng-hub-ui-utils';
 import { Subject } from 'rxjs';
 
-import { PaginableService } from '../../services/paginable.service';
+import { HubPaginableService } from '../../services/paginable.service';
 import { PaginableConfigService } from '../../services/paginate-config.service';
 import { PaginableActionButton } from '../../interfaces';
-import { TableComponent } from './table.component';
+import { HubTableComponent } from './table.component';
 
 /**
  * A row action can say how it should look, and until now it could not.
@@ -57,19 +57,19 @@ function declarationsFor(fragment: string): { selector: string; style: CSSStyleD
 }
 
 describe('row action variants', () => {
-	let component: TableComponent;
+	let component: HubTableComponent;
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			imports: [TableComponent, BrowserAnimationsModule],
+			imports: [HubTableComponent, BrowserAnimationsModule],
 			providers: [
 				{ provide: HubTranslationService, useClass: MockHubTranslationService },
-				{ provide: PaginableService, useClass: MockPaginableService },
+				{ provide: HubPaginableService, useClass: MockPaginableService },
 				{ provide: PaginableConfigService, useValue: { language: 'en', mapping: {} } }
 			]
 		}).compileComponents();
 
-		const fixture = TestBed.createComponent(TableComponent);
+		const fixture = TestBed.createComponent(HubTableComponent);
 		fixture.detectChanges();
 		component = fixture.componentInstance;
 	});
@@ -152,7 +152,7 @@ describe('row action variants', () => {
 		 *
 		 * It used to enumerate one rule per built-in colour, which served those names and
 		 * silently refused every other — while the type invited any string. The accent is a
-		 * value now, written on the element by {@link TableComponent.actionAccent}, so the
+		 * value now, written on the element by {@link HubTableComponent.actionAccent}, so the
 		 * sheet has no business naming colours at all. If a rule ever comes back, the closed
 		 * set comes back with it.
 		 */

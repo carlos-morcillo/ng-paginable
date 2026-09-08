@@ -12,8 +12,8 @@ import { locale as glLocale } from './assets/i18n/gl';
 import { locale as ruLocale } from './assets/i18n/ru';
 import { locale as zhLocale } from './assets/i18n/zh';
 import { PaginableTableConfig } from './interfaces/paginable-table-config';
-import { PaginableDefaultsService } from './services/paginable-defaults.service';
-import { PaginableService } from './services/paginable.service';
+import { HubPaginableDefaultsService } from './services/paginable-defaults.service';
+import { HubPaginableService } from './services/paginable.service';
 import { PaginableConfigService } from './services/paginate-config.service';
 
 /** Bundled translation dictionaries shared by every provisioning entry point. */
@@ -43,19 +43,19 @@ export const PAGINABLE_DICTIONARIES = {
 export function paginableCoreProviders(config?: PaginableTableConfig): (Provider | EnvironmentProviders)[] {
 	return [
 		{ provide: PaginableConfigService, useValue: config ?? {} },
-		PaginableService,
-		PaginableDefaultsService,
+		HubPaginableService,
+		HubPaginableDefaultsService,
 		{
 			provide: HUB_TRANSLATION_CONFIG,
-			useFactory: (paginableService: PaginableService) => ({
+			useFactory: (paginableService: HubPaginableService) => ({
 				dictionaries: PAGINABLE_DICTIONARIES,
 				language: paginableService.config.language ?? 'en',
 				fallbackLanguage: 'en'
 			}),
-			deps: [PaginableService]
+			deps: [HubPaginableService]
 		},
 		HubTranslationService,
-		provideAppInitializer(() => inject(PaginableDefaultsService).preload())
+		provideAppInitializer(() => inject(HubPaginableDefaultsService).preload())
 	];
 }
 

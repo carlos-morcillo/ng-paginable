@@ -1,9 +1,9 @@
 import { Component, TemplateRef, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PaginableErrorDirective } from './paginable-error.directive';
+import { HubPaginableErrorDirective } from './paginable-error.directive';
 
 /**
- * Test component for PaginableErrorDirective
+ * Test component for HubPaginableErrorDirective
  */
 @Component({
 	template: `
@@ -12,22 +12,22 @@ import { PaginableErrorDirective } from './paginable-error.directive';
 		</ng-template>
 	`,
 	standalone: true,
-	imports: [PaginableErrorDirective]
+	imports: [HubPaginableErrorDirective]
 })
 class TestErrorDirectiveComponent {
-	readonly directive = viewChild.required(PaginableErrorDirective);
+	readonly directive = viewChild.required(HubPaginableErrorDirective);
 
 	errorMessage = 'An error occurred';
 }
 
 /**
- * Test suite for PaginableErrorDirective
+ * Test suite for HubPaginableErrorDirective
  * Tests custom error state template directive functionality
  */
-describe('PaginableErrorDirective', () => {
+describe('HubPaginableErrorDirective', () => {
 	let component: TestErrorDirectiveComponent;
 	let fixture: ComponentFixture<TestErrorDirectiveComponent>;
-	let directive: PaginableErrorDirective;
+	let directive: HubPaginableErrorDirective;
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
@@ -57,10 +57,10 @@ describe('PaginableErrorDirective', () => {
 				</ng-template>
 			`,
 			standalone: true,
-			imports: [PaginableErrorDirective]
+			imports: [HubPaginableErrorDirective]
 		})
 		class TestErrorTptComponent {
-			readonly directive = viewChild.required(PaginableErrorDirective);
+			readonly directive = viewChild.required(HubPaginableErrorDirective);
 		}
 
 		const testFixture = TestBed.createComponent(TestErrorTptComponent);

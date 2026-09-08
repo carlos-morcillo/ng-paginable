@@ -6,7 +6,7 @@ import { TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
  * Component for inputting a range of values (number or date) in a table filter.
  *
  * @export
- * @class PaginableTableRangeInputComponent
+ * @class HubPaginableTableRangeInputComponent
  * @implements {ControlValueAccessor}
  */
 @Component({
@@ -19,18 +19,18 @@ import { TranslatePipe, UcfirstPipe } from 'ng-hub-ui-utils';
 	providers: [
 		{
 			provide: NG_VALUE_ACCESSOR,
-			useExisting: forwardRef(() => PaginableTableRangeInputComponent),
+			useExisting: forwardRef(() => HubPaginableTableRangeInputComponent),
 			multi: true
 		}
 	]
 })
-export class PaginableTableRangeInputComponent implements ControlValueAccessor {
+export class HubPaginableTableRangeInputComponent implements ControlValueAccessor {
 	disabled = false;
 	/**
 	 * The type of input to display. Can be 'number' or 'date'.
 	 *
 	 * @type {('number' | 'date')}
-	 * @memberof PaginableTableRangeInputComponent
+	 * @memberof HubPaginableTableRangeInputComponent
 	 */
 	readonly type = input<'number' | 'date'>('number');
 

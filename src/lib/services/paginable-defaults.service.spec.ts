@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { PaginableTableConfig } from '../interfaces/paginable-table-config';
-import { PaginableDefaultsService } from './paginable-defaults.service';
-import { PaginableService } from './paginable.service';
+import { HubPaginableDefaultsService } from './paginable-defaults.service';
+import { HubPaginableService } from './paginable.service';
 import { PaginableConfigService } from './paginate-config.service';
 
 @Component({ selector: 'hub-eager-state', standalone: true, template: '' })
@@ -15,14 +15,14 @@ class LazyComponent {}
  * Builds an isolated injector whose paginable config is the provided one, then
  * resolves the defaults service from it.
  */
-function serviceWith(config: PaginableTableConfig): PaginableDefaultsService {
+function serviceWith(config: PaginableTableConfig): HubPaginableDefaultsService {
 	TestBed.configureTestingModule({
-		providers: [PaginableService, PaginableDefaultsService, { provide: PaginableConfigService, useValue: config }]
+		providers: [HubPaginableService, HubPaginableDefaultsService, { provide: PaginableConfigService, useValue: config }]
 	});
-	return TestBed.inject(PaginableDefaultsService);
+	return TestBed.inject(HubPaginableDefaultsService);
 }
 
-describe('PaginableDefaultsService', () => {
+describe('HubPaginableDefaultsService', () => {
 	afterEach(() => TestBed.resetTestingModule());
 
 	it('exposes null signals when no states are configured', () => {

@@ -1,7 +1,7 @@
 import { inject, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { ResolvedStateDefault } from '../interfaces/paginable-state';
 import { NormalizedStateDefault, normalizeStateDefault } from '../utils';
-import { PaginableService } from './paginable.service';
+import { HubPaginableService } from './paginable.service';
 
 /** The three paginable states that accept a default component. */
 type StateKey = 'loading' | 'error' | 'noResults';
@@ -13,8 +13,8 @@ type StateKey = 'loading' | 'error' | 'noResults';
  * initializer so chunks are fetched at startup rather than mid-render.
  */
 @Injectable({ providedIn: 'root' })
-export class PaginableDefaultsService {
-	#paginable = inject(PaginableService);
+export class HubPaginableDefaultsService {
+	#paginable = inject(HubPaginableService);
 
 	#signals: Record<StateKey, WritableSignal<ResolvedStateDefault | null>> = {
 		loading: signal(null),
