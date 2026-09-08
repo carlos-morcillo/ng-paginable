@@ -86,7 +86,6 @@ This table lists the functionalities of the `ng-hub-ui-paginable` library:
 | :------------------------------------------------------------------------- | :---------: | :-----------------------------------: |
 | Standalone paginator (`hub-paginator` / `hub-ui-paginator`)                |     ✅      |                  ✅                   |
 | Range input (`hub-table-range-input`)                                      |     ✅      | ❌ _(used inside advanced filtering)_ |
-| Tooltip directive (`TooltipDirective`, re-exported from `ng-hub-ui-utils`) |     ✅      |                  ❌                   |
 
 ---
 

@@ -40,8 +40,6 @@ export {
 } from './directives/paginable-no-results.directive';
 export { PaginableTableRowDirective } from './directives/paginable-table-row.directive';
 export { ResizableDirective } from './directives/resizable.directive';
-// Moved to ng-hub-ui-utils; re-exported here for backward compatibility.
-export { TooltipDirective } from 'ng-hub-ui-utils';
 
 // Interfaces
 export * from './interfaces';

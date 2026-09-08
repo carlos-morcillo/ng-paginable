@@ -1,5 +1,19 @@
 # Changelog
 
+## [22.20.0] - 2026-09-07
+
+### Removed
+
+- **The `TooltipDirective` re-export.** The directive lived in `ng-hub-ui-utils` and was
+  re-exported here for the consumers who had imported it from this package before it moved. It
+  is gone from `ng-hub-ui-utils` 22.14.0 — a bare `[tooltip]` selector is a name in the
+  application's namespace, not a library's — so there is nothing left to forward. Nothing in
+  this library used it: the table draws its own tooltips through `HubTableTooltipDirective`,
+  which is unaffected.
+
+  **Breaking** for an application importing `TooltipDirective` from `ng-hub-ui-paginable` —
+  see [`BREAKING_CHANGES.md`](./BREAKING_CHANGES.md).
+
 ## [22.19.1] - 2026-09-07
 
 ### Changed

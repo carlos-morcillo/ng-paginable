@@ -1,5 +1,20 @@
 # Breaking Changes: ng-hub-ui-paginable
 
+## [22.20.0] - 2026-09-07
+
+### The `TooltipDirective` re-export is removed
+
+- **Change**: this package re-exported `TooltipDirective` from `ng-hub-ui-utils` for backward
+  compatibility, the directive having started life here. `ng-hub-ui-utils` 22.14.0 removes it —
+  the bare `[tooltip]` selector belonged to the consumer's namespace rather than a library's —
+  so the forward has nothing left to point at and goes with it.
+- **Impact**: `import { TooltipDirective } from 'ng-hub-ui-paginable'` stops compiling. The
+  table's own tooltips are drawn by `HubTableTooltipDirective` and are not affected.
+- **Migration**: use `HubTooltipDirective` from `ng-hub-ui-utils`, renaming the attributes:
+  `tooltip` → `hubTooltip`, `placement` → `hubTooltipPlacement`, `delay` → `hubTooltipDelay`,
+  `offset` → `hubTooltipOffset`. A template left writing `tooltip="…"` compiles and shows
+  nothing, so check the markup as well as the imports.
+
 ## [22.19.0] - 2026-09-06
 
 ### Single selection renders `input[type="radio"]`
